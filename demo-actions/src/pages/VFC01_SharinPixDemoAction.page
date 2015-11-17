@@ -1,0 +1,14 @@
+<apex:page standardController="Contact" extensions="VFC01_SharinPixDemoAction" showHeader="true" sidebar="true">
+<script>
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    eventer(messageEvent,function(e) {
+        console.log('parent received message!:  ',e);
+        if (event.origin !== "https://app.sharinpix.com"){return;}
+        alert('Images', e.data.payload.images[0].thumbnails);
+
+    },false);
+  </script>
+  <apex:canvasApp developerName="Albums" height="500px" parameters="{!parameters}" width="100%"/>
+</apex:page>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>VFC01_SharinPixDemoAction</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>VFC01_SharinPixDemoAction</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>sharinpix</members>
+        <members>sharinpix</members>
+        <members>sharinpix</members>
+        <members>sharinpix</members>
+        <name>InstalledPackage</name>
+    </types>
+    <version>31.0</version>
+</Package>
