@@ -1,18 +1,14 @@
-<apex:page standardController="Contact" extensions="VFC01_SharinPixDemoAction">
-  <script>
+<apex:page standardController="Contact" extensions="VFC01_SharinPix">
+<script>
     var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
     var eventer = window[eventMethod];
     var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
     eventer(messageEvent,function(e) {
         console.log('parent received message!:  ',e);
-        if (event.origin !== "https://app.sharinpix.com"){return;}
+        if (e.origin !== "https://app.sharinpix.com"){return;}
         console.log(e.data.payload.images);
         if (e.data.payload.action == 'Send an email'){
-            var image_urls = [];
-            for(i = 0; i < e.data.payload.images.length; i++){
-                image_urls.push(e.data.payload.images[i].thumbnails.mini);
-            }
-            spix.VFC01_SharinPix.send_mail(JSON.stringify(e.data.payload.images), function(res){
+            VFC01_SharinPix.send_mail(JSON.stringify(e.data.payload.images), function(res){
                 console.log(res);
             });
         }

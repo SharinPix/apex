@@ -1,7 +1,11 @@
-public with sharing class VFC01_SharinPixDemoAction {
-	public string parameters{get;set;}
-	public VFC01_SharinPixDemoAction(ApexPages.standardController controller) {
-		String id = controller.getId(); // Can be any string
+global without sharing class VFC01_SharinPixDemoAction {
+    
+    global string parameters{get;set;}
+    global string contact{get;set;}
+    global VFC01_SharinPix(ApexPages.standardController controller) {
+        String id = controller.getId(); // Can be any string
+        system.debug('#### id: '+id);
+        contact = id;
 
         map<string, boolean> access = new map<string, boolean>();
         access.put('see', true);
@@ -28,9 +32,9 @@ public with sharing class VFC01_SharinPixDemoAction {
         params.put('Id', id);
   
         parameters = JSON.serialize(params);
-	}
-
-   @RemoteAction
+    }
+    
+    @RemoteAction
     global static void send_mail(string imageObj){
         list<object> imageList = (list<object>) Json.deserializeUntyped(imageObj);
         list<string> imageUrlList = new list<string>();
@@ -59,7 +63,7 @@ public with sharing class VFC01_SharinPixDemoAction {
             String body = 'Hello '+contact.name;
             body += '<br/>The following photos has been uploaded on your record: <br/>';
             for(string url: imageurllist){
-                body += '<image src="'+url+'"><br/>';
+                body += '<img src="'+url+'" /><br/>';
             }
             mail.setHtmlBody(body);
             mails.add(mail);
@@ -67,4 +71,4 @@ public with sharing class VFC01_SharinPixDemoAction {
           
         Messaging.sendEmail(mails);
     }
-}//end class
+}
