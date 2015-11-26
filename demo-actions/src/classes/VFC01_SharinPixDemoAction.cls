@@ -2,7 +2,7 @@ global without sharing class VFC01_SharinPixDemoAction {
     
     global string parameters{get;set;}
     global string contact{get;set;}
-    global VFC01_SharinPix(ApexPages.standardController controller) {
+    global VFC01_SharinPixDemoAction(ApexPages.standardController controller) {
         String id = controller.getId(); // Can be any string
         system.debug('#### id: '+id);
         contact = id;
@@ -17,6 +17,7 @@ global without sharing class VFC01_SharinPixDemoAction {
 
         List<string> actions = new List<string>();
         actions.add('Send an email');
+        actions.add('Add to description');
 
         map<string, object> album_abilities = new map<string, object>();
         album_abilities.put('Access', access);
@@ -68,7 +69,29 @@ global without sharing class VFC01_SharinPixDemoAction {
             mail.setHtmlBody(body);
             mails.add(mail);
         }
-          
         Messaging.sendEmail(mails);
+    }
+
+    @RemoteAction
+    global static void add_to_description(string imageObj){
+        list<object> imageList = (list<object>) Json.deserializeUntyped(imageObj);
+        list<string> imageUrlList = new list<string>();
+        string contactId ;
+        for(object img: imageList){
+            map<string, object> imgMap = (map<string, object>) img;
+            map<string, object> thumbnailMap = (map<string, object>) imgMap.get('thumbnails');
+            imageUrlList.add(string.valueof(thumbnailMap.get('large')));
+            contactId = string.valueof(imgMap.get('album_id'));
+        }
+        Contact contact = [select id, description__c from Contact where id = :contactId limit 1];
+        if (imageUrlList.size() > 0) {
+            string body = contact.description__c == null ? '' : contact.description__c;
+            for(string url: imageurllist){
+                body += '<img src="'+url+'" /><br/>';
+            }
+            contact.description__c = body;
+            update contact;
+
+        }
     }
 }
