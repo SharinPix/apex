@@ -6,10 +6,10 @@
     eventer(messageEvent,function(e) {
         //post to chatter
         if (e.data.name === 'image-new'){
-            spix.VCProductSharinPix.new_image_uploaded(JSON.stringify(e.data.payload.image), "{!$CurrentPage.parameters.Id}", function(res){
+            VCProductSharinPix.new_image_uploaded(JSON.stringify(e.data.payload.image), "{!$CurrentPage.parameters.Id}", function(res){
                 console.log(res);
             });
-        }
+        } 
     },false);
 
   </script>
