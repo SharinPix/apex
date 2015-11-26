@@ -9,7 +9,7 @@
         if (e.origin !== "https://app.sharinpix.com"){return;}
         console.log(e.data.payload.images);
         if (e.data.payload.action == 'Send an email'){
-            VFC01_SharinPixDemoActionVFC01_SharinPixDemoAction.send_mail(JSON.stringify(e.data.payload.images), function(res){
+            VFC01_SharinPixDemoAction.send_mail(JSON.stringify(e.data.payload.images), function(res){
                 alert('Email has been sent.')
             });
         }
