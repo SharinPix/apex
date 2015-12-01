@@ -29,8 +29,6 @@ global without sharing class VFC01_SharinPixDemoAction {
 
         map<string, object> params = new map<string, object>();
         params.put('abilities', abilities);
-
-        params.put('Id', id);
   
         parameters = JSON.serialize(params);
     }
