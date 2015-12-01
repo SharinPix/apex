@@ -3,7 +3,7 @@ global without sharing class VFC01_SharinPixDemoAction {
     global string parameters{get;set;}
     global string contact{get;set;}
     global VFC01_SharinPixDemoAction(ApexPages.standardController controller) {
-        String id = controller.getId(); // Can be any string
+        String id = (Id)controller.getId();// Can be any string
         system.debug('#### id: '+id);
         contact = id;
 
