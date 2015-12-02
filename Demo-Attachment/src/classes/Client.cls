@@ -48,16 +48,14 @@ public class Client {
             throw new SharinPixException('API response ' + response.getStatus() + ': '+ response.getBody());
         }
     }
-    //public static String post_file(String url, String file_name, Blob file_body, Map<String, Object> params){
+    
     public static String post_file(String url, String attachmentId, Map<String, Object> params){
-        
-        Attachment attachment = [select id, name from Attachment where id = :attachmentId limit 1];
         String boundary = '----------------------------741e90d31eff';
         String header = '';
         for (String param_name : params.keySet()) {
           header += '--' + boundary + '\r\nContent-Disposition: form-data; name="' + param_name + '"\r\n\r\n' + params.get(param_name)+ '\r\n';
         }
-        header += '--'+boundary+'\r\nContent-Disposition: form-data; name="file"; filename="'+attachment.Name+'"\r\nContent-Type: application/octet-stream';
+        header += '--'+boundary+'\r\nContent-Disposition: form-data; name="file"; filename="'+[select id, name from Attachment where id = :attachmentId limit 1].Name+'"\r\nContent-Type: application/octet-stream';
         String footer = '\r\n--'+boundary+'--';              
         String headerEncoded = EncodingUtil.base64Encode(Blob.valueOf(header+'\r\n\r\n'));
         while(headerEncoded.endsWith('=')) {
@@ -110,11 +108,5 @@ public class Client {
         String cloudinary = post_file(url, attachmentId, params);
         Map<String, Object> image = this.api_post('/albums/'+albumId+'/images', Blob.valueof('{"cloudinary":' + cloudinary + '}') , token);
         return '';
-    }/*
-    public static void upload_attachment(String attachment_id, String album_id){
-        Attachment attachment = [SELECT Id, Name, Body FROM Attachment WHERE Id=:attachment_id LIMIT 1];
-        System.debug(attachment);
-        Client sp = new Client('bef8076a-995e-48f7-a5fa-683a9c506e4a', 'fab308eafd600629837525d67bcf10bb', 'https://19df3d0.ngrok.com/api/v1');
-        sp.upload_image_to_album(attachment.name, attachment.body, album_id);
-    }*/
+    }
 }//end class
