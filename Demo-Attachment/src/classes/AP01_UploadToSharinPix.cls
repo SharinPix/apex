@@ -7,20 +7,17 @@ public class AP01_UploadToSharinPix {
     	}//end for 
 
     	for(Attachment att: attachmentList){
-    		system.debug('##### att: '+att.parentId);
-    		system.debug('##### caseIdMap: '+caseIdMap.get(att.parentId));
     		upload_photo(att.id, caseIdMap.get(att.parentId));
     	}
     }
 
-    @future(callout=true)
+    @future (callout=true)
     public static void upload_photo(string attachmentId, string caseId){
     	string client_id = 'a06d99e4-2772-4bff-a243-749b28fa6e24';
         string client_secret = 'dfd13c53da6e2768808e2f7b6109e833';
-        Attachment attachment = [SELECT Id, Name, Body FROM Attachment WHERE Id=:attachmentId LIMIT 1];
-
         Client clientInstance = new Client(client_id, client_secret, Client.API_URL);
-        clientInstance.upload_image_to_album(attachment.name, attachment.body, caseId);
+        
+        clientInstance.upload_image_to_album(attachmentId, caseId);
     }
     
 }
