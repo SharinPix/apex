@@ -7,8 +7,6 @@ public class Token {
         this.jwt.claims = claims;
     }
     public String issue(){
-        System.debug('*****Token : ');
-        System.debug(jwt.issue());
         return jwt.issue();
     } 
 }

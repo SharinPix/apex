@@ -47,8 +47,6 @@ public class JWT {
             }
         }
         body.writeEndObject(); 
-        System.debug('ICIC !!!');
-        System.debug(body.getAsString());
         jwt = encodedHeader + '.' + base64URLencode(Blob.valueOf(body.getAsString()));
         
         if ( this.alg == HS256 ) {

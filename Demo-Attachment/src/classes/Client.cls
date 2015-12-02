@@ -18,7 +18,6 @@ public class Client {
         req.setBodyAsBlob(body);
         Http http = new Http();
         HTTPResponse response = http.send(req);
-        System.debug(response.getBody());
         if (response.getStatus() == 'OK'){
             Map<String, Object> json_res = new Map<String, Object>();
             json_res = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
@@ -29,9 +28,6 @@ public class Client {
         return new Map<String, Object>();
     }
     public Map<String, Object> api_get(String endpoint, Token token){
-        System.debug('*****Token : ');
-        System.debug(token.issue());
-        
         HttpRequest req = new HttpRequest();
         req.setEndpoint(this.endpoint_url + endpoint);
         req.setMethod('GET');
@@ -39,7 +35,6 @@ public class Client {
         req.setHeader('Content-Type', 'application/json');
         Http http = new Http();
         HTTPResponse response = http.send(req);
-        System.debug(response.getBody());
         if (response.getStatus() == 'OK'){
             Map<String, Object> json_res = new Map<String, Object>();
             json_res = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
@@ -62,7 +57,6 @@ public class Client {
            header+=' ';
            headerEncoded = EncodingUtil.base64Encode(Blob.valueOf(header+'\r\n\r\n'));
         }
-        System.debug(header);
         if(EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).endsWith('=')){  
             HttpRequest req = new HttpRequest();
             req.setHeader('Content-Type','multipart/form-data; boundary='+boundary);
@@ -100,10 +94,8 @@ public class Client {
         claims.put('abilities', abilities);
         Token token = new Token(this.client_id, this.client_secret, claims);
         Map<String, Object> album = this.api_get('/albums/'+albumId, token);
-        system.debug('#### album.api_get: '+album);
         Map<String, Object> upload_form = (Map<String, Object>) album.get('upload_form');
         Map<String, Object> params = (Map<String, Object>) upload_form.get('params');
-        system.debug('#### params: '+params);
         String url = (String) upload_form.get('url');
         String cloudinary = post_file(url, attachmentId, params);
         Map<String, Object> image = this.api_post('/albums/'+albumId+'/images', Blob.valueof('{"cloudinary":' + cloudinary + '}') , token);
