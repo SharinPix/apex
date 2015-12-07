@@ -28,6 +28,23 @@ public class Client {
         }
         return new Map<String, Object>();
     }
+    public Map<String, Object> api_delete(String endpoint, Token token){
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(this.endpoint_url + endpoint);
+        req.setMethod('DELETE');
+        req.setHeader('Authorization', 'Token token=\"' + token.issue() + '"');
+        req.setHeader('Content-Type', 'application/json');
+        Http http = new Http();
+        HTTPResponse response = http.send(req);
+        System.debug(response.getBody());
+        System.debug('####'+response.getStatusCode());
+        if (response.getStatusCode() == 204){
+            return new Map<String, Object>();
+        }else{
+            throw new SharinPixException('API response ' + response.getStatus() + ': '+ response.getBody());
+        }
+        return new Map<String, Object>();
+    }
     public Map<String, Object> api_get(String endpoint, Token token){
         System.debug('*****Token : ');
         System.debug(token.issue());
