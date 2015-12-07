@@ -1,0 +1,17 @@
+<apex:page standardController="Product2" extensions="VCProductSharinPix">
+  <script>
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    eventer(messageEvent,function(e) {
+        //post to chatter
+        if (e.data.name === 'image-new'){
+            VCProductSharinPix.new_image_uploaded(JSON.stringify(e.data.payload.image), "{!$CurrentPage.parameters.Id}", function(res){
+                console.log(res);
+            });
+        } 
+    },false);
+
+  </script>
+  <apex:canvasApp developerName="Albums" height="500px" parameters="{!parameters}" width="100%"/>
+</apex:page>
