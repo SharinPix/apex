@@ -1,6 +1,5 @@
 public with sharing class SharinPixDemoSite {
-    public string url{get;set;}
-	public String getToken() {
+	public String getUrl() {
         String id = 'salesforce-id';
 
         map<string, boolean> access = new map<string, boolean>();
@@ -25,8 +24,8 @@ public with sharing class SharinPixDemoSite {
         map<string, object> params = new map<string, object>();
         params.put('abilities', abilities);
 
-        Client sp = new Client('Secret-Id', 'Secret-Secret', 'https://api.sharinpix.com/api/v1');
-        string token = new Token(sp, params).issue();
+        sharinpix__Client sp = new sharinpix__Client('secret_id', 'secret_secret', 'https://api.sharinpix.com/api/v1');
+        string token = new sharinpix__Token(sp, params).issue();
         String url = 'https://app.sharinpix.com/albums/'+id+'?token='+token;
         return url;
 	}
