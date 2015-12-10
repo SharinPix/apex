@@ -1,19 +1,18 @@
-public class Client {
-    public String client_id {get;set;}
-    public String client_secret {get;set;}
-    public String endpoint_url {get;set;}
-    
-    public static final String API_URL = 'https://api.sharinpix.com/api/v1';
-    public Client(String client_id, String client_secret, String endpoint_url){
+global class Client {
+    global String client_id {get;set;}
+    global String client_secret {get;set;}
+    global String endpoint_url {get;set;}
+
+    global Client(String client_id, String client_secret, String endpoint_url){
         this.client_id = client_id;
         this.client_secret = client_secret;
         this.endpoint_url = endpoint_url;
     }
-    public Map<String, Object> api_post(String endpoint, Blob body, Token token){
+    global Map<String, Object> api_post(String endpoint, Blob body, Map<String, Object> claims){
         HttpRequest req = new HttpRequest();
         req.setEndpoint(this.endpoint_url + endpoint);
         req.setMethod('POST');
-        req.setHeader('Authorization', 'Token token="' + token.issue() + '"');
+        req.setHeader('Authorization', 'Token token="' + token(claims) + '"');
         req.setHeader('Content-Type', 'application/json');
         req.setBodyAsBlob(body);
         Http http = new Http();
@@ -27,11 +26,11 @@ public class Client {
         }
         return new Map<String, Object>();
     }
-    public Map<String, Object> api_get(String endpoint, Token token){
+    global Map<String, Object> api_get(String endpoint, Map<String, Object> claims){
         HttpRequest req = new HttpRequest();
         req.setEndpoint(this.endpoint_url + endpoint);
         req.setMethod('GET');
-        req.setHeader('Authorization', 'Token token="' + token.issue() + '"');
+        req.setHeader('Authorization', 'Token token="' + token(claims) + '"');
         req.setHeader('Content-Type', 'application/json');
         Http http = new Http();
         HTTPResponse response = http.send(req);
@@ -43,11 +42,11 @@ public class Client {
             throw new SharinPixException('API response ' + response.getStatus() + ': '+ response.getBody());
         }
     }
-    public Map<String, Object> api_delete(String endpoint, Token token){
+    global Map<String, Object> api_delete(String endpoint, Map<String, Object> claims){
         HttpRequest req = new HttpRequest();
         req.setEndpoint(this.endpoint_url + endpoint);
         req.setMethod('DELETE');
-        req.setHeader('Authorization', 'Token token=\"' + token.issue() + '"');
+        req.setHeader('Authorization', 'Token token=\"' + token(claims) + '"');
         req.setHeader('Content-Type', 'application/json');
         Http http = new Http();
         HTTPResponse response = http.send(req);
@@ -59,27 +58,27 @@ public class Client {
         }
         return new Map<String, Object>();
     }
-    
+
     private static String post_file(String url, String attachmentId, Map<String, Object> params){
         String boundary = '----------------------------741e90d31eff';
         String header = '';
         for (String param_name : params.keySet()) {
-          header += '--' + boundary + '\r\nContent-Disposition: form-data; name="' + param_name + '"\r\n\r\n' + params.get(param_name)+ '\r\n';
+            header += '--' + boundary + '\r\nContent-Disposition: form-data; name="' + param_name + '"\r\n\r\n' + params.get(param_name)+ '\r\n';
         }
         header += '--'+boundary+'\r\nContent-Disposition: form-data; name="file"; filename="'+[select id, name from Attachment where id = :attachmentId limit 1].Name+'"\r\nContent-Type: application/octet-stream';
-        String footer = '\r\n--'+boundary+'--';              
+        String footer = '\r\n--'+boundary+'--';
         String headerEncoded = EncodingUtil.base64Encode(Blob.valueOf(header+'\r\n\r\n'));
         while(headerEncoded.endsWith('=')) {
-           header+=' ';
-           headerEncoded = EncodingUtil.base64Encode(Blob.valueOf(header+'\r\n\r\n'));
+            header+=' ';
+            headerEncoded = EncodingUtil.base64Encode(Blob.valueOf(header+'\r\n\r\n'));
         }
-        if(EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).endsWith('=')){  
+        if(EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).endsWith('=')){
             HttpRequest req = new HttpRequest();
             req.setHeader('Content-Type','multipart/form-data; boundary='+boundary);
             req.setHeader('X-Requested-With','XMLHttpRequest');
             req.setMethod('POST');
             req.setEndpoint(url);
-            req.setBodyAsBlob(EncodingUtil.base64Decode(headerEncoded+EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).substring(0,EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).length()-4)+EncodingUtil.base64Encode(Blob.valueOf(EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).substring(EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).length()-4,EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).length())+footer))));            
+            req.setBodyAsBlob(EncodingUtil.base64Decode(headerEncoded+EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).substring(0,EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).length()-4)+EncodingUtil.base64Encode(Blob.valueOf(EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).substring(EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).length()-4,EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).length())+footer))));
             req.setTimeout(120000); 
             Http http = new Http(); 
             HTTPResponse response = http.send(req);
@@ -95,9 +94,9 @@ public class Client {
             HTTPResponse response = http.send(req);
             return response.getBody();
         }
-    }//end post_file
- 
-    public string upload_attachment_to_album(id attachmentId, string albumId){
+    }
+
+    global string upload_attachment_to_album(id attachmentId, string albumId){
         Boolean b_true = true;
         Map<String, Object> album_access = new Map<String, Object>();
         album_access.put('see', b_true);
@@ -108,17 +107,27 @@ public class Client {
         abilities.put(albumId, album_ability);
         Map<String, Object> claims = new Map<String, Object>();
         claims.put('abilities', abilities);
-        Token token = new Token(this.client_id, this.client_secret, claims);
-        Map<String, Object> album = this.api_get('/albums/'+albumId, token);
+        Map<String, Object> album = this.api_get('/albums/'+albumId, claims);
         Map<String, Object> upload_form = (Map<String, Object>) album.get('upload_form');
         Map<String, Object> params = (Map<String, Object>) upload_form.get('params');
         String url = (String) upload_form.get('url');
         String cloudinary = post_file(url, attachmentId, params);
-        Map<String, Object> image = this.api_post('/albums/'+albumId+'/images', Blob.valueof('{"cloudinary":' + cloudinary + '}') , token);
+        Map<String, Object> image = this.api_post(
+                '/albums/'+albumId+'/images',
+                Blob.valueof('{"cloudinary":' + cloudinary + '}'),
+                claims
+                );
         return '';
-    } 
+    }
 
-    public string delete_tag_image(String tagName, String imageId){
+    global string delete_tag_image(String tagName, String imageId){
         return null;
     }
-}//end class
+
+    global string add_tag_image(String tagName, String imageId){
+        return null;
+    }
+    global string token(Map<String, Object> claims){
+        return new Token(this.client_id, this.client_secret, claims).issue();
+    }
+}
