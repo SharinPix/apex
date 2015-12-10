@@ -8,5 +8,5 @@ public class Token {
     }
     public String issue(){
         return jwt.issue();
-    } 
+    }  
 }

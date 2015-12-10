@@ -30,7 +30,7 @@ public class JWT {
     
         JSONGenerator header = JSON.createGenerator(false);
         header.writeStartObject();
-        header.writeStringField('alg', this.alg);
+        header.writeStringField('alg', this.alg); 
         header.writeStringField('typ', 'JWT');
         header.writeEndObject();
         String encodedHeader = base64URLencode(Blob.valueOf(header.getAsString()));
@@ -38,7 +38,7 @@ public class JWT {
         JSONGenerator body = JSON.createGenerator(false);
         body.writeStartObject();
         body.writeStringField('iss', this.iss);
-        Long rightNow = (dateTime.now().getTime()/1000)+1;
+        Long rightNow = (dateTime.now().getTime()/1000)+1; 
         body.writeNumberField('iat', rightNow);
         body.writeNumberField('exp', (rightNow + validFor));
         if (claims != null) {

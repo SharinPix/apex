@@ -65,9 +65,9 @@ public class Client {
             req.setEndpoint(url);
             req.setBodyAsBlob(EncodingUtil.base64Decode(headerEncoded+EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).substring(0,EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).length()-4)+EncodingUtil.base64Encode(Blob.valueOf(EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).substring(EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).length()-4,EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).length())+footer))));            
             req.setTimeout(120000); 
-            Http http = new Http();
+            Http http = new Http(); 
             HTTPResponse response = http.send(req);
-            return response.getBody();
+            return response.getBody(); 
         }else{
             HttpRequest req = new HttpRequest();
             req.setHeader('Content-Type','multipart/form-data; boundary='+boundary);
