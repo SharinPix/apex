@@ -50,7 +50,6 @@ global class Client {
         req.setHeader('Content-Type', 'application/json');
         Http http = new Http();
         HTTPResponse response = http.send(req);
-        System.debug(response.getBody());
         if (response.getStatusCode() == 204){
             return new Map<String, Object>();
         }else{
@@ -129,5 +128,10 @@ global class Client {
     }
     global string token(Map<String, Object> claims){
         return new Token(this.client_id, this.client_secret, claims).issue();
+    }
+
+    global static Client newInstance(){
+        Credential__c cr = Credential__c.getOrgDefaults();
+        return new Client(cr.Client_Id__c, cr.Client_Secret__c, cr.Endpoint_Url__c);
     }
 }
