@@ -8,7 +8,7 @@ global class Client {
         this.client_secret = client_secret;
         this.endpoint_url = endpoint_url;
     }
-    global Map<String, Object> api_post(String endpoint, Blob body, Map<String, Object> claims){
+    global Object api_post(String endpoint, Blob body, Map<String, Object> claims){
         HttpRequest req = new HttpRequest();
         req.setEndpoint(this.endpoint_url + endpoint);
         req.setMethod('POST');
@@ -18,15 +18,13 @@ global class Client {
         Http http = new Http();
         HTTPResponse response = http.send(req);
         if (response.getStatus() == 'OK'){
-            Map<String, Object> json_res = new Map<String, Object>();
-            json_res = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
-            return json_res;
+            return JSON.deserializeUntyped(response.getBody());
         }else{
             throw new SharinPixException('API response ' + response.getStatus() + ': '+ response.getBody());
         }
         return new Map<String, Object>();
     }
-    global Map<String, Object> api_get(String endpoint, Map<String, Object> claims){
+    global Object api_get(String endpoint, Map<String, Object> claims){
         HttpRequest req = new HttpRequest();
         req.setEndpoint(this.endpoint_url + endpoint);
         req.setMethod('GET');
@@ -35,14 +33,12 @@ global class Client {
         Http http = new Http();
         HTTPResponse response = http.send(req);
         if (response.getStatus() == 'OK'){
-            Map<String, Object> json_res = new Map<String, Object>();
-            json_res = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
-            return json_res;
+            return JSON.deserializeUntyped(response.getBody());
         }else{
             throw new SharinPixException('API response ' + response.getStatus() + ': '+ response.getBody());
         }
     }
-    global Map<String, Object> api_delete(String endpoint, Map<String, Object> claims){
+    global boolean api_delete(String endpoint, Map<String, Object> claims){
         HttpRequest req = new HttpRequest();
         req.setEndpoint(this.endpoint_url + endpoint);
         req.setMethod('DELETE');
@@ -52,11 +48,11 @@ global class Client {
         HTTPResponse response = http.send(req);
         System.debug(response.getBody());
         if (response.getStatusCode() == 204){
-            return new Map<String, Object>();
+            return true;
         }else{
             throw new SharinPixException('API response ' + response.getStatus() + ': '+ response.getBody());
         }
-        return new Map<String, Object>();
+        return false;
     }
 
     private static String post_file(String url, String attachmentId, Map<String, Object> params){
@@ -79,24 +75,24 @@ global class Client {
             req.setMethod('POST');
             req.setEndpoint(url);
             req.setBodyAsBlob(EncodingUtil.base64Decode(headerEncoded+EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).substring(0,EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).length()-4)+EncodingUtil.base64Encode(Blob.valueOf(EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).substring(EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).length()-4,EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body).length())+footer))));
-            req.setTimeout(120000); 
-            Http http = new Http(); 
+            req.setTimeout(120000);
+            Http http = new Http();
             HTTPResponse response = http.send(req);
-            return response.getBody(); 
+            return response.getBody();
         }else{
             HttpRequest req = new HttpRequest();
             req.setHeader('Content-Type','multipart/form-data; boundary='+boundary);
             req.setHeader('X-Requested-With','XMLHttpRequest');
             req.setMethod('POST');
             req.setEndpoint(url);req.setBodyAsBlob(EncodingUtil.base64Decode(headerEncoded+EncodingUtil.base64Encode([select id, name, body from Attachment where id = :attachmentId limit 1].Body)+EncodingUtil.base64Encode(Blob.valueOf(footer))));
-            req.setTimeout(120000); 
+            req.setTimeout(120000);
             Http http = new Http();
             HTTPResponse response = http.send(req);
             return response.getBody();
         }
     }
 
-    global string upload_attachment_to_album(id attachmentId, string albumId){
+    global Object upload_attachment_to_album(id attachmentId, string albumId){
         Boolean b_true = true;
         Map<String, Object> album_access = new Map<String, Object>();
         album_access.put('see', b_true);
@@ -107,26 +103,56 @@ global class Client {
         abilities.put(albumId, album_ability);
         Map<String, Object> claims = new Map<String, Object>();
         claims.put('abilities', abilities);
-        Map<String, Object> album = this.api_get('/albums/'+albumId, claims);
+        Map<String, Object> album = (Map<String, Object>)this.api_get('/albums/'+albumId, claims);
         Map<String, Object> upload_form = (Map<String, Object>) album.get('upload_form');
         Map<String, Object> params = (Map<String, Object>) upload_form.get('params');
         String url = (String) upload_form.get('url');
         String cloudinary = post_file(url, attachmentId, params);
-        Map<String, Object> image = this.api_post(
+        return this.api_post(
                 '/albums/'+albumId+'/images',
                 Blob.valueof('{"cloudinary":' + cloudinary + '}'),
                 claims
                 );
-        return '';
     }
 
-    global string delete_tag_image(String tagName, String imageId){
-        return null;
+    global boolean clear_tag_image(String albumId, String imageId, String[] Tags){
+        Map<String, Object> album_access = new Map<String, Object>();
+        album_access.put('see', true);
+        Map<String, String> album_tags = new Map<String, String>();
+        for(String tag : Tags){
+          album_tags.put(tag, '');
+        }
+        Map<String, Object> album_ability = new Map<String, Object>();
+        album_ability.put('Access', album_access);
+        album_ability.put('Tags', album_tags);
+        Map<String, Object> abilities = new Map<String, Object>();
+        abilities.put(albumId, album_ability);
+        Map<String, Object> claims = new Map<String, Object>();
+        claims.put('abilities', abilities);
+        List<Object> tag_images = (List<Object>)this.api_get('/tag_images?image_id='+imageId, claims);
+        for(Object tag_image_object : tag_images){
+            Map<String, Object> tag_image = (Map<String, Object>)tag_image_object;
+            String id = (String)tag_image.get('id');
+            this.api_delete('/tag_images/'+id, claims);
+        }
+        return true;
     }
 
-    global string add_tag_image(String tagName, String imageId){
-        return null;
+    global Object add_tag_image(String albumId, String imageId, String tagName){
+        Map<String, Object> album_access = new Map<String, Object>();
+        album_access.put('see', true);
+        Map<String, String> album_tags = new Map<String, String>();
+        album_tags.put(tagName, '');
+        Map<String, Object> album_ability = new Map<String, Object>();
+        album_ability.put('Access', album_access);
+        album_ability.put('Tags', album_tags);
+        Map<String, Object> abilities = new Map<String, Object>();
+        abilities.put(albumId, album_ability);
+        Map<String, Object> claims = new Map<String, Object>();
+        claims.put('abilities', abilities);
+        return this.api_post('/tags/'+tagName+'/tag_images', Blob.valueof('{"image_ids": ["'+ImageId+'"]}'), claims);
     }
+
     global string token(Map<String, Object> claims){
         return new Token(this.client_id, this.client_secret, claims).issue();
     }
