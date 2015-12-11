@@ -13,6 +13,14 @@
         <name>ApexClass</name>
     </types>
     <types>
+        <members>Albums</members>
+        <name>ConnectedApp</name>
+    </types>
+    <types>
+        <members>SharinPixSetting</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
         <members>ApiCloudinary</members>
         <members>ApiSharinPix</members>
         <members>ResourceCloudinary</members>
@@ -25,6 +33,10 @@
     <types>
         <members>CustomLabels</members>
         <name>CustomLabels</name>
+    </types>
+    <types>
+        <members>SharinPix_setting</members>
+        <name>CustomTab</name>
     </types>
     <types>
         <members>SharinPixIcon16x16</members>
