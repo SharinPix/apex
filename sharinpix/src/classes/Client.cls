@@ -1,4 +1,12 @@
 global class Client {
+    private static Client instance = null;
+
+    global static Client getInstance(){
+        Credential__c cr = Credential__c.getOrgDefaults();
+        if(instance == null) instance = new Client(cr.Client_Id__c, cr.Client_Secret__c, cr.Endpoint_Url__c);
+        return instance;
+    }
+
     global String client_id {get;set;}
     global String client_secret {get;set;}
     global String endpoint_url {get;set;}
@@ -46,7 +54,6 @@ global class Client {
         req.setHeader('Content-Type', 'application/json');
         Http http = new Http();
         HTTPResponse response = http.send(req);
-        System.debug(response.getBody());
         if (response.getStatusCode() == 204){
             return true;
         }else{
