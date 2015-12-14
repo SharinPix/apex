@@ -30,7 +30,6 @@ public with sharing class ClientTest {
         string client_secret = 'test';
         Client clientInstance = new Client(client_id, client_secret, API_URL);
         clientInstance.upload_attachment_to_album(att1.Id, case1.id);
-
         test.stopTest();
     }
 
