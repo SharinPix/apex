@@ -62,4 +62,131 @@ public with sharing class ClientTest {
         clientInstance.upload_attachment_to_album(att1.Id, case1.id);
         test.stopTest();
     }
+
+    static testMethod void testAddTagImage(){
+        string client_id = 'test';
+        string client_secret = 'test';
+        Client clientInstance = new Client(client_id, client_secret, API_URL);
+
+        Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String,HttpCalloutMock>();
+        SingleRequestMock res = new SingleRequestMock(200, 'Ok','{"test": "test"}',null);
+        endpoint2TestResp.put(API_URL+'/tags/tagName/tag_images', res);
+        HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
+
+        Test.setMock(HttpCalloutMock.class, multiCalloutMock);
+
+        test.startTest();
+        clientInstance.add_tag_image('albumId', 'imageId', 'tagName');
+        test.stopTest();
+    }
+
+    static testMethod void testClearTagImage(){
+        string client_id = 'test';
+        string client_secret = 'test';
+        string imageId = 'imageId';
+        string albumId = 'albumId';
+
+        Client clientInstance = new Client(client_id, client_secret, API_URL);
+
+        Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String,HttpCalloutMock>();
+        SingleRequestMock first = new SingleRequestMock(200, 'Ok','[{"id": "test"}]',null);
+        SingleRequestMock second = new SingleRequestMock(204, 'No content','{"test": "test"}',null);
+        endpoint2TestResp.put(API_URL+'/tag_images?image_id='+imageId, first);
+        endpoint2TestResp.put(API_URL+'/tag_images/test', second);
+        HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
+
+        Test.setMock(HttpCalloutMock.class, multiCalloutMock);
+
+        test.startTest();
+        clientInstance.clear_tag_image(albumId, imageId, new list<string>{'tag'});
+        test.stopTest();
+    }
+
+    static testMethod void testClientInstance(){
+        Credential__c credential = new Credential__c(Client_Id__c='test', Client_Secret__c='test', Endpoint_Url__c='https://api.sahrinpix.test/api/v1');
+        insert credential;
+
+        Client clientins ;
+        test.startTest();
+        clientins = Client.getInstance();
+        test.stoptest();
+    }
+
+    static testMethod void testDeprecatedDeleteTagImage(){
+
+        string client_id = 'test';
+        string client_secret = 'test';
+
+        Client clientInstance = new Client(client_id, client_secret, API_URL);
+
+        test.startTest();
+        clientInstance.delete_tag_image('a', 'b');
+        test.stopTest();
+    }
+
+    static testMethod void testDeprecatedAddtagImage(){
+
+        string client_id = 'test';
+        string client_secret = 'test';
+
+        Client clientInstance = new Client(client_id, client_secret, API_URL);
+
+        test.startTest();
+        clientInstance.add_tag_image('a', 'b');
+        test.stopTest();
+    }
+
+    static testMethod void testApiGet(){
+        SingleRequestMock firstResponse = new SingleRequestMock(200, 'Ok','{"public_id":"99d11f10-8b55-493d-9314-333e68bc8f5c"}',null);
+
+        Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String,HttpCalloutMock>();
+        endpoint2TestResp.put(API_URL+'/albums', firstResponse);
+
+        HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
+
+        Test.setMock(HttpCalloutMock.class, multiCalloutMock);
+
+        test.startTest();
+        string client_id = 'test';
+        string client_secret = 'test';
+        Client clientInstance = new Client(client_id, client_secret, API_URL);
+        clientInstance.api_get('/albums', new map<string, object>());
+        test.stopTest();
+    }
+
+    static testMethod void testApiPost(){
+        SingleRequestMock firstResponse = new SingleRequestMock(200, 'Ok','{"public_id":"99d11f10-8b55-493d-9314-333e68bc8f5c"}',null);
+
+        Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String,HttpCalloutMock>();
+        endpoint2TestResp.put(API_URL+'/albums', firstResponse);
+
+        HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
+
+        Test.setMock(HttpCalloutMock.class, multiCalloutMock);
+
+        test.startTest();
+        string client_id = 'test';
+        string client_secret = 'test';
+        Client clientInstance = new Client(client_id, client_secret, API_URL);
+        clientInstance.api_post('/albums', Blob.valueof('this is a test'), new map<string, object>());
+        test.stopTest();
+    }
+
+    static testMethod void testApiDelete(){
+        SingleRequestMock firstResponse = new SingleRequestMock(204, 'No cntent','{}',null);
+
+        Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String,HttpCalloutMock>();
+        endpoint2TestResp.put(API_URL+'/albums', firstResponse);
+
+        HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
+
+        Test.setMock(HttpCalloutMock.class, multiCalloutMock);
+
+        test.startTest();
+        string client_id = 'test';
+        string client_secret = 'test';
+        Client clientInstance = new Client(client_id, client_secret, API_URL);
+        clientInstance.api_delete('/albums', new map<string, object>());
+        test.stopTest();
+    }
 }

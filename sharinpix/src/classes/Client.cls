@@ -167,6 +167,21 @@ global class Client {
         return new Token(this.client_id, this.client_secret, claims).issue();
     }
 
+    global boolean test_api(){
+        try {
+            Map<String, Object> response = (Map<String, Object>)this.get('/organization', new map<String, object>());
+            if(response.containsKey('id')){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch(Exception e){
+            return false;
+        }
+    }
+
     /* AirRefund : */
     @deprecated
     global String upload_attachment_to_album(id attachmentId, string albumId){
