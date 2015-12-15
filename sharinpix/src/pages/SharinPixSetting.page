@@ -3,7 +3,6 @@
 		<apex:pageBlock title="SharinPix setting">
 			<apex:pageBlockButtons location="both">
 				<apex:commandButton value="{!$Label.Save}" action="{!saveCredential}"/>
-				<apex:commandButton value="{!$Label.TestApi}" action="{!testApi}" />
 			</apex:pageBlockButtons>
 			<apex:pageBlockSection title="SharinPix Api settings" columns="1" showHeader="true">
 				<apex:pageMessages />
