@@ -16,7 +16,8 @@ global class Client {
         this.client_secret = client_secret;
         this.endpoint_url = endpoint_url;
     }
-    global Object api_post(String endpoint, Blob body, Map<String, Object> claims){
+
+    global Object post(String endpoint, Blob body, Map<String, Object> claims){
         HttpRequest req = new HttpRequest();
         req.setEndpoint(this.endpoint_url + endpoint);
         req.setMethod('POST');
@@ -32,7 +33,8 @@ global class Client {
         }
         return new Map<String, Object>();
     }
-    global Object api_get(String endpoint, Map<String, Object> claims){
+
+    global Object get(String endpoint, Map<String, Object> claims){
         HttpRequest req = new HttpRequest();
         req.setEndpoint(this.endpoint_url + endpoint);
         req.setMethod('GET');
@@ -46,7 +48,8 @@ global class Client {
             throw new SharinPixException('API response ' + response.getStatus() + ': '+ response.getBody());
         }
     }
-    global boolean api_delete(String endpoint, Map<String, Object> claims){
+
+    global boolean destroy(String endpoint, Map<String, Object> claims){
         HttpRequest req = new HttpRequest();
         req.setEndpoint(this.endpoint_url + endpoint);
         req.setMethod('DELETE');
@@ -99,7 +102,7 @@ global class Client {
         }
     }
 
-    global Object upload_attachment_to_album(id attachmentId, string albumId){
+    global Object upload_attachment(id attachmentId, string albumId){
         Boolean b_true = true;
         Map<String, Object> album_access = new Map<String, Object>();
         album_access.put('see', b_true);
@@ -110,12 +113,12 @@ global class Client {
         abilities.put(albumId, album_ability);
         Map<String, Object> claims = new Map<String, Object>();
         claims.put('abilities', abilities);
-        Map<String, Object> album = (Map<String, Object>)this.api_get('/albums/'+albumId, claims);
+        Map<String, Object> album = (Map<String, Object>)this.get('/albums/'+albumId, claims);
         Map<String, Object> upload_form = (Map<String, Object>) album.get('upload_form');
         Map<String, Object> params = (Map<String, Object>) upload_form.get('params');
         String url = (String) upload_form.get('url');
         String cloudinary = post_file(url, attachmentId, params);
-        return this.api_post(
+        return this.post(
                 '/albums/'+albumId+'/images',
                 Blob.valueof('{"cloudinary":' + cloudinary + '}'),
                 claims
@@ -136,11 +139,11 @@ global class Client {
         abilities.put(albumId, album_ability);
         Map<String, Object> claims = new Map<String, Object>();
         claims.put('abilities', abilities);
-        List<Object> tag_images = (List<Object>)this.api_get('/tag_images?image_id='+imageId, claims);
+        List<Object> tag_images = (List<Object>)this.get('/tag_images?image_id='+imageId, claims);
         for(Object tag_image_object : tag_images){
             Map<String, Object> tag_image = (Map<String, Object>)tag_image_object;
             String id = (String)tag_image.get('id');
-            this.api_delete('/tag_images/'+id, claims);
+            this.destroy('/tag_images/'+id, claims);
         }
         return true;
     }
@@ -157,10 +160,38 @@ global class Client {
         abilities.put(albumId, album_ability);
         Map<String, Object> claims = new Map<String, Object>();
         claims.put('abilities', abilities);
-        return this.api_post('/tags/'+tagName+'/tag_images', Blob.valueof('{"image_ids": ["'+ImageId+'"]}'), claims);
+        return this.post('/tags/'+tagName+'/tag_images', Blob.valueof('{"image_ids": ["'+ImageId+'"]}'), claims);
     }
 
     global string token(Map<String, Object> claims){
         return new Token(this.client_id, this.client_secret, claims).issue();
+    }
+
+    /* AirRefund : */
+    @deprecated
+    global String upload_attachment_to_album(id attachmentId, string albumId){
+        upload_attachment(attachmentId, albumId);
+        return '';
+    }
+    @deprecated
+    global String delete_tag_image(String a, String b){
+        return null;
+    }
+    @deprecated
+    global String add_tag_image(String a, String b){
+        return null;
+    }
+    @deprecated
+    global Map<String, Object> api_delete(String endpoint, Map<String, Object> claims){
+        destroy(endpoint, claims);
+        return null;
+    }
+    @deprecated
+    global Map<String, Object> api_get(String endpoint, Map<String, Object> claims){
+        return (Map<String, Object>)get(endpoint, claims);
+    }
+    @deprecated
+    global Map<String, Object> api_post(String endpoint, Blob body, Map<String, Object> claims){
+        return (Map<String, Object>)post(endpoint, body, claims);
     }
 }
