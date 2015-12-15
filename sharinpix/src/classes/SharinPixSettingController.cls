@@ -21,7 +21,7 @@ public with sharing class SharinPixSettingController {
   public PageReference testApi() {
     Client instance = new Client(credential.Client_Id__c, credential.Client_Secret__c, credential.Endpoint_Url__c);
     try {
-      Map<String, Object> response = instance.get('/organization', new map<String, object>());
+      Map<String, Object> response = (Map<String, Object>)instance.get('/organization', new map<String, object>());
       if(response.containsKey('id')){
         upsert credential;
         ApexPages.AddMessage(new ApexPages.Message(ApexPages.Severity.CONFIRM, system.label.ApiTestSuccess));
