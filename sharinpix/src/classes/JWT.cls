@@ -38,25 +38,18 @@ public class JWT {
         JSONGenerator body = JSON.createGenerator(false);
         body.writeStartObject();
         body.writeStringField('iss', this.iss);
-        //body.writeStringField('sub', this.sub);
-        //body.writeStringField('aud', this.aud);
         Long rightNow = (dateTime.now().getTime()/1000)+1;
         body.writeNumberField('iat', rightNow);
-        body.writeNumberField('exp', (rightNow + validFor));
+        body.writeNumberField('exp', (rightNow + validFor)); 
         if (claims != null) {
             for (String claim : claims.keySet()) {
-                //body.writeBlobField(claim, Blob.valueOf(claims.get(claim)));
                 body.writeObjectField(claim, claims.get(claim));
-                //body.writeStringField(claim, claims.get(claim));
             }
         }
-        body.writeEndObject();
-        System.debug('ICIC !!!');
-        System.debug(body.getAsString());
+        body.writeEndObject(); 
         jwt = encodedHeader + '.' + base64URLencode(Blob.valueOf(body.getAsString()));
         
         if ( this.alg == HS256 ) {
-            //Blob key = EncodingUtil.base64Decode(privateKey);
             Blob key = Blob.valueof(privateKey);
             Blob signature = Crypto.generateMac('hmacSHA256',Blob.valueof(jwt),key);
             jwt += '.' + base64URLencode(signature);  
@@ -75,9 +68,7 @@ public class JWT {
         }
         
         return jwt;
-    
     }
-    
 
     public String base64URLencode(Blob input){ 
         String output = encodingUtil.base64Encode(input);
@@ -88,6 +79,4 @@ public class JWT {
         }
         return output;
     }
-    
-
 }
