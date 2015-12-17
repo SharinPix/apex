@@ -9,7 +9,7 @@ trigger AttachmentAfterInsert on Attachment (after insert) {
             emailMsgIdSet.add(att.parentId);
         }
     }
-    
+     
     if (!attachmentList.isEmpty()){
         AP01_UploadToSharinPix.uploadAttachment(attachmentList, emailMsgIdSet);  
     }
