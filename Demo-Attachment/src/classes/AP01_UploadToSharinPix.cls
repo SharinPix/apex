@@ -13,12 +13,9 @@ public class AP01_UploadToSharinPix {
 
     @future (callout=true)
     public static void upload_photo(string attachmentId, string caseId){ 
-        list<Credential__c> credential = Credential__c.getAll().values();
-        if (!credential.isEmpty()){
-            string client_id = credential[0].Client_Id__c;
-            string client_secret = credential[0].Client_Secret__c;
-            Client clientInstance = new Client(client_id, client_secret, Client.API_URL);
-            clientInstance.upload_image_to_album(attachmentId, caseId);
+        SharinPix.Client clientInstance = SharinPix.Client.getInstance();
+        if (clientInstance!=null){
+            clientInstance.upload_attachment(attachmentId, caseId);
         }
         else {
             system.debug('### Error occurred');
