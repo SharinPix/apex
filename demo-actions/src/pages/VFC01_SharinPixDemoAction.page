@@ -1,19 +1,24 @@
 <apex:page standardController="Contact" extensions="VFC01_SharinPixDemoAction">
-  <script>
+<a id="testlink" href="/{!id}" target="_top" style="display: none;"></a>
+<script>
     var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
     var eventer = window[eventMethod];
     var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
     eventer(messageEvent,function(e) {
         console.log('parent received message!:  ',e);
-        if (event.origin !== "https://app.sharinpix.com"){return;}
+        if (e.origin !== "https://app.sharinpix.com"){return;}
         console.log(e.data.payload.images);
         if (e.data.payload.action == 'Send an email'){
-            var image_urls = [];
-            for(i = 0; i < e.data.payload.images.length; i++){
-                image_urls.push(e.data.payload.images[i].thumbnails.mini);
-            }
-            spix.VFC01_SharinPix.send_mail(JSON.stringify(e.data.payload.images), function(res){
-                console.log(res);
+            VFC01_SharinPixDemoAction.send_mail(JSON.stringify(e.data.payload.images), function(res){
+                alert('Email has been sent.')
+            });
+        }
+        if (e.data.payload.action == 'Add to description'){
+            VFC01_SharinPixDemoAction.add_to_description(JSON.stringify(e.data.payload.images), function(res){
+                var elem = document.getElementById('testlink');
+                console.log(elem);
+                var event = new Event('click');
+                elem.dispatchEvent(event);
             });
         }
     },false);

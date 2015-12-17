@@ -1,0 +1,18 @@
+<apex:page standardController="Contact" extensions="SharinPixDemoDeleteImage">
+<script>
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    eventer(messageEvent,function(e) {
+        console.log('parent received message!:  ',e);
+        if (e.origin !== "https://app.sharinpix.com"){return;}
+        console.log(e.data.payload.images);
+        if (e.data.payload.action == 'Delete Images'){
+            SharinPixDemoDeleteImage.delete_images(JSON.stringify(e.data.payload.images), function(res){
+                alert('Images deleted. Please reload page.')
+            });
+        }
+    },false);
+  </script>
+  <apex:canvasApp developerName="Albums" height="500px" parameters="{!parameters}" width="100%"/>
+</apex:page>
