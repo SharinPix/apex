@@ -25,12 +25,15 @@ public with sharing class ClientTest {
         Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
         insert att1;
+        string ret = null;
         test.startTest();
-        string client_id = 'test';
-        string client_secret = 'test';
-        Client clientInstance = new Client(client_id, client_secret, API_URL);
-        clientInstance.upload_attachment_to_album(att1.Id, case1.id);
+            string client_id = 'test';
+            string client_secret = 'test';
+            Client clientInstance = new Client(client_id, client_secret, API_URL);
+            ret = clientInstance.upload_attachment_to_album(att1.Id, case1.id);
         test.stopTest();
+
+        system.assertEquals(ret, '');
     }
 
     static testMethod void testMock2(){
@@ -49,18 +52,20 @@ public with sharing class ClientTest {
 
         string encodedBody = EncodingUtil.base64Encode(att1.body);
         if (encodedBody.endsWith('=')){
-            system.debug('#### '+encodedBody);
             encodedBody = encodedBody.substring(0, encodedBody.length()-3);
         }
         att1.body = EncodingUtil.base64Decode(encodedBody);
         insert att1;
 
+        string ret = null; 
         test.startTest();
-        string client_id = 'test';
-        string client_secret = 'test';
-        Client clientInstance = new Client(client_id, client_secret, API_URL);
-        clientInstance.upload_attachment_to_album(att1.Id, case1.id);
+            string client_id = 'test';
+            string client_secret = 'test';
+            Client clientInstance = new Client(client_id, client_secret, API_URL);
+            ret = clientInstance.upload_attachment_to_album(att1.Id, case1.id);
         test.stopTest();
+
+        system.assertEquals(ret, '');
     }
 
     static testMethod void testAddTagImage(){
@@ -75,9 +80,12 @@ public with sharing class ClientTest {
 
         Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
+        map<string, object> ret = null;
         test.startTest();
-        clientInstance.add_tag_image('albumId', 'imageId', 'tagName');
+            ret = (map<string, object>) clientInstance.add_tag_image('albumId', 'imageId', 'tagName');
         test.stopTest();
+
+        system.assertEquals(string.valueof(ret.get('test')), 'test');
     }
 
     static testMethod void testClearTagImage(){
@@ -97,9 +105,14 @@ public with sharing class ClientTest {
 
         Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
+        boolean ret = false;
+
         test.startTest();
-        clientInstance.clear_tag_image(albumId, imageId, new list<string>{'tag'});
+            ret = clientInstance.clear_tag_image(albumId, imageId, new list<string>{'tag'});
         test.stopTest();
+
+        system.assert(ret);
+
     }
 
     static testMethod void testClientInstance(){
@@ -108,8 +121,12 @@ public with sharing class ClientTest {
 
         Client clientins ;
         test.startTest();
-        clientins = Client.getInstance();
+            clientins = Client.getInstance();
         test.stoptest();
+
+        system.assertEquals(clientins.client_id, credential.Client_Id__c);
+        system.assertEquals(clientins.client_secret, credential.Client_Secret__c);
+        system.assertEquals(clientins.endpoint_url, credential.Endpoint_Url__c);
     }
 
     static testMethod void testDeprecatedDeleteTagImage(){
@@ -119,9 +136,12 @@ public with sharing class ClientTest {
 
         Client clientInstance = new Client(client_id, client_secret, API_URL);
 
+        string ret;
         test.startTest();
-        clientInstance.delete_tag_image('a', 'b');
+            ret = clientInstance.delete_tag_image('a', 'b');
         test.stopTest();
+
+        system.assertEquals(ret, null);
     }
 
     static testMethod void testDeprecatedAddtagImage(){
@@ -130,10 +150,13 @@ public with sharing class ClientTest {
         string client_secret = 'test';
 
         Client clientInstance = new Client(client_id, client_secret, API_URL);
+        string ret;
 
         test.startTest();
-        clientInstance.add_tag_image('a', 'b');
+            ret = clientInstance.add_tag_image('a', 'b');
         test.stopTest();
+
+        system.assertEquals(ret, null);
     }
 
     static testMethod void testApiGet(){
@@ -146,12 +169,16 @@ public with sharing class ClientTest {
 
         Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
+        map<string, object> ret;
+
         test.startTest();
-        string client_id = 'test';
-        string client_secret = 'test';
-        Client clientInstance = new Client(client_id, client_secret, API_URL);
-        clientInstance.api_get('/albums', new map<string, object>());
+            string client_id = 'test';
+            string client_secret = 'test';
+            Client clientInstance = new Client(client_id, client_secret, API_URL);
+            ret = clientInstance.api_get('/albums', new map<string, object>());
         test.stopTest();
+
+        system.assertEquals(string.valueof(ret.get('public_id')), '99d11f10-8b55-493d-9314-333e68bc8f5c');
     }
 
     static testMethod void testApiPost(){
@@ -164,12 +191,16 @@ public with sharing class ClientTest {
 
         Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
+        map<string, object> ret;
+
         test.startTest();
-        string client_id = 'test';
-        string client_secret = 'test';
-        Client clientInstance = new Client(client_id, client_secret, API_URL);
-        clientInstance.api_post('/albums', Blob.valueof('this is a test'), new map<string, object>());
+            string client_id = 'test';
+            string client_secret = 'test';
+            Client clientInstance = new Client(client_id, client_secret, API_URL);
+            ret = clientInstance.api_post('/albums', Blob.valueof('this is a test'), new map<string, object>());
         test.stopTest();
+
+        system.assertEquals(string.valueof(ret.get('public_id')), '99d11f10-8b55-493d-9314-333e68bc8f5c');
     }
 
     static testMethod void testApiDelete(){
@@ -182,11 +213,15 @@ public with sharing class ClientTest {
 
         Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
+        Map<String, Object> ret;
+
         test.startTest();
-        string client_id = 'test';
-        string client_secret = 'test';
-        Client clientInstance = new Client(client_id, client_secret, API_URL);
-        clientInstance.api_delete('/albums', new map<string, object>());
+            string client_id = 'test';
+            string client_secret = 'test';
+            Client clientInstance = new Client(client_id, client_secret, API_URL);
+            ret = clientInstance.api_delete('/albums', new map<string, object>());
         test.stopTest();
+
+        system.assertEquals(ret, null);
     }
 }
