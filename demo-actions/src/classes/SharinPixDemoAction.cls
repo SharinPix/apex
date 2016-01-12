@@ -1,8 +1,8 @@
-global without sharing class VFC01_SharinPixDemoAction {
+global without sharing class SharinPixDemoAction {
     
     global string parameters{get;set;}
     global string contact{get;set;}
-    global VFC01_SharinPixDemoAction(ApexPages.standardController controller) {
+    global SharinPixDemoAction(ApexPages.standardController controller) {
         String id = (Id)controller.getId();// Can be any string
         system.debug('#### id: '+id);
         contact = id;
@@ -18,6 +18,8 @@ global without sharing class VFC01_SharinPixDemoAction {
         List<string> actions = new List<string>();
         actions.add('Send an email');
         actions.add('Add to description');
+        actions.add('Create a task');
+        actions.add('Post to chatter');
 
         map<string, object> album_abilities = new map<string, object>();
         album_abilities.put('Access', access);
@@ -69,6 +71,38 @@ global without sharing class VFC01_SharinPixDemoAction {
         }
         Messaging.sendEmail(mails);
     }
+    
+    @RemoteAction
+    global static string create_task(string AlbumId, string image_url){
+        Task task = new Task();
+        task.Subject = 'Created from SharinPix';
+        task.Status='Active';
+        task.Description='';
+        task.WhoId = AlbumId;
+        //task.SharinPix_Image__c = image_url;
+        insert task;
+        string id = (string)task.id;
+        return id;
+    }
+
+    @RemoteAction
+    global static void post_to_chatter(string AlbumId, string image_url){
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(image_url);
+        req.setMethod('GET');
+        Http binding = new Http();
+        HttpResponse res = binding.send(req);
+        Blob image = res.getBodyAsBlob();
+
+        FeedItem post = new FeedItem();
+        post.ParentId = AlbumId;
+        post.Body = 'posted :';
+        post.ContentData = image;
+        post.ContentFileName = 'image.jpg';
+        insert post;
+    }
+
+
 
     @RemoteAction
     global static void add_to_description(string imageObj){
