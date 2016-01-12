@@ -1,0 +1,54 @@
+<apex:page standardController="Contact" extensions="SharinPixDemoAction">
+<a id="reloadlink" href="/{!id}" target="_top" style="display: none;"></a>
+<a id="newlink" href="#" target="_blank" style="display: none;"></a>
+<script>
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    eventer(messageEvent,function(e) {
+        console.log('parent received message!:  ',e);
+        if (e.origin !== "https://app.sharinpix.com"){return;}
+        console.log(e.data.payload.images);
+        if (e.data.payload.action == 'Send an email'){
+            SharinPixDemoAction.send_mail(JSON.stringify(e.data.payload.images), function(res){
+                alert('Email has been sent.')
+            });
+        }
+        if (e.data.payload.action == 'Add to description'){
+            SharinPixDemoAction.add_to_description(JSON.stringify(e.data.payload.images), function(res){
+                var elem = document.getElementById('reloadlink');
+                console.log(elem);
+                var event = new Event('click');
+                elem.dispatchEvent(event);
+            });
+        }
+        if (e.data.payload.action == 'Post to chatter'){
+            images = e.data.payload.images;
+            for(var i=images.length; i--;){
+                SharinPixDemoAction.post_to_chatter(images[i].album_id, images[i].thumbnails.mini, function(res){
+                    var elem = document.getElementById('reloadlink');
+                    var event = new Event('click');
+                    elem.dispatchEvent(event);
+                });
+            }
+            SharinPixDemoAction.add_to_description(JSON.stringify(e.data.payload.images), function(res){
+                var elem = document.getElementById('reloadlink');
+                var event = new Event('click');
+                elem.dispatchEvent(event);
+            });
+        }
+        if (e.data.payload.action == 'Create a task'){
+            images = e.data.payload.images;
+            for(var i=images.length; i--;){
+                SharinPixDemoAction.create_task(images[i].album_id, images[i].thumbnails.large, function(res){
+                    var elem = document.getElementById('newlink');
+                    elem.href='/'+res+'/e?retURL=%2F'+res;
+                    var event = new Event('click');
+                    elem.dispatchEvent(event);
+                });
+            }
+        }
+    },false);
+  </script>
+  <apex:canvasApp developerName="Albums" height="500px" parameters="{!parameters}" width="100%"/>
+</apex:page>
