@@ -119,7 +119,7 @@ global with sharing class Client {
         }
     }
 
-    global Object upload_attachment(id attachmentId, string albumId){
+    global Object upload_attachment(id attachmentId, string albumId, Map<String, Object> metadatas){
         if (!(Schema.sObjectType.Attachment.isAccessible() &&
             Schema.sObjectType.Attachment.fields.Id.isAccessible() &&
             Schema.sObjectType.Attachment.fields.Name.isAccessible() &&
@@ -144,11 +144,26 @@ global with sharing class Client {
         Map<String, Object> params = (Map<String, Object>) upload_form.get('params');
         String url = (String) upload_form.get('url');
         String cloudinary = post_file(url, attachmentId, params);
+        if(!metadatas.containsKey('attachmentId')){
+            metadatas.put('attachmentId', attachmentId);
+        }
+        JSONGenerator body = JSON.createGenerator(false);
+
+        body.writeStartObject();
+        body.writeObjectField('cloudinary', JSON.deserializeUntyped(cloudinary));
+        body.writeObjectField('metadatas', metadatas);
+        body.writeEndObject();
+
         return this.post(
                 '/albums/'+albumId+'/images',
-                Blob.valueof('{"cloudinary":' + cloudinary + '}'),
+                Blob.valueof(body.getAsString()),
                 claims
                 );
+    }
+
+    global Object upload_attachment(id attachmentId, string albumId){
+        Map<String, Object> metadatas = new Map<String, Object>();
+        return upload_attachment(attachmentId, albumId, metadatas);
     }
 
     global boolean clear_tag_image(String albumId, String imageId, String[] Tags){
