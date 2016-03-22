@@ -1,0 +1,26 @@
+<apex:page standardController="Contact" extensions="SharinPixDemoActionTask">
+<a id="reloadlink" href="/{!id}" target="_top" style="display: none;"></a>
+<a id="newlink" href="#" target="_blank" style="display: none;"></a>
+<script>
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    eventer(messageEvent,function(e) {
+        console.log('parent received message!:  ',e);
+        if (e.origin !== "https://app.sharinpix.com"){return;}
+        console.log(e.data.payload.images);
+        if (e.data.payload.action == 'Create a task'){
+            images = e.data.payload.images;
+            for(var i=images.length; i--;){
+                SharinPixDemoActionTask.create_task(images[i].album_id, images[i].thumbnails.large, function(res){
+                    var elem = document.getElementById('newlink');
+                    elem.href='/'+res+'/e?retURL=%2F'+res;
+                    var event = new Event('click');
+                    elem.dispatchEvent(event);
+                });
+            }
+        }
+    },false);
+  </script>
+  <apex:canvasApp developerName="Albums" height="500px" parameters="{!parameters}" width="100%"/>
+</apex:page>
