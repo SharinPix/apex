@@ -1,4 +1,4 @@
-public class Token {
+public with sharing class Token {
     public JWT jwt {get;set;}
     public Token(string client_id, string client_secret, Map<String, Object> claims){
         this.jwt = new JWT('HS256');

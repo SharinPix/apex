@@ -1,4 +1,4 @@
-global class Client {
+global with sharing class Client {
     private static Client instance = null;
 
     global static Client getInstance(){
@@ -21,6 +21,23 @@ global class Client {
         HttpRequest req = new HttpRequest();
         req.setEndpoint(this.endpoint_url + endpoint);
         req.setMethod('POST');
+        req.setHeader('Authorization', 'Token token="' + token(claims) + '"');
+        req.setHeader('Content-Type', 'application/json');
+        req.setBodyAsBlob(body);
+        Http http = new Http();
+        HTTPResponse response = http.send(req);
+        if (response.getStatus() == 'OK'){
+            return JSON.deserializeUntyped(response.getBody());
+        }else{
+            throw new SharinPixException('API response ' + response.getStatus() + ': '+ response.getBody());
+        }
+        return new Map<String, Object>();
+    }
+
+    global Object put(String endpoint, Blob body, Map<String, Object> claims){
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(this.endpoint_url + endpoint);
+        req.setMethod('PUT');
         req.setHeader('Authorization', 'Token token="' + token(claims) + '"');
         req.setHeader('Content-Type', 'application/json');
         req.setBodyAsBlob(body);
@@ -102,7 +119,16 @@ global class Client {
         }
     }
 
-    global Object upload_attachment(id attachmentId, string albumId){
+    global Object upload_attachment(id attachmentId, string albumId, Map<String, Object> metadatas){
+        if (!(Schema.sObjectType.Attachment.isAccessible() &&
+            Schema.sObjectType.Attachment.fields.Id.isAccessible() &&
+            Schema.sObjectType.Attachment.fields.Name.isAccessible() &&
+            Schema.sObjectType.Attachment.fields.Body.isAccessible()))
+        {
+            throw new SharinPixException('Insufficient privilege');
+            return null;
+        }
+
         Boolean b_true = true;
         Map<String, Object> album_access = new Map<String, Object>();
         album_access.put('see', b_true);
@@ -118,11 +144,26 @@ global class Client {
         Map<String, Object> params = (Map<String, Object>) upload_form.get('params');
         String url = (String) upload_form.get('url');
         String cloudinary = post_file(url, attachmentId, params);
+        if(!metadatas.containsKey('attachmentId')){
+            metadatas.put('attachmentId', attachmentId);
+        }
+        JSONGenerator body = JSON.createGenerator(false);
+
+        body.writeStartObject();
+        body.writeObjectField('cloudinary', JSON.deserializeUntyped(cloudinary));
+        body.writeObjectField('metadatas', metadatas);
+        body.writeEndObject();
+
         return this.post(
                 '/albums/'+albumId+'/images',
-                Blob.valueof('{"cloudinary":' + cloudinary + '}'),
+                Blob.valueof(body.getAsString()),
                 claims
                 );
+    }
+
+    global Object upload_attachment(id attachmentId, string albumId){
+        Map<String, Object> metadatas = new Map<String, Object>();
+        return upload_attachment(attachmentId, albumId, metadatas);
     }
 
     global boolean clear_tag_image(String albumId, String imageId, String[] Tags){
