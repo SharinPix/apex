@@ -203,6 +203,28 @@ public with sharing class ClientTest {
         system.assertEquals(string.valueof(ret.get('public_id')), '99d11f10-8b55-493d-9314-333e68bc8f5c');
     }
 
+    static testMethod void testApiPut(){
+        SingleRequestMock firstResponse = new SingleRequestMock(200, 'Ok','{"images_count": "0", "public_id": "sharinpix2", "thumbnails": "", "upload_form": "", "views_count": "0"}',null);
+
+        Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String,HttpCalloutMock>();
+        endpoint2TestResp.put(API_URL+'/albums/sharinpix', firstResponse);
+
+        HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
+
+        Test.setMock(HttpCalloutMock.class, multiCalloutMock);
+
+        map<string, object> ret;
+
+        test.startTest();
+            string client_id = 'test';
+            string client_secret = 'test';
+            Client clientInstance = new Client(client_id, client_secret, API_URL);
+            ret = (map<string, object>) clientInstance.put('/albums/sharinpix', Blob.valueof('this is a test'), new map<string, object>());
+        test.stopTest();
+
+        system.assertEquals(string.valueof(ret.get('public_id')), 'sharinpix2');
+    }
+
     static testMethod void testApiDelete(){
         SingleRequestMock firstResponse = new SingleRequestMock(204, 'No cntent','{}',null);
 
