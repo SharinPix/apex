@@ -1,4 +1,4 @@
-public class JWT {
+public with sharing class JWT {
     
     public String alg {get;set;}
     public String iss {get;set;}
