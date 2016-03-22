@@ -1,1 +1,1 @@
-public class SharinPixException extends Exception {}
+public with sharing class SharinPixException extends Exception {}
