@@ -1,0 +1,20 @@
+<apex:page standardController="Contact" extensions="SharinPixDemoActionEmail">
+<a id="reloadlink" href="/{!id}" target="_top" style="display: none;"></a>
+<a id="newlink" href="#" target="_blank" style="display: none;"></a>
+<script>
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    eventer(messageEvent,function(e) {
+        console.log('parent received message!:  ',e);
+        if (e.origin !== "https://app.sharinpix.com"){return;}
+        console.log(e.data.payload.images);
+        if (e.data.payload.action == 'Send an email'){
+            SharinPixDemoActionEmail.send_mail(JSON.stringify(e.data.payload.images), function(res){
+                alert('Email has been sent.')
+            });
+        }
+    },false);
+  </script>
+  <apex:canvasApp developerName="Albums" height="500px" parameters="{!parameters}" width="100%"/>
+</apex:page>
