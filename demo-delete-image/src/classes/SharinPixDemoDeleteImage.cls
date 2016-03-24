@@ -32,7 +32,7 @@ global without sharing class SharinPixDemoDeleteImage {
     global static void delete_images(string imageObj){
 
         String id = 'salesforce-id';
-        Client sp = new Client('5de7c1f5-cc42-4df9-9c72-a60a1a613f70', 'a9952bee35724ce1eaa0cdabbf76d9e2', 'https://api.sharinpix.com/api/v1');
+        SharinPix.Client sp = SharinPix.Client.getInstance();
 
         list<object> imageList = (list<object>) Json.deserializeUntyped(imageObj);
         list<string> imageUrlList = new list<string>();
@@ -49,9 +49,7 @@ global without sharing class SharinPixDemoDeleteImage {
 	        abilities.put((string)imgMap.get('album_id'), album_abilities);
 	        map<string, object> params = new map<string, object>();
         	params.put('abilities', abilities);
-        	Token token = new Token(sp, params);
-            sp.api_delete('/images/'+imageId, token);
-
+            sp.destroy('/images/'+imageId, params);
         }
     }
 }
