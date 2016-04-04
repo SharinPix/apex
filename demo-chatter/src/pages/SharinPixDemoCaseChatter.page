@@ -1,4 +1,4 @@
-<apex:page standardController="Product2" extensions="VCProductSharinPix">
+<apex:page standardController="Case" extensions="SharinPixDemoCaseChatter">
   <script>
     var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
     var eventer = window[eventMethod];
@@ -6,7 +6,7 @@
     eventer(messageEvent,function(e) {
         //post to chatter
         if (e.data.name === 'image-new'){
-            VCProductSharinPix.new_image_uploaded(JSON.stringify(e.data.payload.image), "{!$CurrentPage.parameters.Id}", function(res){
+            SharinPixDemoCaseChatter.new_image_uploaded(JSON.stringify(e.data.payload.image), "{!$CurrentPage.parameters.Id}", function(res){
                 console.log(res);
             });
         } 
