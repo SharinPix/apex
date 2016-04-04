@@ -1,4 +1,4 @@
-public class AP01_UploadToSharinPix {
+public class SharinPixDemoAttachmentUpload {
 
     public static void uploadAttachment(list<Attachment> attachmentList, set<id> emailMsgIdSet){
         map<Id, Id> caseIdMap = new map<Id, Id>();

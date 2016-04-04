@@ -11,6 +11,6 @@ trigger AttachmentAfterInsert on Attachment (after insert) {
     }
 
     if (!attachmentList.isEmpty()){
-        AP01_UploadToSharinPix.uploadAttachment(attachmentList, emailMsgIdSet);
+        SharinPixDemoAttachmentUpload.uploadAttachment(attachmentList, emailMsgIdSet);
     }
 }
