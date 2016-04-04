@@ -1,8 +1,17 @@
-global without sharing class VCProductSharinPix {
+# Abstract 
+
+Auto-generate a Chatter post in record feed when a new image is added to SharinPix album of record.
+
+## Implementation Steps
+
+Apex Controller (with API level 35)
+
+```java
+global without sharing class SharinPixDemoCaseChatter {
     
     global string parameters{get;set;}
     global string product{get;set;}
-    global VCProductSharinPix(ApexPages.standardController controller) {
+    global SharinPixDemoCaseChatter(ApexPages.standardController controller) {
         String id = controller.getId(); // Can be any string
         system.debug('#### id: '+id);
         product = id;
@@ -33,44 +42,6 @@ global without sharing class VCProductSharinPix {
   
         parameters = JSON.serialize(params);
     }
-    
-    @RemoteAction
-    global static void send_mail(string imageObj){
-        list<object> imageList = (list<object>) Json.deserializeUntyped(imageObj);
-        list<string> imageUrlList = new list<string>();
-        string contactId ;
-        for(object img: imageList){
-            map<string, object> imgMap = (map<string, object>) img;
-            map<string, object> thumbnailMap = (map<string, object>) imgMap.get('thumbnails');
-            imageUrlList.add(string.valueof(thumbnailMap.get('mini')));
-            contactId = string.valueof(imgMap.get('album_id'));
-        }
-        
-        List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
-        
-        Contact contact = [select id, name, email from Contact where id = :contactId limit 1];
-        if (imageUrlList.size() > 0) {
-            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            
-            List<String> sendTo = new List<String>();
-            sendTo.add(contact.Email);
-            mail.setToAddresses(sendTo);
-            
-            mail.setReplyTo(UserInfo.getUserEmail());
-            mail.setSenderDisplayName(UserInfo.getName());
-            
-            mail.setSubject('Photo Uploaded');
-            String body = 'Hello '+contact.name;
-            body += '<br/>The following photos has been uploaded on your record: <br/>';
-            for(string url: imageurllist){
-                body += '<image src="'+url+'"><br/>';
-            }
-            mail.setHtmlBody(body);
-            mails.add(mail);
-        }
-          
-        Messaging.sendEmail(mails);
-    }
 
     @RemoteAction
     global static void new_image_uploaded(string imageObj, string idObj){
@@ -93,3 +64,27 @@ global without sharing class VCProductSharinPix {
         insert post;
     }
 }
+```
+
+
+VisualForce page:
+
+```html
+<apex:page standardController="Case" extensions="SharinPixDemoCaseChatter">
+  <script>
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    eventer(messageEvent,function(e) {
+        //post to chatter
+        if (e.data.name === 'image-new'){
+            SharinPixDemoCaseChatter.new_image_uploaded(JSON.stringify(e.data.payload.image), "{!$CurrentPage.parameters.Id}", function(res){
+                console.log(res);
+            });
+        } 
+    },false);
+
+  </script>
+  <apex:canvasApp developerName="Albums" height="500px" parameters="{!parameters}" width="100%"/>
+</apex:page>
+```
