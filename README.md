@@ -1,5 +1,7 @@
 # SharinPix Cookbook
 
+SharinPix offers open APIs to easily meet your business requirements.  
+Below is an extract of popular SharinPix implementation steps for common use cases:
 
 [Move a Salesforce attachment into a SharinPix image] (demo-attachment)
 
