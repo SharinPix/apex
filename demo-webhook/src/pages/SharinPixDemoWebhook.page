@@ -1,0 +1,3 @@
+<apex:page controller="SharinPixDemoWebhook" sidebar="false" showHeader="false" action="{!handleWebHook}" >
+SharinPix
+</apex:page>
