@@ -1,4 +1,4 @@
-# Abstract
+# Delete SharinPix images
 
 SharinPix provides the abitility to mass-delete images from a record.
 

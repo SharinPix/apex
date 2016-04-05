@@ -1,4 +1,4 @@
-# Abstract
+# Generate a Salesforce task from SharinPix images
 
 Create task in one click from a call to action on SharinPix image.
 

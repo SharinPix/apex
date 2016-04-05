@@ -1,4 +1,4 @@
-# Abstract 
+# Post in Salesforce Chatter on SharinPix new image upload
 
 Auto-generate a Chatter post in record feed when a new image is added to SharinPix album of record.
 

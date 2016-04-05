@@ -1,4 +1,4 @@
-# Abstract
+# Use SharinPix images inside Salesforce rich text field
 
 Use SharinPix images within Salesforce richtext field.
 
