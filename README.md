@@ -18,10 +18,8 @@
 
 [Delete SharinPix images] (demo-delete-image)
 
-TODO :
-
 
 [Enrich Salesforce with image data](demo-webhook)
 
 
-[Use SharinPix images inside Salesforce rich text field] (demo-action-richtext)
+[Use SharinPix images inside Salesforce rich text field] (demo-action-description)
