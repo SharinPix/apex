@@ -1,4 +1,4 @@
-# Abstract
+# Enrich Salesforce with image data
 
 Being able to view an image is fascinating but having the possibility to use its metadatas is awesomeness.
 
