@@ -1,9 +1,8 @@
 public with sharing class SharinPixDemoSite {
-    public string url{get;set;}
     public String getUrl() {
         String id = 'salesforce-id';
-
-        map<string, boolean> access = new map<string, boolean>();
+        
+        Map<string, boolean> access = new Map<string, boolean>();
         access.put('see', true);
         access.put('image_list', true);
         access.put('image_upload', true);
@@ -11,21 +10,17 @@ public with sharing class SharinPixDemoSite {
         access.put('image_crop', true);
         access.put('image_rotate', true);
 
-        List<string> actions = new List<string>();
-        actions.add('Send an email');
-
-        map<string, object> album_abilities = new map<string, object>();
+        Map<string, object> album_abilities = new Map<string, object>();
         album_abilities.put('Access', access);
-        album_abilities.put('Actions', actions);
 
-        map<string, object> abilities = new map<string, object>();
+        Map<string, object> abilities = new Map<string, object>();
         abilities.put(id, album_abilities);
 
-        map<string, object> params = new map<string, object>();
+        Map<string, object> params = new Map<string, object>();
         params.put('abilities', abilities);
 
-        sharinpix.Client sp = new sharinpix.Client('secret_id', 'secret_secret', 'https://api.sharinpix.com/api/v1');
-        string token = sp.token(params);
+        SharinPix.Client clientInstance = SharinPix.Client.getInstance();
+        String token = clientInstance.token(params);
         String url = 'https://app.sharinpix.com/albums/'+id+'?token='+token;
         return url;
     }
