@@ -1,4 +1,4 @@
 <design:component>
-	<design:attribute name="AlbumId" label="AlbumId" description="Enter the AlbumId (recommended value: {!recordId})" />
+  <design:attribute name="AlbumId" label="AlbumId" description="Enter the AlbumId (recommended value: {!recordId})" />
   <design:attribute name="height" label="height" description="Enter the height (minimum 300px)" default="300" />
 </design:component>
