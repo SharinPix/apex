@@ -1,0 +1,24 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" controller="SharinPixLightningController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:registerEvent name="Event" type="c:Event"/>
+    <aura:dependency resource="c:Loading"/>
+    <aura:dependency resource="ui:message"/>
+    <aura:attribute name="AlbumId" type="String"/>
+    <aura:attribute name="url" type="String"/>
+    <aura:attribute name="loading" type="Boolean" default="true"/>
+    <aura:attribute name="height" type="Integer"/>
+    <aura:attribute name="fullscreen" type="Boolean" default="false"/>
+    <div aura:id="sharinpix" class="sharinpix-container" style="{!'height:'+v.height+'px;'}">
+        <aura:if isTrue="{! v.loading }">
+            <c:Loading />
+        </aura:if>
+        <aura:if isTrue="{! v.url }">
+            <iframe aura:id="iframe" class="{! 'sharinpix-iframe ' + (v.fullscreen? 'fullscreen' : '') }" src="{!v.url}" onload="{! c.onLoaded }"></iframe>
+        </aura:if>
+        <aura:if isTrue="{! v.error }">
+            <ui:message title="Error" severity="Error">
+                {! v.error }
+            </ui:message>
+        </aura:if>
+    </div>
+</aura:component>
