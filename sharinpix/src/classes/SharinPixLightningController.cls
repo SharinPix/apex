@@ -8,17 +8,17 @@ public with sharing class SharinPixLightningController {
     Map<String, Object> params = new Map<String, Object>();
     params.put('user_id', UserInfo.getUserId());
 
-    List<UserRecordAccess> userRecordAccessList = [SELECT recordid, HasEditAccess, HasReadAccess
+    List<UserRecordAccess> userRecordAccessList = [SELECT RecordId, HasEditAccess, HasReadAccess
                                                    FROM UserRecordAccess
                                                    WHERE UserId = :UserInfo.getUserId()
                                                      AND RecordId = :id];
-    if (!userRecordAccessList.isEmpty()){
+    if (!userRecordAccessList.isEmpty()) {
       UserRecordAccess userRecordAccess = userRecordAccessList[0];
       if (userRecordAccess.hasReadAccess){
         access.put('see', true);
         access.put('image_list', true);
       }
-      if (userRecordAccess.HasEditAccess){
+      if (userRecordAccess.HasEditAccess) {
         access.put('image_upload', true);
         access.put('image_delete', true);
         access.put('image_crop', true);
@@ -30,6 +30,10 @@ public with sharing class SharinPixLightningController {
     params.put('abilities', abilities);
     params.put('Id', id);
 
-    return 'https://app.sharinpix.com/pagelayout/' + id + '?token=' +SharinPix.Client.getInstance().token(params);
+    if (Test.isRunningTest()) {
+      return JSON.serialize(params);
+    } else {
+      return 'https://app.sharinpix.com/pagelayout/' + id + '?token=' + SharinPix.Client.getInstance().token(params);
+    }
   }
 }
