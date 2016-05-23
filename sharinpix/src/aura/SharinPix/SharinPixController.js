@@ -34,8 +34,8 @@
         }
       }
     },false);
-	},
+  },
   onLoaded : function(component, event) {
     component.set('v.loading', false);
-	}
+  }
 })
