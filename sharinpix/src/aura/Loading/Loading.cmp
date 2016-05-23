@@ -1,5 +1,5 @@
 <aura:component >
-	<div class="sharinpix-loading">
+  <div class="sharinpix-loading">
     <div class="loading0"></div>
     <div class="loading1"></div>
     <div class="loading2"></div>
