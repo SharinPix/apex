@@ -6,14 +6,14 @@
         <members>JWT</members>
         <members>MultiRequestMock</members>
         <members>SharinPixException</members>
+        <members>SharinPixLightningController</members>
+        <members>SharinPixLightningControllerTEST</members>
         <members>SharinPixSampleController</members>
         <members>SharinPixSampleControllerTest</members>
         <members>SharinPixSettingController</members>
         <members>SharinPixSettingControllerTEST</members>
         <members>SingleRequestMock</members>
         <members>Token</members>
-        <members>SharinPixLightningController</members>
-        <members>SharinPixLightningControllerTEST</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -24,9 +24,9 @@
         <name>ApexPage</name>
     </types>
     <types>
+        <members>Event</members>
         <members>Loading</members>
         <members>SharinPix</members>
-        <members>Event</members>
         <name>AuraDefinitionBundle</name>
     </types>
     <types>
