@@ -7,6 +7,7 @@ public with sharing class SharinPixLightningController {
     Map<String, Object> abilities = new Map<String, Object>();
     Map<String, Object> params = new Map<String, Object>();
     params.put('user_id', UserInfo.getUserId());
+    params.put('email', UserInfo.getUserEmail());
 
     List<UserRecordAccess> userRecordAccessList = [SELECT RecordId, HasEditAccess, HasReadAccess
                                                    FROM UserRecordAccess

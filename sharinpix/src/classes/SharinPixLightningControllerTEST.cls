@@ -54,6 +54,7 @@ private class SharinPixLightningControllerTEST {
       abilities.put(id, album_abilities);
       Map<String, Object> params = new Map<String, Object>();
       params.put('user_id', UserInfo.getUserId());
+      params.put('email', UserInfo.getUserEmail());
       params.put('abilities', abilities);
       params.put('Id', id);
 
@@ -80,6 +81,7 @@ private class SharinPixLightningControllerTEST {
       abilities.put(id, album_abilities);
       Map<String, Object> params = new Map<String, Object>();
       params.put('user_id', UserInfo.getUserId());
+      params.put('email', UserInfo.getUserEmail());
       params.put('abilities', abilities);
       params.put('Id', id);
 
