@@ -128,6 +128,7 @@ global with sharing class Client {
             throw new SharinPixException('Insufficient privilege');
             return null;
         }
+        Attachment attachment = [SELECT Id, name FROM Attachment WHERE Id=:attachmentId LIMIT 1];
 
         Boolean b_true = true;
         Map<String, Object> album_access = new Map<String, Object>();
@@ -139,26 +140,38 @@ global with sharing class Client {
         abilities.put(albumId, album_ability);
         Map<String, Object> claims = new Map<String, Object>();
         claims.put('abilities', abilities);
-        Map<String, Object> album = (Map<String, Object>)this.get('/albums/'+albumId, claims);
+
+
+        /*Map<String, Object> album = (Map<String, Object>)this.get('/albums/'+albumId, claims);
+
+
+
+
+
         Map<String, Object> upload_form = (Map<String, Object>) album.get('upload_form');
         Map<String, Object> params = (Map<String, Object>) upload_form.get('params');
         String url = (String) upload_form.get('url');
-        String cloudinary = post_file(url, attachmentId, params);
+
+
+
+        String cloudinary = post_file(url, attachmentId, params);*/
+
+
         if(!metadatas.containsKey('attachmentId')){
             metadatas.put('attachmentId', attachmentId);
         }
-        JSONGenerator body = JSON.createGenerator(false);
 
-        body.writeStartObject();
-        body.writeObjectField('cloudinary', JSON.deserializeUntyped(cloudinary));
-        body.writeObjectField('metadatas', metadatas);
-        body.writeEndObject();
+        Map<String, Object> import_payload = new Map<String, Object>();
+        import_payload.put('filename', attachment.name);
+        import_payload.put('metadatas', metadatas);
+        import_payload.put('album_id', albumId);
+        String attachment_url = URL.getSalesforceBaseUrl().toExternalForm()+'/services/data/v36.0/sobjects/Attachment/'+attachmentId+'/body';
+        import_payload.put('url', attachment_url);
+        Map<String, String> headers = new Map<String, String>();
+        headers.put('Authorization', 'Bearer ' + UserInfo.getSessionId());
+        import_payload.put('secure_headers', headers);
 
-        return this.post(
-                '/albums/'+albumId+'/images',
-                Blob.valueof(body.getAsString()),
-                claims
-                );
+        return this.post('/imports/', Blob.valueOf(JSON.serialize(import_payload)), claims);
     }
 
     global Object upload_attachment(id attachmentId, string albumId){
