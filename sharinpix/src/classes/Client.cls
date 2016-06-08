@@ -2,8 +2,12 @@ global with sharing class Client {
     private static Client instance = null;
 
     global static Client getInstance(){
-        Credential__c cr = Credential__c.getOrgDefaults();
-        if(instance == null) instance = new Client(cr.Client_Id__c, cr.Client_Secret__c, cr.Endpoint_Url__c);
+        if (!Test.isRunningTest()) {
+            Credential__c cr = Credential__c.getOrgDefaults();
+            if (instance == null) instance = new Client(cr.Client_Id__c, cr.Client_Secret__c, cr.Endpoint_Url__c);
+        } else {
+            instance = new Client('test', 'test', 'https://api.sharinpix.com/api/v1');
+        }
         return instance;
     }
 
