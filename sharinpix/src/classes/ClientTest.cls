@@ -116,17 +116,14 @@ public with sharing class ClientTest {
     }
 
     static testMethod void testClientInstance(){
-        Credential__c credential = new Credential__c(Client_Id__c='test', Client_Secret__c='test', Endpoint_Url__c='https://api.sahrinpix.test/api/v1');
-        insert credential;
-
         Client clientins ;
         test.startTest();
             clientins = Client.getInstance();
         test.stoptest();
 
-        system.assertEquals(clientins.client_id, credential.Client_Id__c);
-        system.assertEquals(clientins.client_secret, credential.Client_Secret__c);
-        system.assertEquals(clientins.endpoint_url, credential.Endpoint_Url__c);
+        system.assertEquals(clientins.client_id, 'test');
+        system.assertEquals(clientins.client_secret, 'test');
+        system.assertEquals(clientins.endpoint_url, 'https://api.sharinpix.com/api/v1');
     }
 
     static testMethod void testDeprecatedDeleteTagImage(){
