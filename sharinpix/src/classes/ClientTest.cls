@@ -14,11 +14,13 @@ public with sharing class ClientTest {
         SingleRequestMock firstResponse = new SingleRequestMock(200, 'Ok','{"public_id":"99d11f10-8b55-493d-9314-333e68bc8f5c","upload_form":{"url":"https://api.cloudinary.com/v1_1/hwja6b0dx/auto/upload","params":{"timestamp":1449051274,"transformation":"a_exif","callback":"https://localhost/cloudinary_cors.html","type":"private","tags":"99d11f10-8b55-493d-9314-333e68bc8f5c","signature":"794baa26c36e0f6f35dae498c5313670ed8f45c5","api_key":"744524991939777"}},"images_count":1,"views_count":0,"thumbnails":[{"public_id":"58738212-d891-4931-a0e4-895a917d1b28","infos":{"bytes":3604,"created_at":"2015-09-25T13:32:55Z","etag":"5a98d4d3e5d39024abf237be55e99b15","format":"png","height":48,"resource_type":"image","tags":["99d11f10-8b55-493d-9314-333e68bc8f5c"],"type":"private","width":48,"location":{"accuracy":36,"latitude":48.861934399999996,"longitude":2.348967}},"exifs":{},"gps":[48.861934399999996,2.348967],"gps_ip":null,"gps_exifs":null,"gps_html":[48.861934399999996,2.348967],"created_at":"2015-12-02T11:14:34.269+01:00","width":48,"height":48,"rotation":0,"crop_x":0.0,"crop_y":0.0,"crop_w":0.0,"crop_h":0.0,"album_id":"99d11f10-8b55-493d-9314-333e68bc8f5c","thumbnails":{"full":"/assets/blank.jpg","large":"/assets/blank.jpg","mini":"/assets/blank.jpg"}}]}',null);
         SingleRequestMock secondResponse = new SingleRequestMock(200, 'Ok','{"public_id":"y1tbrymtuozqiaocrm2n","version":1449663204,"signature":"cf72619efe8f3a335ffca296b1ba89229244ec82","width":510,"height":330,"format":"jpg","resource_type":"image","created_at":"2015-12-09T12:13:24Z","tags":["50024000005Ii2QAAS"],"bytes":87785,"type":"private","etag":"16c6dabff69949b0bde2a58560a21c77","url":"http://res.cloudinary.com/hwdbenbwd/image/private/s--Zwg5gua6--/v1449663204/y1tbrymtuozqiaocrm2n.jpg","secure_url":"https://res.cloudinary.com/hwdbenbwd/image/private/s--Zwg5gua6--/v1449663204/y1tbrymtuozqiaocrm2n.jpg","original_filename":"raphael_teenage_mutant_ninja_turtles-t2"}',null);
         SingleRequestMock thirdResponse = new SingleRequestMock(200, 'Ok','{"images": "uploaded"}',null);
+        SingleRequestMock fourthResponse = new SingleRequestMock(200, 'Ok', '{}', null);
 
         Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String,HttpCalloutMock>();
         endpoint2TestResp.put(API_URL+'/albums/'+case1.Id, firstResponse);
         endpoint2TestResp.put('https://api.cloudinary.com/v1_1/hwja6b0dx/auto/upload', secondResponse);
         endpoint2TestResp.put(API_URL+'/albums/'+case1.Id+'/images', thirdResponse);
+        endpoint2TestResp.put(API_URL+'/imports/', fourthResponse);
 
         HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
 
@@ -40,11 +42,13 @@ public with sharing class ClientTest {
         SingleRequestMock firstResponse = new SingleRequestMock(200, 'Ok','{"public_id":"99d11f10-8b55-493d-9314-333e68bc8f5c","upload_form":{"url":"https://api.cloudinary.com/v1_1/hwja6b0dx/auto/upload","params":{"timestamp":1449051274,"transformation":"a_exif","callback":"https://localhost/cloudinary_cors.html","type":"private","tags":"99d11f10-8b55-493d-9314-333e68bc8f5c","signature":"794baa26c36e0f6f35dae498c5313670ed8f45c5","api_key":"744524991939777"}},"images_count":1,"views_count":0,"thumbnails":[{"public_id":"58738212-d891-4931-a0e4-895a917d1b28","infos":{"bytes":3604,"created_at":"2015-09-25T13:32:55Z","etag":"5a98d4d3e5d39024abf237be55e99b15","format":"png","height":48,"resource_type":"image","tags":["99d11f10-8b55-493d-9314-333e68bc8f5c"],"type":"private","width":48,"location":{"accuracy":36,"latitude":48.861934399999996,"longitude":2.348967}},"exifs":{},"gps":[48.861934399999996,2.348967],"gps_ip":null,"gps_exifs":null,"gps_html":[48.861934399999996,2.348967],"created_at":"2015-12-02T11:14:34.269+01:00","width":48,"height":48,"rotation":0,"crop_x":0.0,"crop_y":0.0,"crop_w":0.0,"crop_h":0.0,"album_id":"99d11f10-8b55-493d-9314-333e68bc8f5c","thumbnails":{"full":"/assets/blank.jpg","large":"/assets/blank.jpg","mini":"/assets/blank.jpg"}}]}',null);
         SingleRequestMock secondResponse = new SingleRequestMock(200, 'Ok','{"public_id":"y1tbrymtuozqiaocrm2n","version":1449663204,"signature":"cf72619efe8f3a335ffca296b1ba89229244ec82","width":510,"height":330,"format":"jpg","resource_type":"image","created_at":"2015-12-09T12:13:24Z","tags":["50024000005Ii2QAAS"],"bytes":87785,"type":"private","etag":"16c6dabff69949b0bde2a58560a21c77","url":"http://res.cloudinary.com/hwdbenbwd/image/private/s--Zwg5gua6--/v1449663204/y1tbrymtuozqiaocrm2n.jpg","secure_url":"https://res.cloudinary.com/hwdbenbwd/image/private/s--Zwg5gua6--/v1449663204/y1tbrymtuozqiaocrm2n.jpg","original_filename":"raphael_teenage_mutant_ninja_turtles-t2"}',null);
         SingleRequestMock thirdResponse = new SingleRequestMock(200, 'Ok','{"images": "uploaded"}',null);
+        SingleRequestMock fourthResponse = new SingleRequestMock(200, 'Ok', '{}', null);
 
         Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String,HttpCalloutMock>();
         endpoint2TestResp.put(API_URL+'/albums/'+case1.Id, firstResponse);
         endpoint2TestResp.put('https://api.cloudinary.com/v1_1/hwja6b0dx/auto/upload', secondResponse);
         endpoint2TestResp.put(API_URL+'/albums/'+case1.Id+'/images', thirdResponse);
+        endpoint2TestResp.put(API_URL+'/imports/', fourthResponse);
 
         HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
 
@@ -57,7 +61,7 @@ public with sharing class ClientTest {
         att1.body = EncodingUtil.base64Decode(encodedBody);
         insert att1;
 
-        string ret = null; 
+        string ret = null;
         test.startTest();
             string client_id = 'test';
             string client_secret = 'test';
