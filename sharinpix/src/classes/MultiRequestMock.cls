@@ -1,21 +1,21 @@
-@IsTest
+@isTest
 public class MultiRequestMock implements HttpCalloutMock {
-	Map<String, HttpCalloutMock> requests;
+  Map<String, HttpCalloutMock> requests;
 
-	public MultiRequestMock(Map<String, HttpCalloutMock> requests) {
-		this.requests = requests;
-	}
+  public MultiRequestMock(Map<String, HttpCalloutMock> requests) {
+    this.requests = requests;
+  }
 
-	public HTTPResponse respond(HTTPRequest req) {
-		HttpCalloutMock mock = requests.get(req.getEndpoint());
-		if (mock != null) {
-			return mock.respond(req);
-		} else {
-    		throw new SharinPixException('HTTP callout not supported for test methods');
-		} 
-	}
+  public HTTPResponse respond(HTTPRequest req) {
+    HttpCalloutMock mock = requests.get(req.getEndpoint());
+    if (mock != null) {
+      return mock.respond(req);
+    } else {
+      throw new SharinPixException('HTTP callout not supported for test methods');
+    }
+  }
 
-	public void addRequestMock(String url, HttpCalloutMock mock) {
-		requests.put(url, mock);
-	}
+  public void addRequestMock(String url, HttpCalloutMock mock) {
+    requests.put(url, mock);
+  }
 }
