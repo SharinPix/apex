@@ -1,24 +1,24 @@
-public without sharing class SharinPixSampleController {
-    public string parameters {get;set;}
-    
+public with sharing class SharinPixSampleController {
+    public String parameters { get; set; }
+
     public SharinPixSampleController(ApexPages.standardController controller) {
         Id id = controller.getId();
-        
-        map<string, boolean> access = new map<string, boolean>();
+
+        Map<String, Boolean> access = new Map<String, Boolean>();
         access.put('see', true);
         access.put('image_list', true);
         access.put('image_upload', true);
         access.put('image_delete', true);
         access.put('image_crop', true);
         access.put('image_rotate', true);
-        
-        map<string, object> album_abilities = new map<string, object>();
+
+        Map<String, Object> album_abilities = new Map<String, Object>();
         album_abilities.put('Access', access);
-        
-        map<string, object> abilities = new map<string, object>();
+
+        Map<String, Object> abilities = new Map<String, Object>();
         abilities.put(id, album_abilities);
-        
-        map<string, object> params = new map<string, object>();
+
+        Map<String, Object> params = new Map<String, Object>();
         params.put('abilities', abilities);
 
         params.put('Id', id);
