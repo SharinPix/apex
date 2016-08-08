@@ -1,4 +1,4 @@
-# Tag your images
+# Add tags to your images
 
 Add tags to your album images to better categorize them.
 
