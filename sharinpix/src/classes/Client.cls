@@ -115,11 +115,8 @@ global with sharing class Client {
     import_payload.put('filename', attachment.name);
     import_payload.put('metadatas', metadatas);
     import_payload.put('album_id', albumId);
-    String attachment_url = URL.getSalesforceBaseUrl().toExternalForm()+'/services/data/v36.0/sobjects/Attachment/'+attachmentId+'/body';
-    import_payload.put('url', attachment_url);
-    Map<String, String> headers = new Map<String, String>();
-    headers.put('Authorization', 'Bearer ' + UserInfo.getSessionId());
-    import_payload.put('secure_headers', headers);
+    import_payload.put('attachment_id', attachmentId);
+    import_payload.put('import_type', 'salesforce');
 
     return this.post('/imports/', Blob.valueOf(JSON.serialize(import_payload)), claims);
   }
