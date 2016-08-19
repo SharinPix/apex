@@ -95,6 +95,22 @@ public with sharing class ClientTest {
     System.assertEquals(clientInstance.endpoint_url, 'https://api.sharinpix.test/api/v1');
   }
 
+  static testMethod void testNewClientFromValidURL() {
+    Client clientInstance = new Client('sharinpix://clientid:clientsecret@api.sharinpix.com/api/v1');
+    System.assertEquals('clientid', clientInstance.client_id);
+    System.assertEquals('clientsecret', clientInstance.client_secret);
+    System.assertEquals('https://api.sharinpix.com/api/v1', clientInstance.endpoint_url);
+  }
+
+  static testMethod void testNewClientFromInvalidURL() {
+    try {
+      Client clientIns = new Client('sharinpix://clientcredential@api.sharinpix.com/api/v1');
+      System.assert(false);
+    } catch (Exception e) {
+      System.assertEquals('Invalid SharinPix URL', e.getMessage());
+    }
+  }
+
   static testMethod void testDeprecatedDeleteTagImage() {
     Client clientInstance = Client.getInstance();
 
