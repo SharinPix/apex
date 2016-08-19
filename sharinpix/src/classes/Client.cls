@@ -1,12 +1,17 @@
 global with sharing class Client {
   private static Client instance = null;
 
-  global static Client getInstance(){
-    if (!Test.isRunningTest()) {
-      Credential__c cr = Credential__c.getOrgDefaults();
-      if (instance == null) instance = new Client(cr.Client_Id__c, cr.Client_Secret__c, cr.Endpoint_Url__c);
-    } else {
-      instance = new Client('test', 'test', 'https://api.sharinpix.test/api/v1');
+  global static Client getInstance() {
+    if (Test.isRunningTest()) {
+      return instance = new Client('sharinpix://test:test@api.sharinpix.test/api/v1');
+    }
+    Credential2__c cr = Credential2__c.getOrgDefaults(); // TODO RENAME
+    if (instance == null) {
+      if (String.isNotEmpty(cr.SharinPix_URL__c)) {
+        instance = new Client(cr.SharinPix_URL__c);
+      } else {
+        instance = new Client(cr.Client_Id__c, cr.Client_Secret__c, cr.Endpoint_Url__c);
+      }
     }
     return instance;
   }
@@ -19,6 +24,21 @@ global with sharing class Client {
     this.client_id = client_id;
     this.client_secret = client_secret;
     this.endpoint_url = endpoint_url;
+  }
+
+  global Client(String sharinpixUrl) {
+    try {
+      String clientId = sharinpixUrl.substring(sharinpixUrl.indexOf('/') + 2, sharinpixUrl.indexOf(':', 10));
+      String clientSecret = sharinpixUrl.substring(sharinpixUrl.indexOf(':', 10) + 1, sharinpixUrl.indexOf('@'));
+      String endpointUrl = 'https://' + sharinpixUrl.substring(sharinpixUrl.indexOf('@') + 1);
+      if (String.isNotEmpty(clientId) && String.isNotEmpty(clientSecret) && String.isNotEmpty(endpointUrl)) {
+        this.client_id = clientId;
+        this.client_secret = clientSecret;
+        this.endpoint_url = endpointUrl;
+      }
+    } catch (Exception e) {
+      throw new SharinPixException('Invalid SharinPix URL');
+    }
   }
 
   global Object post(String endpoint, Blob body, Map<String, Object> claims){
