@@ -27,7 +27,7 @@ public with sharing class SharinPixSettingController {
   }
 
   @RemoteAction
-  public static boolean isSandbox() {
-    return [SELECT Id, IsSandbox FROM Organization LIMIT 1].IsSandbox;
+  public static String getOrgInfos() {
+    return JSON.serialize([SELECT Id, InstanceName, IsSandbox, Name, OrganizationType FROM Organization LIMIT 1]);
   }
 }
