@@ -1,15 +1,39 @@
-<apex:page showHeader="true" sidebar="true" Controller="SharinPixSettingController">
-	<apex:form >	
-		<apex:pageBlock title="SharinPix setting">
-			<apex:pageBlockButtons location="both">
-				<apex:commandButton value="{!$Label.Save}" action="{!saveCredential}"/>
-			</apex:pageBlockButtons>
-			<apex:pageBlockSection title="SharinPix Api settings" columns="1" showHeader="true">
-				<apex:pageMessages />
-				<apex:inputField value="{!credential.Client_Id__c}" />
-				<apex:inputField value="{!credential.Client_Secret__c}" />
-				<apex:inputField value="{!credential.Endpoint_Url__c}" />
-			</apex:pageBlockSection>
-		</apex:pageBlock>
-	</apex:form>	
+<apex:page controller="SharinPixSettingController">
+    <apex:canvasApp developerName="Albums" height="500px" parameters="{!parameters}" width="100%"/>
+    <script>
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    eventer(messageEvent, function(e) {
+        if (e.origin !== "https://app.sharinpix.com") { return; }
+        if (e.data.name == null) { return; }
+        switch(e.data.name) {
+            case "check-secret":
+                sharinpix.SharinPixSettingController.hasValidSecret(
+                    function(response) {
+                        e.source.postMessage({ name: "admin-secret-valid", payload: response }, e.origin);
+                    }
+                );
+                break;
+            case "admin-secret-url":
+                sharinpixUrl = e.data.payload;
+                if (sharinpixUrl != null) {
+                    sharinpix.SharinPixSettingController.saveSecret(
+                        sharinpixUrl,
+                        function(response) {
+                            e.source.postMessage({ name: "admin-secret-saved", payload: response }, e.origin);
+                        }
+                    );
+                }
+                break;
+            case "check-sandbox":
+                sharinpix.SharinPixSettingController.isSandbox(
+                    function(response) {
+                        e.source.postMessage({ name: "is-sandbox", payload: response }, e.origin);
+                    }
+                );
+                break;
+        }
+    }, false);
+    </script>
 </apex:page>

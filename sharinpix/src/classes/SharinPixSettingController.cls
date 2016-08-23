@@ -1,28 +1,33 @@
 public with sharing class SharinPixSettingController {
-    public Credential__c credential {get;set;}
-    public SharinPixSettingController() {
-        credential = Credential__c.getOrgDefaults();
-        if (string.isblank(credential.Endpoint_Url__c)){
-            credential.Endpoint_Url__c = 'https://api.sharinpix.com/api/v1';
-        }
-    }
+  public String parameters{ get; set; }
 
-    public pagereference saveCredential() {
-        if (string.isblank(credential.Client_Id__c) || string.isblank(credential.Client_Secret__c)){
-            ApexPages.AddMessage(new ApexPages.Message(ApexPages.Severity.Error, system.label.ClientInformationMissing));
-        }
-        else {
-            Client instance = new Client(credential.Client_Id__c, credential.Client_Secret__c, credential.Endpoint_Url__c);
+  public SharinPixSettingController() {
+    parameters = JSON.serialize(new Map<String, Object> { 'admin' => true, 'path' => '/admin' });
+  }
 
-            boolean test = instance.test_api();
-            if (test){
-                upsert credential;
-                ApexPages.AddMessage(new ApexPages.Message(ApexPages.Severity.Info, system.label.CredentialSuccess));
-            }
-            else {
-                ApexPages.AddMessage(new ApexPages.Message(ApexPages.Severity.ERROR, system.label.ApiTestFailure));
-            }
-        }
-        return null;
+  @RemoteAction
+  public static boolean hasValidSecret() {
+    sharinpix.Client clientInstance = sharinpix.Client.getInstance();
+    return clientInstance.test_api();
+  }
+
+  @RemoteAction
+  public static boolean saveSecret(String sharinpixUrl) {
+    try {
+      Credential__c credential = Credential__c.getOrgDefaults();
+      credential.SharinPix_URL__c = sharinpixUrl;
+      credential.Client_Id__c = sharinpixUrl.substring(sharinpixUrl.indexOf('/') + 2, sharinpixUrl.indexOf(':', 10));
+      credential.Client_Secret__c = sharinpixUrl.substring(sharinpixUrl.indexOf(':', 10) + 1, sharinpixUrl.indexOf('@'));
+      credential.Endpoint_Url__c = 'https://' + sharinpixUrl.substring(sharinpixUrl.indexOf('@') + 1);
+      upsert credential;
+      return true;
+    } catch (Exception e) {
+      return false;
     }
+  }
+
+  @RemoteAction
+  public static boolean isSandbox() {
+    return [SELECT Id, IsSandbox FROM Organization LIMIT 1].IsSandbox;
+  }
 }
