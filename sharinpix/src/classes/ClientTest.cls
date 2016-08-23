@@ -2,7 +2,7 @@
 public with sharing class ClientTest {
   static Attachment att1;
   static Case case1;
-  static String API_URL = 'https://api.sharinpix.test/api/v1';
+  static String API_URL = 'https://api.sharinpix.com/api/v1';
 
   static {
     case1 = new Case(Status='New', Origin='Email');
@@ -92,7 +92,7 @@ public with sharing class ClientTest {
 
     System.assertEquals(clientInstance.client_id, 'test');
     System.assertEquals(clientInstance.client_secret, 'test');
-    System.assertEquals(clientInstance.endpoint_url, 'https://api.sharinpix.test/api/v1');
+    System.assertEquals(clientInstance.endpoint_url, 'https://api.sharinpix.com/api/v1');
   }
 
   static testMethod void testNewClientFromValidURL() {

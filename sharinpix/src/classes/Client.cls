@@ -3,11 +3,11 @@ global with sharing class Client {
 
   global static Client getInstance() {
     if (Test.isRunningTest()) {
-      return instance = new Client('sharinpix://test:test@api.sharinpix.test/api/v1');
+      return instance = new Client('sharinpix://test:test@api.sharinpix.com/api/v1');
     }
-    Credential2__c cr = Credential2__c.getOrgDefaults(); // TODO RENAME
+    Credential__c cr = Credential__c.getOrgDefaults();
     if (instance == null) {
-      if (String.isNotEmpty(cr.SharinPix_URL__c)) {
+      if (String.isNotBlank(cr.SharinPix_URL__c)) {
         instance = new Client(cr.SharinPix_URL__c);
       } else {
         instance = new Client(cr.Client_Id__c, cr.Client_Secret__c, cr.Endpoint_Url__c);
@@ -31,7 +31,7 @@ global with sharing class Client {
       String clientId = sharinpixUrl.substring(sharinpixUrl.indexOf('/') + 2, sharinpixUrl.indexOf(':', 10));
       String clientSecret = sharinpixUrl.substring(sharinpixUrl.indexOf(':', 10) + 1, sharinpixUrl.indexOf('@'));
       String endpointUrl = 'https://' + sharinpixUrl.substring(sharinpixUrl.indexOf('@') + 1);
-      if (String.isNotEmpty(clientId) && String.isNotEmpty(clientSecret) && String.isNotEmpty(endpointUrl)) {
+      if (String.isNotBlank(clientId) && String.isNotBlank(clientSecret) && String.isNotBlank(endpointUrl)) {
         this.client_id = clientId;
         this.client_secret = clientSecret;
         this.endpoint_url = endpointUrl;
