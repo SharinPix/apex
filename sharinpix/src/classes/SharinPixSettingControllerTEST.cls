@@ -59,9 +59,10 @@ private class SharinPixSettingControllerTEST {
     Test.stopTest();
   }
 
-  static testMethod void testIsSandbox() {
+  static testMethod void testOrgInfos() {
+    String expected = JSON.serialize([SELECT Id, InstanceName, IsSandbox, Name, OrganizationType FROM Organization LIMIT 1]);
     Test.startTest();
-    System.assert(!SharinPixSettingController.isSandbox());
+    System.assertEquals(expected, SharinPixSettingController.getOrgInfos());
     Test.stopTest();
   }
 }

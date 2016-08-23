@@ -26,11 +26,12 @@
                     );
                 }
                 break;
-            case "check-sandbox":
-                sharinpix.SharinPixSettingController.isSandbox(
+            case "get-org-infos":
+                sharinpix.SharinPixSettingController.getOrgInfos(
                     function(response) {
-                        e.source.postMessage({ name: "is-sandbox", payload: response }, e.origin);
-                    }
+                        e.source.postMessage({ name: "org-infos", payload: eval(response)[0] }, e.origin);
+                    },
+                    { escape: false }
                 );
                 break;
         }
