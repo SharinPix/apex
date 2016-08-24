@@ -92,14 +92,14 @@ public with sharing class ClientTest {
 
     System.assertEquals(clientInstance.client_id, 'test');
     System.assertEquals(clientInstance.client_secret, 'test');
-    System.assertEquals(clientInstance.endpoint_url, 'https://api.sharinpix.com/api/v1');
+    System.assertEquals(clientInstance.endpoint_url, API_URL);
   }
 
   static testMethod void testNewClientFromValidURL() {
     Client clientInstance = new Client('sharinpix://clientid:clientsecret@api.sharinpix.com/api/v1');
     System.assertEquals('clientid', clientInstance.client_id);
     System.assertEquals('clientsecret', clientInstance.client_secret);
-    System.assertEquals('https://api.sharinpix.com/api/v1', clientInstance.endpoint_url);
+    System.assertEquals(API_URL, clientInstance.endpoint_url);
   }
 
   static testMethod void testNewClientFromInvalidURL() {
