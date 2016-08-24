@@ -9,6 +9,7 @@
   <aura:attribute name="loading" type="Boolean" default="true"/>
   <aura:attribute name="height" type="Integer" access="GLOBAL"/>
   <aura:attribute name="fullscreen" type="Boolean" default="false"/>
+  <aura:attribute name="sharinpix_error" type="String"/>
   <div aura:id="sharinpix" class="sharinpix-container" style="{!'height:'+v.height+'px;'}">
     <aura:if isTrue="{! v.loading }">
       <c:Loading />
@@ -16,9 +17,9 @@
     <aura:if isTrue="{! v.url }">
       <iframe aura:id="iframe" class="{! 'sharinpix-iframe ' + (v.fullscreen? 'fullscreen' : '') }" src="{!v.url}" onload="{! c.onLoaded }"></iframe>
     </aura:if>
-    <aura:if isTrue="{! v.error }">
+    <aura:if isTrue="{! v.sharinpix_error }">
       <ui:message title="Error" severity="Error">
-        {! v.error }
+        {! v.sharinpix_error }
       </ui:message>
     </aura:if>
   </div>
