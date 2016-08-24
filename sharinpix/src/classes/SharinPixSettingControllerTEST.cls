@@ -17,7 +17,7 @@ private class SharinPixSettingControllerTEST {
 
     SharinPixSettingController.saveSecret('sharinpix://clientid:clientsecret@api.sharinpix.com/api/v1');
     Test.startTest();
-	System.assert(SharinPixSettingController.hasValidSecret());
+    System.assert(SharinPixSettingController.hasValidSecret());
     Test.stopTest();
   }
 
