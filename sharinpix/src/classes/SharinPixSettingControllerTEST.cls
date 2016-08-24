@@ -1,5 +1,7 @@
 @isTest
 private class SharinPixSettingControllerTEST {
+  static final String API_URL = 'https://api.sharinpix.com/api/v1';
+
   static testMethod void testParameters() {
     Map<String, Object> params = new Map<String, Object> { 'admin' => true, 'path' => '/admin' };
     Test.startTest();
@@ -11,7 +13,7 @@ private class SharinPixSettingControllerTEST {
   static testMethod void testSecretIsValid() {
     SingleRequestMock firstResponse = new SingleRequestMock(200, 'Ok', '{"id":"c4a87f6a-677e-4c2c-bf14-8496e8edf5e2", "name":"SharinPix"}', null);
     Map<String, HttpCalloutMock> mapRequestResponse = new Map<String, HttpCalloutMock>();
-    mapRequestResponse.put('https://api.sharinpix.com/api/v1/organization', firstResponse);
+    mapRequestResponse.put(API_URL + '/organization', firstResponse);
     HttpCalloutMock multiCalloutMock = new MultiRequestMock(mapRequestResponse);
     Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
@@ -24,7 +26,7 @@ private class SharinPixSettingControllerTEST {
   static testMethod void testSecretIsInvalidated() {
     SingleRequestMock firstResponse = new SingleRequestMock(200, 'Ok', '{"id":"c4a87f6a-677e-4c2c-bf14-8496e8edf5e2", "name":"SharinPix"}', null);
     Map<String, HttpCalloutMock> mapRequestResponse = new Map<String, HttpCalloutMock>();
-    mapRequestResponse.put('https://api.sharinpix.com/api/v1/organization', firstResponse);
+    mapRequestResponse.put(API_URL + '/organization', firstResponse);
     HttpCalloutMock multiCalloutMock = new MultiRequestMock(mapRequestResponse);
     Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
@@ -32,7 +34,7 @@ private class SharinPixSettingControllerTEST {
 
     firstResponse = new SingleRequestMock(401, 'Unauthorized', '', null);
     mapRequestResponse = new Map<String,HttpCalloutMock>();
-    mapRequestResponse.put('https://api.sharinpix.com/api/v1/organization', firstResponse);
+    mapRequestResponse.put(API_URL + '/organization', firstResponse);
     multiCalloutMock = new MultiRequestMock(mapRequestResponse);
     Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
@@ -44,7 +46,7 @@ private class SharinPixSettingControllerTEST {
   static testMethod void testSaveSecretWithValidUrl() {
     SingleRequestMock firstResponse = new SingleRequestMock(200, 'Ok', '{"id":"c4a87f6a-677e-4c2c-bf14-8496e8edf5e2", "name":"SharinPix"}', null);
     Map<String, HttpCalloutMock> mapRequestResponse = new Map<String,HttpCalloutMock>();
-    mapRequestResponse.put('https://api.sharinpix.com/api/v1/organization', firstResponse);
+    mapRequestResponse.put(API_URL + '/organization', firstResponse);
     HttpCalloutMock multiCalloutMock = new MultiRequestMock(mapRequestResponse);
     Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
