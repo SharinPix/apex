@@ -1,0 +1,18 @@
+<aura:component access="GLOBAL"
+                implements="force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" >
+    <aura:attribute name="albumId" type="String"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="height" type="Integer" default="500"/>
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+
+    <sharinpix:SharinPix aura:id="sharinpix-cmp" AlbumId="{! v.albumId }" height="{! v.height }"/>
+
+    <ui:inputText aura:id="album-id" placeholder="AlbumId"/>
+    <ui:inputText aura:id="record-id" placeholder="recordId"/>
+    <ui:button label="Set AlbumId or recordId" press="{! c.changeId }"></ui:button>
+
+    <ui:inputText aura:id="height" placeholder="height" value="500"/>
+    <ui:button label="Set height" press="{! c.changeHeight }"></ui:button>
+
+    <ui:button label="Reload component" press="{! c.reloadSharinPix }"></ui:button>
+</aura:component>
