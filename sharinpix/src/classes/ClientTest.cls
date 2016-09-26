@@ -190,4 +190,37 @@ public with sharing class ClientTest {
 
     System.assertEquals(ret, null);
   }
+
+  static testMethod void testPermanentToken() {
+    Map<String, Object> params = new Map<String, Object> { 'exp' => 0 };
+    Client clientInstance = Client.getInstance();
+    Test.startTest();
+    String token = clientInstance.token(params);
+    Test.stopTest();
+    String base64Payload = token.substring(token.indexOf('.') + 1, token.lastIndexOf('.'));
+    Map<String, Object> tokenPayload = (Map<String, Object>)JSON.deserializeUntyped(EncodingUtil.base64Decode(base64Payload).toString());
+    System.assertEquals(null, tokenPayload.get('exp'));
+  }
+
+  static testMethod void testTokenWithExpSet() {
+    Map<String, Object> params = new Map<String, Object> { 'exp' => (Datetime.now().getTime()/1000 + 1) + 500 };
+    Client clientInstance = Client.getInstance();
+    Test.startTest();
+    String token = clientInstance.token(params);
+    Test.stopTest();
+    String base64Payload = token.substring(token.indexOf('.') + 1, token.lastIndexOf('.'));
+    Map<String, Object> tokenPayload = (Map<String, Object>)JSON.deserializeUntyped(EncodingUtil.base64Decode(base64Payload).toString());
+    System.assertEquals(500, (Integer)tokenPayload.get('exp') - (Integer)tokenPayload.get('iat'));
+  }
+
+  static testMethod void testTokenWithNoExpSet() {
+    Map<String, Object> params = new Map<String, Object> { 'key' => 'value' };
+    Client clientInstance = Client.getInstance();
+    Test.startTest();
+    String token = clientInstance.token(params);
+    Test.stopTest();
+    String base64Payload = token.substring(token.indexOf('.') + 1, token.lastIndexOf('.'));
+    Map<String, Object> tokenPayload = (Map<String, Object>)JSON.deserializeUntyped(EncodingUtil.base64Decode(base64Payload).toString());
+    System.assertEquals(300, (Integer)tokenPayload.get('exp') - (Integer)tokenPayload.get('iat'));
+  }
 }
