@@ -1,25 +1,34 @@
-<aura:component access="GLOBAL" implements="force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" controller="SharinPixLightningController">
-  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
-  <aura:registerEvent name="Event" type="c:Event"/>
+<aura:component access="GLOBAL"
+                implements="force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes"
+                controller="SharinPixLightningController">
   <aura:dependency resource="c:Loading"/>
   <aura:dependency resource="ui:message"/>
+  <aura:registerEvent name="Event" type="c:Event"/>
+
   <aura:attribute name="AlbumId" type="String" access="GLOBAL"/>
   <aura:attribute name="recordId" type="String"/>
+  <aura:attribute name="height" type="Integer" access="GLOBAL"/>
   <aura:attribute name="url" type="String"/>
   <aura:attribute name="loading" type="Boolean" default="true"/>
-  <aura:attribute name="height" type="Integer" access="GLOBAL"/>
   <aura:attribute name="fullscreen" type="Boolean" default="false"/>
-  <aura:attribute name="sharinpix_error" type="String"/>
-  <div aura:id="sharinpix" class="sharinpix-container" style="{!'height:'+v.height+'px;'}">
+  <aura:attribute name="sharinpixError" type="String"/>
+
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+  <aura:handler event="aura:locationChange" action="{! c.doReload }"/>
+  <aura:handler name="change" value="{! v.AlbumId }" action="{! c.doReload }"/>
+  <aura:handler name="change" value="{! v.recordId }" action="{! c.doReload }"/>
+  <aura:method name="reload" action="{! c.doReload }"/>
+
+  <div aura:id="sharinpix" class="sharinpix-container" style="{! 'height:' + v.height + 'px;' }">
     <aura:if isTrue="{! v.loading }">
       <c:Loading />
     </aura:if>
     <aura:if isTrue="{! v.url }">
-      <iframe aura:id="iframe" class="{! 'sharinpix-iframe ' + (v.fullscreen? 'fullscreen' : '') }" src="{!v.url}" onload="{! c.onLoaded }"></iframe>
+      <iframe aura:id="iframe" class="{! 'sharinpix-iframe' + (v.fullscreen ? ' fullscreen' : '') }" src="{! v.url }" onload="{! c.onLoaded }"></iframe>
     </aura:if>
-    <aura:if isTrue="{! v.sharinpix_error }">
+    <aura:if isTrue="{! v.sharinpixError }">
       <ui:message title="Error" severity="Error">
-        {! v.sharinpix_error }
+        {! v.sharinpixError }
       </ui:message>
     </aura:if>
   </div>
