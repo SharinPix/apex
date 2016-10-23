@@ -1,0 +1,4 @@
+<design:component>
+  <design:attribute name="recordId" label="RecordId" description="Enter the RecordId or leave unchanged to use the record Id" default="{!recordId}"/>
+  <design:attribute name="label" label="label" description="Enter the button label" default="Upload"/>
+</design:component>

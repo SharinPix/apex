@@ -1,0 +1,26 @@
+.THIS label{
+  cursor: pointer;
+  margin: 0 1em;
+}
+.THIS label * {
+  pointer-events: none
+}
+.THIS input {
+   width: 0.1px;
+   height: 0.1px;
+   opacity: 0;
+   overflow: hidden;
+   position: absolute;
+   z-index: -1;
+}
+.THIS label span {
+	position: relative;
+	z-index: 1;
+}
+.THIS .progress{
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	background: rgb(216, 221, 230);
+}
