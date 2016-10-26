@@ -29,7 +29,7 @@ public with sharing class FileController {
     @AuraEnabled
     public static list<Attachment> getFiles(Id parentId, String prefix, String contentType) { 
         String nameLike = prefix + '%';
-        return [SELECT ID FROM Attachment WHERE ParentId = :parentId AND ContentType LIKE :contentType AND Name LIKE :nameLike LIMIT 25];
+        return [SELECT ID, Name, ContentType FROM Attachment WHERE ParentId = :parentId AND ContentType LIKE :contentType AND Name LIKE :nameLike LIMIT 25];
     }
     
     private static void appendToFile(Id fileId, String base64Data) {
