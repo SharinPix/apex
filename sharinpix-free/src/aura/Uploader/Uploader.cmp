@@ -1,7 +1,7 @@
-<aura:component access="GLOBAL" implements="force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" controller="FileController">
+<aura:component access="GLOBAL" implements="force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" controller="ImageController">
 	<aura:handler name="init" value="{!this}" action="{!c.init}"/>
-	<aura:attribute name="recordId" type="String"/>
-	<aura:attribute name="label" type="String"/>
+	<aura:attribute name="recordId" type="String" access="global"/>
+	<aura:attribute name="label" type="String" access="global"/>
 	<aura:attribute name="uploaderId" type="String"/>
 	<aura:attribute name="uploading" type="Boolean"/>
 	<aura:attribute name="done" type="Boolean"/>

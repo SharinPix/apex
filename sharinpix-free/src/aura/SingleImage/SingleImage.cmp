@@ -1,5 +1,5 @@
 <aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" controller="FileController">
-	<aura:attribute name="attachmentId" type="String"/>
+	<aura:attribute name="attachmentId" type="String" access="global"/>
 	<aura:attribute name="loading" type="Boolean"/>
 	<aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
 	<aura:registerEvent name="ImageDeleted" type="sharinpix_free:ImageDeleted"/>

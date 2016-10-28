@@ -1,4 +1,4 @@
-public with sharing class FileController {
+public with sharing class ImageController {
     
     @AuraEnabled
     public static Id saveTheFile(Id parentId, String fileName, String base64Data, String contentType) { 
