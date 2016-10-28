@@ -1,0 +1,3 @@
+<design:component>
+	<design:attribute name="attachmentId" label="attachmentId" description="Enter the attachmentId" default=""/>
+</design:component>

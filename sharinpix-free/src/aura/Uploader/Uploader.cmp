@@ -7,17 +7,21 @@
 	<aura:attribute name="done" type="Boolean"/>
 	<aura:attribute name="n_uploading" type="Integer"/>
 	<aura:attribute name="n_uploaded" type="Integer"/>
+	<aura:attribute name="progress" type="Integer"/>
 	<aura:attribute name="filenamePrefix" type="Integer"/>
+	<aura:registerEvent name="Uploaded" type="sharinpix_free:Uploaded"/>
 	<div aura:id="uploader" class="uploader-container">
-		<label class="slds-button slds-button--neutral" for="{!v.uploaderId}">
-			<span>{! v.label }</span>
+		<label for="{!v.uploaderId}" title="Upload">
+			<lightning:icon iconName="utility:upload" alternativeText="Upload Images"/>
+			<div class="progress" style="{! 'height: ' + v.progress+'%;' }"></div>
+			<!--span>{! ' ' + v.label }</span>
 			<aura:if isTrue="{! v.n_uploading != v.n_uploaded }">
-				<div class="progress" style="{! 'width: ' + (v.n_uploaded /v.n_uploading*100)+'%;' }"></div>
+
 				<span>...({! v.n_uploaded }/{! v.n_uploading}) ({! v.n_uploaded /v.n_uploading*100 }%)</span>
 			</aura:if>
 			<aura:if isTrue="{! v.done }">
 				<span>...(100%)</span>
-			</aura:if>
+			</aura:if-->
 		</label>
 		<input id="{!v.uploaderId}" type="file" name="file" class="file" aura:id="file" onchange="{!c.fileInputChange}" multiple="multiple" accept="image/*"/>
 	</div>

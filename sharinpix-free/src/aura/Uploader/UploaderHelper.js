@@ -1,7 +1,7 @@
 ({
     MAX_FILE_SIZE: 4 500 000, // 6 000 000 * 3/4 to account for base64
-    CHUNK_SIZE: 950 000, // Use a multiple of 4
-    //CHUNK_SIZE: 1000,
+    //CHUNK_SIZE: 950 000, // Use a multiple of 4
+    CHUNK_SIZE: 500 000,
     filetoBase64 : function(file, callback){
         var fr = new FileReader();
         fr.onload = function() {
@@ -15,22 +15,29 @@
         }
         fr.readAsDataURL(file);
     },
+    update_progress:  function(component){
+        component.set('v.progress', 30 + Math.round(component.get('v.n_uploaded')/component.get('v.n_uploading')*70));
+    },
     upload: function(component, files, callback) {
+        var helper = this;
         for (var i=0; i < files.length; i++) {
             component.set('v.n_uploading', component.get('v.n_uploading') + 1);
+            helper.update_progress(component);
             this.upload_file(component, files[i], function(err, res){
                 console.log('UPLOADED !' + err + res);
                 component.set('v.n_uploaded', component.get('v.n_uploaded') + 1);
+                helper.update_progress(component);
                 if(component.get('v.n_uploaded') == component.get('v.n_uploading')){
                     callback(null, component.set('v.n_uploaded'));
                     component.set('v.n_uploaded', 0);
                     component.set('v.n_uploading', 0);
+                    component.set('v.progress', 0);
                     component.set('v.done', true);
-                    setTimeout(function(){
+                    /*setTimeout(function(){
                         $A.getCallback(function(){
                             component.set('v.done', false);
                         })();
-                     }, 5000);
+                     }, 5000);*/
                     var input = component.find("file").getElement();
                     input.type = '';
                     input.type = 'file';

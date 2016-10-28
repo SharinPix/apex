@@ -29,9 +29,16 @@ public with sharing class FileController {
     @AuraEnabled
     public static list<Attachment> getFiles(Id parentId, String prefix, String contentType) { 
         String nameLike = prefix + '%';
-        return [SELECT ID, Name, ContentType FROM Attachment WHERE ParentId = :parentId AND ContentType LIKE :contentType AND Name LIKE :nameLike LIMIT 25];
+        return [SELECT ID FROM Attachment WHERE ParentId = :parentId AND ContentType LIKE :contentType AND Name LIKE :nameLike ORDER BY CreatedDate DESC LIMIT 50];
     }
     
+    @AuraEnabled
+    public static Boolean deleteAttachment(Id Id){
+        System.debug(id);
+        delete [SELECT Id FROM Attachment WHERE Id = :id];
+        return true;
+    }
+
     private static void appendToFile(Id fileId, String base64Data) {
         base64Data = EncodingUtil.urlDecode(base64Data, 'UTF-8');
         

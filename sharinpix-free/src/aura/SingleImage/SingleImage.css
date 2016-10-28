@@ -1,0 +1,15 @@
+.THIS {
+	position: relative;
+}
+.THIS .info{
+	position: absolute;
+	background: rgba(255, 255, 255, 0.5);
+}
+.THIS img{
+	min-width: 50px;
+	min-height: 180px;
+	height: auto;
+	width: 100%;
+	margin: 0 auto;
+	background: #b0b0b0;
+}

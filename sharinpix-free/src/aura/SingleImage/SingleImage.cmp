@@ -1,0 +1,14 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" controller="FileController">
+	<aura:attribute name="attachmentId" type="String"/>
+	<aura:attribute name="loading" type="Boolean"/>
+	<aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+	<aura:registerEvent name="ImageDeleted" type="sharinpix_free:ImageDeleted"/>
+	<aura:handler name="change" value="{! v.attachmentId }" action="{! c.doReload }"/>
+	<div class="container">
+		<!--div class="info">{!v.attachmentId}</div-->
+		<img aura:id="image" src="{! '/servlet/servlet.FileDownload?file=' + v.attachmentId}" onload="{! c.onLoaded }"/>
+		<aura:if isTrue="{! v.loading }">
+			<lightning:spinner/>
+		</aura:if>
+	</div>
+</aura:component>
