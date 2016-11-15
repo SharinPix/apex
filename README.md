@@ -25,3 +25,5 @@ Below is an extract of popular SharinPix implementation steps for common use cas
 
 
 [Use SharinPix images inside Salesforce rich text field] (demo-action-description)
+
+[Get modified version of an image] (demo-image-signed)
