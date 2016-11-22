@@ -8,11 +8,9 @@
 		component.set('v.uploaderId', 'uploader_'+component.getGlobalId());
 	},
 	fileInputChange: function(component, event, helper) {
-		console.log('UPLOADING !');
 		helper.upload(component, component.find("file").getElement().files, function(err, res){
-			var event = $A.get('e.sharinpix_free:Uploaded');
+			var event = $A.get('e.c:Uploaded');
 		event.fire();
-			console.log('UPLOAD DONE !');
 		});
 	}
 })

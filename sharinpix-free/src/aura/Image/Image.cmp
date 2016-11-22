@@ -2,6 +2,7 @@
 	<aura:attribute name="recordId" type="String"/>
 	<aura:attribute name="loading" type="Boolean"/>
 	<aura:attribute name="errorMessage" type="String"/>
+	<aura:dependency resource="ui:message"/>
 	<aura:attribute name="images" type="Object[]"/>
 	<aura:attribute name="image" type="Object"/>
 	<aura:attribute name="index" type="Integer"/>
@@ -10,21 +11,27 @@
   	<aura:handler event="aura:locationChange" action="{! c.doReload }"/>
   	<aura:handler name="change" value="{! v.recordId }" action="{! c.doReload }"/>
   	<aura:method name="reload" action="{! c.doReload }"/>
-  	<aura:handler event="sharinpix_free:Uploaded" action="{!c.uploaded}"/>
+	<aura:handler event="c:Uploaded" action="{!c.uploaded}"/>
+	<aura:handler event="c:ErrorHandling" action="{!c.displayError}"/>
+
+	<aura:if isTrue="{! v.errorMessage }">
+      <ui:message title="Error" severity="Error" class="errormessages">
+        {! v.errorMessage }
+      </ui:message>
+    </aura:if>
 	<div class="image-container">
 		<aura:if isTrue="{! v.loading }">
-			<lightning:spinner/>
+			<lightning:spinner />
 		<aura:set attribute="else">
 			<aura:if isTrue="{! v.total > 0 }">
-	    		<sharinpix_free:SingleImage attachmentId="{!v.image.Id}" />
+			<c:SingleImage attachmentId="{!v.image.Id}" />
 	    		<aura:set attribute="else">
 	    			<div class="uploader-no-images-btn">
-	    				<sharinpix_free:uploader recordId="{!v.recordId}" label="Upload Images"/>
+					<c:Uploader recordId="{!v.recordId}" label="Upload Images"/>
 	    			</div>
 	    		</aura:set>
 	    	</aura:if>
 	    	<aura:if isTrue="{! v.total > 1 }">
-	    		<!--div class="progress">{! (v.index+1) + '/' + v.total }</div-->
 	    		<button class="control control-previous" label="Previous" onclick="{! c.doPrevious }">
 	    			<lightning:icon iconName="utility:chevronleft" size="large" alternativeText="Previous Image"/>
 		    	</button>
@@ -34,7 +41,7 @@
 		    </aura:if>
 		    <aura:if isTrue="{! v.total > 0 }">
 		    	<div class="uploader-btn">
-		    		<sharinpix_free:uploader recordId="{!v.recordId}"/>
+				<c:Uploader recordId="{!v.recordId}"/>
 		    	</div>
 		    	<button class="delete-btn" label="Delete" onclick="{! c.doDelete }" title="Delete">
 					<lightning:icon iconName="action:delete" alternativeText="Delete"/>
