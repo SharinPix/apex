@@ -41,6 +41,33 @@ global with sharing class Client {
     }
   }
 
+
+  global Boolean renameAlbum(String src, String destination){
+    map<string, object> album = (map<string, object>) this.put(
+      '/albums/'+src,
+      blob.valueof(
+        JSON.serialize(
+          new map<string, object>{
+            'album'=> new map<string, string>{
+              'public_id'=>destination
+            }
+          }
+        )
+      ),
+      new map<string, object>{
+        'abilities' => new map<string, object>{
+          src => new map<string, object>{
+            'Access'  => new map<string, object>{
+                'rename' => true,
+                'see' => true
+            }
+          }
+        }
+      }
+    );
+    return destination == (string) album.get('public_id');
+  }
+
   global Object post(String endpoint, Blob body, Map<String, Object> claims){
     HttpRequest req = new HttpRequest();
     req.setEndpoint(this.endpoint_url + endpoint);

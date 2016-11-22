@@ -17,7 +17,7 @@
         default:
           console.log('Unhandled event:', e.data.name);
       }
-      var event = $A.get('e.sharinpix:Event');
+      var event = $A.get('e.c:Event');
       event.setParams({
         'name' : e.data.name,
         'payload': e.data.payload,
