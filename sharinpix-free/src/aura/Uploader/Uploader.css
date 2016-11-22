@@ -1,0 +1,49 @@
+.THIS label * {
+  pointer-events: none
+}
+.THIS {
+  display: inline-block;
+}
+.THIS label{
+  cursor: pointer;
+  background: rgb(216, 221, 230);
+  border-radius: 50%;
+  box-shadow: 0 4px 4px 0 rgba(0,0,0,.16);
+  padding: 0.5rem ;
+  width: 48px;
+  height: 48px;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  display: block;
+}
+.THIS input {
+   width: 0.1px;
+   height: 0.1px;
+   opacity: 0;
+   overflow: hidden;
+   position: absolute;
+   z-index: -1;
+}
+.THIS label span {
+	position: relative;
+	z-index: 1;
+}
+@keyframes progressgreen {
+  from { background: rgb(75, 202, 129); }
+  to { background: rgba(75, 202, 129, 0.5); }
+}
+
+.THIS .progress{
+  background: rgb(75, 202, 129);
+  animation-name: progressgreen;
+  animation-duration: 1s;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+	position: absolute;
+	left: 0;
+  right: 0;
+	bottom: 0;
+  height: 0;
+  transition: height 5s ease-out;
+}
