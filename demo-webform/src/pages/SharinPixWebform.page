@@ -1,4 +1,7 @@
-<apex:page docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" cache="false" standardController="Case" extensions="sharinpix_webform_controller" applyBodyTag="false" applyHtmlTag="false">
+<apex:page docType="html-5.0" cache="false" 
+           showHeader="false" sidebar="false" standardStylesheets="false" 
+           standardController="Case" extensions="SharinPixWebformController" 
+           applyHtmlTag="false" applyBodyTag="false">
 <html>
 <head>
     <meta charset="utf-8"/>
@@ -18,7 +21,7 @@
             <apex:pageBlock rendered="{!IF($CurrentPage.parameters.success != 'true', true, false)}" id="formulaire" >
                 <div class="row"><div class="col-md-12"><p><h3>Create a new case.</h3></p></div></div>
                 <apex:pagemessages />
-                <apex:form>
+                <apex:form >
                     <div class="form-group">
                         <apex:inputText required="true" id="subject" styleclass="form-control" value="{!cs.subject}" html-placeholder="Subject"/>
                     </div>

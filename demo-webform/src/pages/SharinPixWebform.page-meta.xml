@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>34.0</apiVersion>
+    <apiVersion>37.0</apiVersion>
     <availableInTouch>false</availableInTouch>
     <confirmationTokenRequired>false</confirmationTokenRequired>
-    <label>sharinpix_webform</label>
-    <packageVersions>
-        <majorNumber>1</majorNumber>
-        <minorNumber>1</minorNumber>
-        <namespace>ch_dashboards</namespace>
-    </packageVersions>
+    <label>SharinPixWebform</label>
     <packageVersions>
         <majorNumber>1</majorNumber>
         <minorNumber>11</minorNumber>
@@ -18,10 +13,5 @@
         <majorNumber>1</majorNumber>
         <minorNumber>7</minorNumber>
         <namespace>sf_com_apps</namespace>
-    </packageVersions>
-    <packageVersions>
-        <majorNumber>1</majorNumber>
-        <minorNumber>16</minorNumber>
-        <namespace>sharinpix</namespace>
     </packageVersions>
 </ApexPage>
