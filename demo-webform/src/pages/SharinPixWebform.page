@@ -1,0 +1,61 @@
+<apex:page docType="html-5.0" cache="false" 
+           showHeader="false" sidebar="false" standardStylesheets="false" 
+           standardController="Case" extensions="SharinPixWebformController" 
+           applyHtmlTag="false" applyBodyTag="false">
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <apex:pageBlock rendered="{!IF($CurrentPage.parameters.success == 'true', true, false)}" id="msg_success">
+                <p><h1 class="text-center  ">Thank you !</h1></p>
+            </apex:pageBlock>
+        
+            <apex:pageBlock rendered="{!IF($CurrentPage.parameters.success != 'true', true, false)}" id="formulaire" >
+                <div class="row"><div class="col-md-12"><p><h3>Create a new case.</h3></p></div></div>
+                <apex:pagemessages />
+                <apex:form >
+                    <div class="form-group">
+                        <apex:inputText required="true" id="subject" styleclass="form-control" value="{!cs.subject}" html-placeholder="Subject"/>
+                    </div>
+                    <div class="form-group">
+                        <apex:inputTextarea required="true" id="description" styleclass="form-control" value="{!cs.description}" html-placeholder="Describe your case..."/>
+                    </div>
+                    <iframe src="{!url}" height="400px" width="100%" style="border: 0"/>
+                    <input type="submit" class="btn btn-primary" value="Create a case" />
+                    <apex:actionFunction action="{!saveCase}" name="saveCase" oncomplete="renameAlbum()"/>
+                    <apex:actionFunction action="{!renameAlbum}" name="renameAlbum" oncomplete="done()"/>
+                </apex:form>
+            </apex:pageBlock>
+        </div>
+    </div>
+  </div>
+    <script>
+    done = function() {
+        window.location = '?success=true';
+    }
+    $('body').on('click', '.btn', function(){
+        $(this).attr('disabled', 'disabled');
+        saveCase();
+    });
+    $('.btn').attr('disabled', 'disabled');
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    eventer(messageEvent,function(e) {
+        if (e.origin !== "https://app.sharinpix.com"){return;}
+        if (e.data.name == 'image-new'){
+            $('.btn').attr('disabled', false);
+        }
+    },false);
+    </script>
+</body>
+</html>
+</apex:page>
