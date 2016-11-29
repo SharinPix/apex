@@ -24,7 +24,18 @@
             component.set('v.n_uploading', component.get('v.n_uploading') + 1);
             helper.update_progress(component);
             this.upload_file(component, files[i], function(err, res){
-                console.log('UPLOADED !' + err + res);
+                if (err !== null){
+                    callback('Error occurred', null);
+                    component.set('v.n_uploaded', 0);
+                    component.set('v.n_uploading', 0);
+                    component.set('v.progress', 0);
+                    component.set('v.done', true);
+
+                    var error = JSON.parse(err)[0];
+                    var event = $A.get('e.c:ErrorHandling').setParams({error: error.message});
+                    event.fire();
+                    return;
+                }
                 component.set('v.n_uploaded', component.get('v.n_uploaded') + 1);
                 helper.update_progress(component);
                 if(component.get('v.n_uploaded') == component.get('v.n_uploading')){
@@ -33,11 +44,6 @@
                     component.set('v.n_uploading', 0);
                     component.set('v.progress', 0);
                     component.set('v.done', true);
-                    /*setTimeout(function(){
-                        $A.getCallback(function(){
-                            component.set('v.done', false);
-                        })();
-                     }, 5000);*/
                     var input = component.find("file").getElement();
                     input.type = '';
                     input.type = 'file';
@@ -74,7 +80,6 @@
        
         var self = this;
         action.setCallback(this, function(response) {
-            console.log('callback');
             if (response.getState() === 'SUCCESS') {
                 attachId = response.getReturnValue();
                 self.uploadChunk(component, file, fileContents, toPos, callback, attachId);
