@@ -124,12 +124,6 @@ global with sharing class Client {
     return false;
   }
 
-  /**
-   * Renames an album
-   * @param  oldAlbumId Id of the album to be renamed
-   * @param  newAlbumId Id to give the album
-   * @return true if album is successfully renamed
-   */
   global Boolean renameAlbum(String oldAlbumId, String newAlbumId) {
     Map<String, Object> album = (Map<String, Object>)this.put(
       '/albums/' + oldAlbumId,
@@ -156,7 +150,7 @@ global with sharing class Client {
     return newAlbumId == (String)album.get('public_id');
   }
 
-  global Object addTagImage(String albumId, String imageId, String tagName) {
+  global Object addTag(String albumId, String imageId, String tagName) {
     Map<String, Object> claims = new Map<String, Object> {
       'abilities' => new Map<String, Object> {
         albumId => new Map<String, Object> {
@@ -169,7 +163,7 @@ global with sharing class Client {
         }
       }
     };
-    return this.post('/tags/' + tagName.replaceAll(' ', '%20') + '/tag_images', Blob.valueOf('{"image_ids":["' + imageId + '"]}'), claims);
+    return this.post('/tags/' + EncodingUtil.urlEncode(tagName, 'UTF-8').replaceAll('\\+', '%20') + '/tag_images', Blob.valueOf('{"image_ids":["' + imageId + '"]}'), claims);
   }
 
   global Object add_tag_image(String albumId, String imageId, String tagName) {
@@ -185,6 +179,32 @@ global with sharing class Client {
     Map<String, Object> claims = new Map<String, Object>();
     claims.put('abilities', abilities);
     return this.post('/tags/' + tagName + '/tag_images', Blob.valueOf('{"image_ids": ["' + imageId + '"]}'), claims);
+  }
+
+  global Boolean removeTag(String albumId, String imageId, String[] tags) {
+    try {
+      Map<String, Object> paramTags = new Map<String, Object>();
+      for (String tag : tags) {
+        paramTags.put(tag, '');
+      }
+      Map<String, Object> claims = new Map<String, Object> {
+        'abilities' => new Map<String, Object> {
+          albumId => new Map<String, Object> {
+            'Access' => new Map<String, Object> {
+              'see' => true
+            },
+            'Tags' => paramTags
+          }
+        }
+      };
+      List<Object> tagImages = (List<Object>)this.get('/tag_images?image_id=' + imageId, claims);
+      for (Object tagImage : tagImages) {
+        this.destroy('/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'), claims);
+      }
+      return true;
+    } catch (Exception e) {
+      throw new SharinPixException(e.getCause() + '[' + e.getLineNumber() + ']: ' + e.getMessage());
+    }
   }
 
   global Boolean clear_tag_image(String albumId, String imageId, String[] tags) {
@@ -246,6 +266,36 @@ global with sharing class Client {
     import_payload.put('import_type', 'salesforce');
 
     return this.post('/imports/', Blob.valueOf(JSON.serialize(import_payload)), claims);
+  }
+
+  global List<String> getTagsOnImage(String albumId, String imageId, List<String> tags) {
+    Map<String, Object> paramTags = new Map<String, Object>();
+    for (String tag : tags) {
+      paramTags.put(tag, '');
+    }
+    Map<String, Object> params = new Map<String, Object> {
+        'abilities' => new Map<String, Object> {
+            albumId => new Map<String, Object> {
+                'Access' => new Map<String, Object> {
+                    'see' => true,
+                    'image_tag' => true
+                },
+                'Tags' => paramTags
+            }
+        }
+    };
+    Integer page = 1;
+    List<Object> tagImagesPage = new List<Object>();
+    List<Object> allTagImages = new List<Object>();
+    do {
+      tagImagesPage = (List<Object>)this.get('/tag_images?album_id=' + albumId + '&image_id=' + imageId + '&page=' + page++, params);
+      allTagImages.addAll(tagImagesPage);
+    } while (tagImagesPage.size() == 25);
+    List<String> tagsOnImage = new List<String>();
+    for (Object tagImage : allTagImages) {
+        tagsOnImage.add((String)((Map<String, Object>)((Map<String, Object>)tagImage).get('tag')).get('name'));
+    }
+    return tagsOnImage;
   }
 
   /* AirRefund : */
