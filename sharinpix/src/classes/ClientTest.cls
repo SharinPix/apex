@@ -3,6 +3,7 @@ public with sharing class ClientTest {
   static Attachment att1;
   static Case case1;
   static String API_URL = 'https://api.sharinpix.com/api/v1';
+  static String APP_URL = 'https://app.sharinpix.com';
 
   static {
     case1 = new Case(Status='New', Origin='Email');
@@ -63,12 +64,43 @@ public with sharing class ClientTest {
     System.assert(renamed);
   }
 
+  static testMethod void testGetTagsOnImage() {
+    Client clientInstance = Client.getInstance();
+    String albumId = 'albumId', imageId = 'imageId';
+
+    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+      API_URL + '/tag_images?album_id=' + albumId + '&image_id=' + imageId + '&page=1' => new SingleRequestMock(200, 'OK','[{"tag":{"name":"name"}}]', null)
+    };
+    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+    Test.startTest();
+    List<String> response = (List<String>)clientInstance.getTagsOnImage('albumId', 'imageId', new List<String> { 'tagName' });
+    Test.stopTest();
+
+    System.assertEquals(response[0], 'name');
+  }
+
+  static testMethod void testAddTag() {
+    Client clientInstance = Client.getInstance();
+
+    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+      API_URL + '/tags/tagName/tag_images' => new SingleRequestMock(200, 'OK','{"test":"test"}', null)
+    };
+    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+    Test.startTest();
+    Map<String, Object> response = (Map<String, Object>)clientInstance.addTag('albumId', 'imageId', 'tagName');
+    Test.stopTest();
+
+    System.assertEquals(String.valueof(response.get('test')), 'test');
+  }
+
   static testMethod void testAddTagImage() {
     Client clientInstance = Client.getInstance();
 
     Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String, HttpCalloutMock>();
-    SingleRequestMock res = new SingleRequestMock(200, 'Ok','{"test": "test"}',null);
-    endpoint2TestResp.put(API_URL+'/tags/tagName/tag_images', res);
+    SingleRequestMock res = new SingleRequestMock(200, 'Ok','{"test": "test"}', null);
+    endpoint2TestResp.put(API_URL + '/tags/tagName/tag_images', res);
     HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
     Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
@@ -77,6 +109,24 @@ public with sharing class ClientTest {
     Test.stopTest();
 
     System.assertEquals(String.valueof(ret.get('test')), 'test');
+  }
+
+  static testMethod void testRemoveTag() {
+    Client clientInstance = Client.getInstance();
+    String albumId = 'albumId', imageId = 'imageId';
+
+    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+      API_URL + '/tag_images?image_id=' + imageId => new SingleRequestMock(200, 'OK', '[{"id":"test"}]', null),
+      API_URL + '/tag_images/test' => new SingleRequestMock(204, 'No Content', '{"test":"test"}', null)
+    };
+    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+    Boolean tagRemoved = false;
+    Test.startTest();
+    tagRemoved = clientInstance.removeTag(albumId, imageId, new List<String> { 'tag' });
+    Test.stopTest();
+
+    System.assert(tagRemoved);
   }
 
   static testMethod void testClearTagImage() {
@@ -98,6 +148,44 @@ public with sharing class ClientTest {
     Test.stopTest();
 
     System.assert(ret);
+  }
+
+  static testMethod void testCropImage() {
+    Client clientInstance = Client.getInstance();
+    String albumId = 'albumId', imageId = 'imageId';
+
+    Test.startTest();
+    String transformedImageUrl = clientInstance.cropImage(imageId, 'fit', 200, 200);
+    String cropErrorMessage, sizeErrorMessage;
+    try {
+      clientInstance.cropImage(albumId, 'plop', 200, 200);
+    } catch (Exception e) {
+      cropErrorMessage = e.getMessage();
+    }
+    try {
+      clientInstance.cropImage(albumId, 'fit', null, null);
+    } catch (Exception e) {
+      sizeErrorMessage = e.getMessage();
+    }
+    Test.stopTest();
+    System.assert(transformedImageUrl.startsWith(APP_URL + '/images/' + imageId + '?token='));
+    System.assertEquals('Invalid crop style.', cropErrorMessage);
+    System.assertEquals('Invalid width or height.', sizeErrorMessage);
+  }
+
+  static testMethod void testGetAlbumImages() {
+    Client clientInstance = Client.getInstance();
+
+    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+      API_URL + '/albums/' + case1.Id + '/images?page=1' => new SingleRequestMock(200, 'OK', '[{"public_id":"imageId"}]', null)
+    };
+    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+    Test.startTest();
+    List<Object> images = clientInstance.getAlbumImages(case1.Id);
+    Test.stoptest();
+
+    System.assertEquals('imageId', ((Map<String, Object>)images[0]).get('public_id'));
   }
 
   static testMethod void testClientInstance() {
@@ -204,6 +292,36 @@ public with sharing class ClientTest {
     Test.stopTest();
 
     System.assertEquals(ret, null);
+  }
+
+  static testMethod void testTestApiSuccess() {
+    Client clientInstance = Client.getInstance();
+
+    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+      API_URL + '/organization' => new SingleRequestMock(200, 'OK', '{"id":"orgId"}', null)
+    };
+    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+    Test.startTest();
+    Boolean isValid = clientInstance.test_api();
+    Test.stopTest();
+
+    System.assert(isValid);
+  }
+
+  static testMethod void testTestApiFailure() {
+    Client clientInstance = Client.getInstance();
+
+    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+      API_URL + '/organization' => new SingleRequestMock(404, 'Not Found', '', null)
+    };
+    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+    Test.startTest();
+    Boolean isValid = clientInstance.test_api();
+    Test.stopTest();
+
+    System.assert(!isValid);
   }
 
   static testMethod void testPermanentToken() {
