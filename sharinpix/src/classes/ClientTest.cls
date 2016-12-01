@@ -48,6 +48,21 @@ public with sharing class ClientTest {
     System.assertEquals(ret, '');
   }
 
+  static testMethod void testRenameAlbum() {
+    Client clientInstance = Client.getInstance();
+
+    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+      API_URL + '/albums/oldAlbumId' => new SingleRequestMock(200, 'OK', '{"public_id":"newAlbumId"}', null)
+    };
+    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+    Test.startTest();
+    Boolean renamed = clientInstance.renameAlbum('oldAlbumId', 'newAlbumId');
+    Test.stopTest();
+
+    System.assert(renamed);
+  }
+
   static testMethod void testAddTagImage() {
     Client clientInstance = Client.getInstance();
 
