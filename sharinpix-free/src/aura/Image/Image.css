@@ -3,6 +3,10 @@
 	min-height: 180px;
 	background: rgb(244, 246, 249);
 }
+.THIS.errormessages {
+	min-height: 70px !important;
+}
+
 .THIS .control:focus{
 	outline: none;
 }
