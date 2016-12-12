@@ -3,7 +3,6 @@ public with sharing class ClientTest {
   static Attachment att1;
   static Case case1;
   static String API_URL = 'https://api.sharinpix.com/api/v1';
-  static String APP_URL = 'https://app.sharinpix.com';
 
   static {
     case1 = new Case(Status='New', Origin='Email');
@@ -150,25 +149,41 @@ public with sharing class ClientTest {
     System.assert(ret);
   }
 
-  static testMethod void testCropImage() {
+  static testMethod void testGetImageDetails() {
     Client clientInstance = Client.getInstance();
-    String albumId = 'albumId', imageId = 'imageId';
+
+    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+      API_URL + '/images/imageId' => new SingleRequestMock(200, 'OK', '{"albumId":"albumId","imageId":"imageId"}', null)
+    };
+    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
 
     Test.startTest();
-    String transformedImageUrl = clientInstance.cropImage(imageId, 'fit', 200, 200);
+    Map<String, Object> response = clientInstance.getImageDetails('albumId', 'imageId');
+    Test.stopTest();
+
+    System.assertEquals('imageId', response.get('imageId'));
+  }
+
+  static testMethod void testCroppedImageUrl() {
+    Client clientInstance = Client.getInstance();
+    String albumId = 'albumId', imageId = 'imageId';
     String cropErrorMessage, sizeErrorMessage;
+
+    Test.startTest();
+    String transformedImageUrl = clientInstance.croppedImageUrl(imageId, 'fit', 200, 200);
     try {
-      clientInstance.cropImage(albumId, 'plop', 200, 200);
+      clientInstance.croppedImageUrl(albumId, 'plop', 200, 200);
     } catch (Exception e) {
       cropErrorMessage = e.getMessage();
     }
     try {
-      clientInstance.cropImage(albumId, 'fit', null, null);
+      clientInstance.croppedImageUrl(albumId, 'fit', 0, 0);
     } catch (Exception e) {
       sizeErrorMessage = e.getMessage();
     }
     Test.stopTest();
-    System.assert(transformedImageUrl.startsWith(APP_URL + '/images/' + imageId + '?token='));
+    System.debug(transformedImageUrl);
+    System.assertEquals('https://test.cloudinary.com/imageId', transformedImageUrl);
     System.assertEquals('Invalid crop style.', cropErrorMessage);
     System.assertEquals('Invalid width or height.', sizeErrorMessage);
   }
@@ -188,6 +203,22 @@ public with sharing class ClientTest {
     System.assertEquals('imageId', ((Map<String, Object>)images[0]).get('public_id'));
   }
 
+  static testMethod void testGetImageUrl() {
+    Client clientInstance = Client.getInstance();
+
+    Test.setMock(HttpCalloutMock.class, new SingleRequestMock(200, 'OK', '', null));
+
+    Test.startTest();
+    String imageUrl = clientInstance.getImageUrl(
+      'imageId',
+      new Map<String, Object> { 'download' => false },
+      new List<Object> { new Map<String, Object> { 'crop' => 'fit', 'width' => 500 } }
+    );
+    Test.stopTest();
+
+    System.assertEquals('https://test.cloudinary.com/imageId', imageUrl);
+  }
+
   static testMethod void testClientInstance() {
     Test.startTest();
     Client clientInstance = Client.getInstance();
@@ -198,8 +229,19 @@ public with sharing class ClientTest {
     System.assertEquals(clientInstance.endpoint_url, API_URL);
   }
 
+  static testMethod void testNewClient() {
+    Test.startTest();
+    Client clientInstance = new Client('clientid', 'clientsecret', 'https://api.sharinpix.com/api/v1');
+    Test.stopTest();
+    System.assertEquals('clientid', clientInstance.client_id);
+    System.assertEquals('clientsecret', clientInstance.client_secret);
+    System.assertEquals(API_URL, clientInstance.endpoint_url);
+  }
+
   static testMethod void testNewClientFromValidURL() {
+    Test.startTest();
     Client clientInstance = new Client('sharinpix://clientid:clientsecret@api.sharinpix.com/api/v1');
+    Test.stopTest();
     System.assertEquals('clientid', clientInstance.client_id);
     System.assertEquals('clientsecret', clientInstance.client_secret);
     System.assertEquals(API_URL, clientInstance.endpoint_url);
@@ -207,7 +249,9 @@ public with sharing class ClientTest {
 
   static testMethod void testNewClientFromInvalidURL() {
     try {
+      Test.startTest();
       Client clientIns = new Client('sharinpix://clientcredential@api.sharinpix.com/api/v1');
+      Test.stopTest();
       System.assert(false);
     } catch (Exception e) {
       System.assertEquals('Invalid SharinPix URL', e.getMessage());

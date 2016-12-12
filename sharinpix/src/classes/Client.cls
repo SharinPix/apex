@@ -1,7 +1,7 @@
 global with sharing class Client {
   private static Client instance = null;
 
-  private static final String APP_URL = 'https://app.sharinpix.com';
+  private static final String API_URL = 'https://api.sharinpix.com';
 
   global String client_id { get; set; }
   global String client_secret { get; set; }
@@ -75,6 +75,13 @@ global with sharing class Client {
     return newAlbumId == (String)album.get('public_id');
   }
 
+  /**
+   * Performs a POST request on a SharinPix endpoint
+   * @param  endpoint The endpoint to POST to
+   * @param  body     The body of the request
+   * @param  claims   The parameters to generate the auth token with
+   * @return          The object returned from the POST request
+   */
   global Object post(String endpoint, Blob body, Map<String, Object> claims) {
     HttpRequest req = new HttpRequest();
     req.setEndpoint(this.endpoint_url + endpoint);
@@ -89,9 +96,15 @@ global with sharing class Client {
     } else {
       throw new SharinPixException('API response ' + response.getStatus() + ': ' + response.getBody());
     }
-    return new Map<String, Object>();
   }
 
+  /**
+   * Performs a PUT request on a SharinPix endpoint
+   * @param  endpoint The endpoint to PUT into
+   * @param  body     The body of the request
+   * @param  claims   The parameters to generate the auth token with
+   * @return          The object returned from the PUT request
+   */
   global Object put(String endpoint, Blob body, Map<String, Object> claims) {
     HttpRequest req = new HttpRequest();
     req.setEndpoint(this.endpoint_url + endpoint);
@@ -106,9 +119,14 @@ global with sharing class Client {
     } else {
       throw new SharinPixException('API response ' + response.getStatus() + ': ' + response.getBody());
     }
-    return new Map<String, Object>();
   }
 
+  /**
+   * Performs a GET request on a SharinPix endpoint
+   * @param  endpoint The endpoint to GET from
+   * @param  claims   The parameters to generate the auth token with
+   * @return          The object returned from the GET request
+   */
   global Object get(String endpoint, Map<String, Object> claims) {
     HttpRequest req = new HttpRequest();
     req.setEndpoint(this.endpoint_url + endpoint);
@@ -124,6 +142,12 @@ global with sharing class Client {
     }
   }
 
+  /**
+   * Performs a DELETE request on a SharinPix endpoint
+   * @param  endpoint The endpoint to DELETE from
+   * @param  claims   The parameters to generate the auth token with
+   * @return          true if the DELETE is successful, false otherwise
+   */
   global Boolean destroy(String endpoint, Map<String, Object> claims) {
     HttpRequest req = new HttpRequest();
     req.setEndpoint(this.endpoint_url + endpoint);
@@ -137,7 +161,6 @@ global with sharing class Client {
     } else {
       throw new SharinPixException('API response ' + response.getStatus() + ': '+ response.getBody());
     }
-    return false;
   }
 
   global Object upload_attachment(id attachmentId, string albumId, Map<String, Object> metadatas) {
@@ -146,7 +169,6 @@ global with sharing class Client {
           && Schema.sObjectType.Attachment.fields.Name.isAccessible()
           && Schema.sObjectType.Attachment.fields.Body.isAccessible())) {
       throw new SharinPixException('Insufficient privilege');
-      return null;
     }
     Attachment attachment = [SELECT Id, Name FROM Attachment WHERE Id=:attachmentId LIMIT 1];
 
@@ -178,6 +200,13 @@ global with sharing class Client {
     return upload_attachment(attachmentId, albumId, metadatas);
   }
 
+  /**
+   * Retrieves all tags from an image
+   * @param  albumId Album ID of image to get tags for
+   * @param  imageId Image ID of image to get tags for
+   * @param  tags    List of possible tags on image
+   * @return         List of tags on image
+   */
   global List<String> getTagsOnImage(String albumId, String imageId, List<String> tags) {
     Map<String, Object> albumTags = new Map<String, Object>();
     for (String tag : tags) {
@@ -208,6 +237,13 @@ global with sharing class Client {
     return tagsOnImage;
   }
 
+  /**
+   * Clears tags from a tagged image
+   * @param  albumId Album ID of image to untag
+   * @param  imageId Public ID of the image to untag
+   * @param  tags    List of tags to remove from image
+   * @return         True if tags removed, false otherwise
+   */
   global Boolean removeTag(String albumId, String imageId, String[] tags) {
     try {
       Map<String, Object> albumTags = new Map<String, Object>();
@@ -257,6 +293,13 @@ global with sharing class Client {
     return true;
   }
 
+  /**
+   * Add a tag to an image
+   * @param  albumId Album ID of image to tag
+   * @param  imageId Public ID of the image to tag
+   * @param  tagName Name of tag to add to image
+   * @return         Map containing the newly created tag image details
+   */
   global Object addTag(String albumId, String imageId, String tagName) {
     Map<String, Object> claims = new Map<String, Object> {
       'abilities' => new Map<String, Object> {
@@ -270,7 +313,12 @@ global with sharing class Client {
         }
       }
     };
-    return this.post('/tags/' + EncodingUtil.urlEncode(tagName, 'UTF-8').replaceAll('\\+', '%20') + '/tag_images', Blob.valueOf('{"image_ids":["' + imageId + '"]}'), claims);
+    Object tagImageObj = this.post(
+      '/tags/' + EncodingUtil.urlEncode(tagName, 'UTF-8').replaceAll('\\+', '%20') + '/tag_images',
+      Blob.valueOf('{"image_ids":["' + imageId + '"]}'),
+      claims
+    );
+    return (Map<String, Object>)tagImageObj;
   }
 
   global Object add_tag_image(String albumId, String imageId, String tagName) {
@@ -292,6 +340,10 @@ global with sharing class Client {
     return new Token(this.client_id, this.client_secret, claims).issue();
   }
 
+  /**
+   * Verify whether secret is correctly configured
+   * @return true if secret is configured, false otherwise
+   */
   global Boolean test_api() {
     try {
       Map<String, Object> response = (Map<String, Object>)this.get('/organization', new Map<String, Object>());
@@ -304,48 +356,57 @@ global with sharing class Client {
   }
 
   /**
+   * Get image details
+   * @param imageId Public ID of image to fetch details on
+   * @return        Map containing image details
+   */
+  global Map<String, Object> getImageDetails(String albumId, String imageId) {
+    Object imageObj = this.get(
+      '/images/' + imageId,
+      new Map<String, Object>{
+        'abilities' => new Map<String, Object> {
+          albumId => new Map<String, Object> {
+            'Access' => new Map<String, Boolean> {
+              'see' => true,
+              'image_list' => true
+            }
+          }
+        }
+      }
+    );
+    return (Map<String, Object>)imageObj;
+  }
+
+  /**
    * Crops or resizes an image
    * @param imageId   Public ID of image to crop
    * @param cropStyle Crop style to apply. Possible values: fill, fit, scale, pad, crop, thumb
-   * @param width     Width to resize to, null if only height is to be used
-   * @param height    Height to resize to, null if only width is to be used
+   * @param width     Width to resize to, 0 if only height is to be used
+   * @param height    Height to resize to, 0 if only width is to be used
    * @return          URL of transformed image
    */
-  global String cropImage(String imageId, String cropStyle, Integer width, Integer height) {
+  global String croppedImageUrl(String imageId, String cropStyle, Integer width, Integer height) {
     Matcher patternMatcher = Pattern.compile('fill|fit|scale|pad|crop|thumb').matcher(cropStyle);
     if (!patternMatcher.matches()) {
       throw new SharinPixException('Invalid crop style.');
     }
-    if ((width == null && height == null) || width < 0 || height < 0) {
+    if ((width == null && height == null) || (width == 0 && height == 0) || width < 0 || height < 0) {
       throw new SharinPixException('Invalid width or height.');
     }
     Map<String, Object> transfomation = new Map<String, Object> { 'crop' => cropStyle };
-    if (width != null) {
+    if (width != 0) {
       transfomation.put('width', width);
     }
-    if (height != null) {
+    if (height != 0) {
       transfomation.put('height', height);
     }
-    Map<String, Object> params = new Map<String, Object> {
-      'id' => imageId,
-      'sharinpix' => new Map<String, Boolean> {
-        'download' => false
-      },
-      'transformations' => new List<Object> { transfomation }
-    };
-    // TODO ! + Remote Site + exp !
-    /*HTTPRequest request = new HTTPRequest();
-    request.setMethod('GET');
-    request.setEndpoint(APP_URL + '/images/' + imageId + '?token=' + token(params));
-    HTTPResponse response = (new HTTP()).send(request);
-    return response.getHeader('Location');*/
-    return APP_URL + '/images/' + imageId + '?token=' + token(params);
+    return this.getImageUrl(imageId, new Map<String, Object> { 'download' => false }, new List<Object> { transfomation });
   }
 
   /**
    * Get all images from an album. Cast image object as Map<String, Object> to access attributes
    * @param albumId ID of the album to retrieve images for
-   * @return        List of images
+   * @return        List of image objects
    */
   public List<Object> getAlbumImages(String albumId) {
     if (albumId InstanceOf Id) {
@@ -366,37 +427,54 @@ global with sharing class Client {
     List<Object> pageImages;
     Integer page = 1;
     do {
-      pageImages = (List<Object>)get('/albums/' + albumId + '/images?page=' + page++, albumParams);
+      pageImages = (List<Object>)this.get('/albums/' + albumId + '/images?page=' + page++, albumParams);
       albumImages.addAll(pageImages);
     } while (pageImages.size() == 25);
     return albumImages;
   }
 
+  public String getImageUrl(String imageId, Map<String, Object> sharinpix, List<Object> transformations) {
+    Map<String, Object> params = new Map<String, Object> {
+      'id' => imageId,
+      'sharinpix' => sharinpix,
+      'transformations' => transformations
+    };
+    HTTPRequest request = new HTTPRequest();
+    request.setMethod('GET');
+    request.setEndpoint(API_URL + '/images/' + imageId + '?token=' + token(params));
+    if (!Test.isRunningTest()) {
+      HTTPResponse response = (new HTTP()).send(request);
+      return response.getHeader('Location');
+    } else {
+      return 'https://test.cloudinary.com/' + imageId;
+    }
+  }
+
   /* AirRefund : */
   @deprecated
-  global String upload_attachment_to_album(id attachmentId, string albumId){
+  global String upload_attachment_to_album(id attachmentId, string albumId) {
     upload_attachment(attachmentId, albumId);
     return '';
   }
   @deprecated
-  global String delete_tag_image(String a, String b){
+  global String delete_tag_image(String a, String b) {
     return null;
   }
   @deprecated
-  global String add_tag_image(String a, String b){
+  global String add_tag_image(String a, String b) {
     return null;
   }
   @deprecated
-  global Map<String, Object> api_delete(String endpoint, Map<String, Object> claims){
+  global Map<String, Object> api_delete(String endpoint, Map<String, Object> claims) {
     destroy(endpoint, claims);
     return null;
   }
   @deprecated
-  global Map<String, Object> api_get(String endpoint, Map<String, Object> claims){
+  global Map<String, Object> api_get(String endpoint, Map<String, Object> claims) {
     return (Map<String, Object>)get(endpoint, claims);
   }
   @deprecated
-  global Map<String, Object> api_post(String endpoint, Blob body, Map<String, Object> claims){
+  global Map<String, Object> api_post(String endpoint, Blob body, Map<String, Object> claims) {
     return (Map<String, Object>)post(endpoint, body, claims);
   }
 }
