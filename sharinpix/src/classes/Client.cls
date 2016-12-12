@@ -22,7 +22,7 @@ global with sharing class Client {
     return instance;
   }
 
-  global Client(String client_id, String client_secret, String endpoint_url){
+  global Client(String client_id, String client_secret, String endpoint_url) {
     this.client_id = client_id;
     this.client_secret = client_secret;
     this.endpoint_url = endpoint_url;
@@ -181,7 +181,7 @@ global with sharing class Client {
     abilities.put(albumId, album_ability);
     Map<String, Object> claims = new Map<String, Object>();
     claims.put('abilities', abilities);
-    if(!metadatas.containsKey('attachmentId')){
+    if (!metadatas.containsKey('attachmentId')) {
       metadatas.put('attachmentId', attachmentId);
     }
 
@@ -433,6 +433,13 @@ global with sharing class Client {
     return albumImages;
   }
 
+  /**
+   * Get URL of transformed image
+   * @param  imageId         Public ID of image to transform
+   * @param  sharinpix       SharinPix transformations
+   * @param  transformations Image transformations
+   * @return                 URL of transformed image
+   */
   public String getImageUrl(String imageId, Map<String, Object> sharinpix, List<Object> transformations) {
     Map<String, Object> params = new Map<String, Object> {
       'id' => imageId,
@@ -442,12 +449,8 @@ global with sharing class Client {
     HTTPRequest request = new HTTPRequest();
     request.setMethod('GET');
     request.setEndpoint(API_URL + '/images/' + imageId + '?token=' + token(params));
-    if (!Test.isRunningTest()) {
-      HTTPResponse response = (new HTTP()).send(request);
-      return response.getHeader('Location');
-    } else {
-      return 'https://test.cloudinary.com/' + imageId;
-    }
+    HTTPResponse response = (new HTTP()).send(request);
+    return response.getHeader('Location');
   }
 
   /* AirRefund : */

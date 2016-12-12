@@ -169,6 +169,11 @@ public with sharing class ClientTest {
     String albumId = 'albumId', imageId = 'imageId';
     String cropErrorMessage, sizeErrorMessage;
 
+    Test.setMock(
+      HttpCalloutMock.class,
+      new SingleRequestMock(200, 'OK', '', new Map<String, String> { 'Location' => 'https://test.cloudinary.com/imageId' })
+    );
+
     Test.startTest();
     String transformedImageUrl = clientInstance.croppedImageUrl(imageId, 'fit', 200, 200);
     try {
@@ -206,7 +211,10 @@ public with sharing class ClientTest {
   static testMethod void testGetImageUrl() {
     Client clientInstance = Client.getInstance();
 
-    Test.setMock(HttpCalloutMock.class, new SingleRequestMock(200, 'OK', '', null));
+    Test.setMock(
+      HttpCalloutMock.class,
+      new SingleRequestMock(200, 'OK', '', new Map<String, String> { 'Location' => 'https://test.cloudinary.com/imageId' })
+    );
 
     Test.startTest();
     String imageUrl = clientInstance.getImageUrl(
