@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
+        <members>Action</members>
         <members>Client</members>
         <members>ClientTest</members>
+        <members>Command</members>
+        <members>Crud</members>
+        <members>Image</members>
         <members>JWT</members>
         <members>MultiRequestMock</members>
         <members>SharinPixException</members>
@@ -13,6 +17,10 @@
         <members>SharinPixSettingController</members>
         <members>SharinPixSettingControllerTEST</members>
         <members>SingleRequestMock</members>
+        <members>Tag</members>
+        <members>TagActionController</members>
+        <members>TagActionController_TEST</members>
+        <members>TagImage</members>
         <members>Token</members>
         <name>ApexClass</name>
     </types>
