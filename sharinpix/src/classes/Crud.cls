@@ -16,30 +16,30 @@ public with sharing class Crud {
     private static Integer ISCREATEABLE = 3;
     private static Integer ISACCESSIBLE = 4;
 
-    public static boolean isCreateable(Schema.SObjectType sobjType) {
-        return ObjectPermission(sobjType, ISCREATEABLE, new list < Schema.SObjectField > ());
-    }
-    public static boolean isCreateable(Schema.SObjectType sobjType, List < Schema.SObjectField > fieldList) {
-        return ObjectPermission(sobjType, ISCREATEABLE, fieldList);
-    }
-    public static boolean isUpdateable(Schema.SObjectType sobjType) {
-        return ObjectPermission(sobjType, ISUPDATEABLE, new list < Schema.SObjectField > ());
-    }
+    //public static boolean isCreateable(Schema.SObjectType sobjType) {
+    //    return ObjectPermission(sobjType, ISCREATEABLE, new list < Schema.SObjectField > ());
+    //}
+    //public static boolean isCreateable(Schema.SObjectType sobjType, List < Schema.SObjectField > fieldList) {
+    //    return ObjectPermission(sobjType, ISCREATEABLE, fieldList);
+    //}
+    //public static boolean isUpdateable(Schema.SObjectType sobjType) {
+    //    return ObjectPermission(sobjType, ISUPDATEABLE, new list < Schema.SObjectField > ());
+    //}
     public static boolean isUpdateable(Schema.SObjectType sobjType, List < Schema.SObjectField > fieldList) {
         return ObjectPermission(sobjType, ISUPDATEABLE, fieldList);
     }
-    public static boolean isDeletable(Schema.SObjectType sobjType) {
-        return ObjectPermission(sobjType, ISDELETABLE, new list < Schema.SObjectField > ());
-    }
-    public static boolean isDeletable(Schema.SObjectType sobjType, List < Schema.SObjectField > fieldList) {
-        return ObjectPermission(sobjType, ISDELETABLE, fieldList);
-    }
-    public static boolean isAccessible(Schema.SObjectType sobjType) {
-        return ObjectPermission(sobjType, ISACCESSIBLE, new list < Schema.SObjectField > ());
-    }
-    public static boolean isAccessible(Schema.SObjectType sobjType, List < Schema.SObjectField > fieldList) {
-        return ObjectPermission(sobjType, ISACCESSIBLE, fieldList);
-    }
+    //public static boolean isDeletable(Schema.SObjectType sobjType) {
+    //    return ObjectPermission(sobjType, ISDELETABLE, new list < Schema.SObjectField > ());
+    //}
+    //public static boolean isDeletable(Schema.SObjectType sobjType, List < Schema.SObjectField > fieldList) {
+    //    return ObjectPermission(sobjType, ISDELETABLE, fieldList);
+    //}
+    //public static boolean isAccessible(Schema.SObjectType sobjType) {
+    //    return ObjectPermission(sobjType, ISACCESSIBLE, new list < Schema.SObjectField > ());
+    //}
+    //public static boolean isAccessible(Schema.SObjectType sobjType, List < Schema.SObjectField > fieldList) {
+    //    return ObjectPermission(sobjType, ISACCESSIBLE, fieldList);
+    //}
 
     public static boolean ObjectPermission(Schema.SObjectType sobjType, Integer permissionType, List < Schema.SObjectField > sObjectFieldList) {
         if ((permissionType == ISCREATEABLE && sobjType.getDescribe().isCreateable()) ||

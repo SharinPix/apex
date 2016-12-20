@@ -1,0 +1,26 @@
+<apex:component access="global" allowDML="true" controller="TagActionController" >
+	<apex:attribute name="recordId" description="Id of the current record" type="String"/>
+	<script>
+	    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+	    var eventer = window[eventMethod];
+	    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+	    eventer(messageEvent,function(e) {
+	        if (event.origin !== "https://scpix-pr-773.herokuapp.com"){return;}
+	        console.log(e.data);
+	        if (e.data.name === 'tag-image-new'){
+	            //check if contains action
+	            if (e.data.payload.tag_image.tag.action !== null){
+	            	console.log('Action is not null');
+	            	console.log(e.data.payload.tag_image);
+	            	console.log(JSON.stringify(e.data.payload.tag_image));
+	            	TagActionCtrl.executeCommand("{!recordId}",JSON.stringify(e.data.payload.tag_image), function(result, event){
+			    		console.log(result, event);
+			    	});
+	            }
+	            else {
+	            	console.log('Action is null');
+	            }
+	        }
+	    },false);
+	</script>
+</apex:component>

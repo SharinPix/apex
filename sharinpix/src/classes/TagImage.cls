@@ -3,4 +3,7 @@ public with sharing class TagImage {
 	public Tag tag;
 	public string id;
 	public string user;
+	public TagImage(){
+		
+	}
 }

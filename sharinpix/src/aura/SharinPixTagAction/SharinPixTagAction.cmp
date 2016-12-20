@@ -1,5 +1,0 @@
-<aura:component access="GLOBAL"
-                implements="force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes"
-                controller="TagActionController">
-    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>        
-</aura:component>

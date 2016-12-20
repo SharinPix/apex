@@ -1,4 +1,5 @@
 <design:component>
   <design:attribute name="AlbumId" label="AlbumId" description="Enter the AlbumId or leave unchanged to use the record Id" default="{!recordId}"/>
   <design:attribute name="height" label="Height" description="Enter the height (minimum: 300)" default="500"/>
+  <design:attribute name="enableAction" label="Enable action" description="Enable Tag action" />
 </design:component>

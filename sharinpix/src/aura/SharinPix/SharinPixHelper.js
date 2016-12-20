@@ -15,5 +15,17 @@
       }
     });
     $A.enqueueAction(action);
+  },
+  execCommand: function(recordId, payload, component,event) {
+    var action = component.get("c.executeCommandLightning");
+    action.setParams({"recordId": recordId,
+                      "jsonfile": payload});
+    action.setCallback(this, function(response) {
+        var state = response.getState();
+        if(state === "SUCCESS"){
+          // $A.get("e.force:refreshView").fire();
+        }
+    });
+    $A.enqueueAction(action);
   }
 })

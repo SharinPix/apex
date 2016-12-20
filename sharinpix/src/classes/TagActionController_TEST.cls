@@ -30,7 +30,7 @@ private class TagActionController_TEST {
 		insert contact;
 	}
 
-	@isTest static void imageurl_test() {
+	@isTest static void testImageurl() {
 		Test.startTest();
 		TagActionController.executeCommand(account.Id, responseMap.get('imageUrl'));
 		Test.stopTest();
@@ -38,7 +38,7 @@ private class TagActionController_TEST {
 		system.assertEquals([select website from account where id = :account.id].website, 'https://res.cloudinary.com/hcdh57m0l/image/authenticated/s--vy4-AMc7--/c_fi…/fl_attachment/dpr_auto,q_auto,f_auto/v1481539072/lw3mee7ynxbjemwqb85s.jpg');
 	}
 	
-	@isTest static void boolean_test() {
+	@isTest static void testBoolean() {
 		Test.startTest();
 		TagActionController.executeCommand(opportunity.Id, responseMap.get('boolean'));
 		Test.stopTest();
@@ -46,7 +46,7 @@ private class TagActionController_TEST {
 		system.assert([select IsPrivate from opportunity where id = :opportunity.id].IsPrivate);
 	}
 
-	@isTest static void textarea_test() {
+	@isTest static void testTextarea() {
 		Test.startTest();
 		TagActionController.executeCommand(contact.Id, responseMap.get('textarea'));
 		Test.stopTest();
@@ -54,7 +54,7 @@ private class TagActionController_TEST {
 		system.assertEquals([select description from contact where Id = :contact.id].description, 'This is a test');
 	}
 
-	@isTest static void currency_test() {
+	@isTest static void testCurrency() {
 		Test.startTest();
 		TagActionController.executeCommand(account.Id, responseMap.get('currency'));
 		Test.stopTest();
@@ -62,7 +62,7 @@ private class TagActionController_TEST {
 		System.assertEquals([select AnnualRevenue from Account where Id = :account.id].AnnualRevenue, 1000);
 	}
 	
-	@isTest static void percent_test() {
+	@isTest static void testPercent() {
 		Test.startTest();
 		TagActionController.executeCommand(opportunity.Id, responseMap.get('percent'));
 		Test.stopTest();
@@ -70,7 +70,7 @@ private class TagActionController_TEST {
 		system.assertEquals([select Probability from opportunity where id = :opportunity.id].Probability, 1);
 	}
 
-	@isTest static void number_test() {
+	@isTest static void testNumber() {
 		Test.startTest();
 		TagActionController.executeCommand(account.Id, responseMap.get('integer'));
 		Test.stopTest();
@@ -78,7 +78,7 @@ private class TagActionController_TEST {
 		System.assertEquals([select NumberOfEmployees from Account where Id = :account.id].NumberOfEmployees, 300);
 	}
 
-	@isTest static void geolocation_test() {
+	@isTest static void testGeolocation() {
 		Test.startTest();
 		TagActionController.executeCommand(contact.Id, responseMap.get('geolocation'));
 		Test.stopTest();
@@ -89,9 +89,9 @@ private class TagActionController_TEST {
 		system.assertEquals(cont.MailingLongitude, 57.51583333333333);
 	}
 
-	@isTest static void lightning_number_test() {
+	@isTest static void testLightning_number() {
 		Test.startTest();
-		TagActionController.executeCommandLightning(account.Id, responseMap.get('integer'));
+		SharinPixLightningController.executeCommandLightning(account.Id, responseMap.get('integer'));
 		Test.stopTest();
 
 		System.assertEquals([select NumberOfEmployees from Account where Id = :account.id].NumberOfEmployees, 300);
