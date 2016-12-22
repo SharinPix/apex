@@ -1,9 +1,11 @@
 ({
-  doInit : function(component) {
+  doInit : function(component, event, helper) {
     component.reload();
-    if (window && (window.addEventListener != null)) {
+    if (window && (window.addEventListener !== null)) {
         window.addEventListener('message', $A.getCallback( function(postMessageEvent) {
-          if (postMessageEvent.origin !== 'https://app.sharinpix.com') { return; }
+          if (postMessageEvent.origin !== 'https://app.sharinpix.com'){
+            return;
+          }
           if (postMessageEvent && component.isValid() ){
             switch(postMessageEvent.data.name) {
               case 'viewer-image-viewed':
@@ -14,19 +16,19 @@
                 break;
               case 'tag-image-new':
                 if (component.get('v.enableAction')===true){
-                  helper.execCommand(component.get("v.recordId"),JSON.stringify(postMessageEvent.data.payload.tag_image), component, event);
+                  helper.execCommand(component.get("v.recordId"), JSON.stringify(postMessageEvent.data.payload.tag_image), component, event);
                 }
                 break;
               default:
                 console.log('Unhandled event:', postMessageEvent.data.name);
             }
-            var event = $A.get('e.sharinpix:Event');
-            event.setParams({
+            var eventSharinPix = $A.get('e.sharinpix:Event');
+            eventSharinPix.setParams({
               'name' : postMessageEvent.data.name,
               'payload': postMessageEvent.data.payload,
               'albumId': component.get('v.AlbumId')
             });
-            event.fire();
+            eventSharinPix.fire();
           }
         })
       );

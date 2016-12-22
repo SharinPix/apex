@@ -9,7 +9,7 @@
     action.setParams({ albumId : albumId });
     action.setCallback(this, function(response) {
       if (response.getState() === 'SUCCESS') {
-        callback(null, response.getReturnValue());
+        callback(null, response.getReturnValue());
       } else {
         callback(JSON.stringify(response.getError()));
       }
