@@ -22,7 +22,7 @@
               default:
                 console.log('Unhandled event:', postMessageEvent.data.name);
             }
-            var eventSharinPix = $A.get('e.sharinpix:Event');
+            var eventSharinPix = $A.get('e.c:Event');
             eventSharinPix.setParams({
               'name' : postMessageEvent.data.name,
               'payload': postMessageEvent.data.payload,
