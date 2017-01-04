@@ -9,6 +9,7 @@
         <members>Image</members>
         <members>JWT</members>
         <members>MultiRequestMock</members>
+        <members>SObjectWrapper</members>
         <members>SharinPixException</members>
         <members>SharinPixLightningController</members>
         <members>SharinPixLightningControllerTEST</members>
@@ -21,6 +22,7 @@
         <members>TagActionController</members>
         <members>TagActionController_TEST</members>
         <members>TagImage</members>
+        <members>TagImageTEST</members>
         <members>Token</members>
         <name>ApexClass</name>
     </types>
@@ -42,20 +44,8 @@
         <name>AuraDefinitionBundle</name>
     </types>
     <types>
-        <members>Albums</members>
-        <name>ConnectedApp</name>
-    </types>
-    <types>
-        <members>CustomLabels</members>
-        <name>CustomLabels</name>
-    </types>
-    <types>
         <members>Credential__c</members>
         <name>CustomObject</name>
-    </types>
-    <types>
-        <members>SharinPix_setting</members>
-        <name>CustomTab</name>
     </types>
     <types>
         <members>ApiSharinPix</members>
