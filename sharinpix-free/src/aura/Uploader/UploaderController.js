@@ -9,8 +9,10 @@
 	},
 	fileInputChange: function(component, event, helper) {
 		helper.upload(component, component.find("file").getElement().files, function(err, res){
-			var event = $A.get('e.c:Uploaded');
-		event.fire();
-		});
+			if (err !== 'Error occurred'){
+				var eventUploaded = $A.get('e.c:Uploaded');
+        		eventUploaded.fire();	
+			}
+		});	
 	}
 })

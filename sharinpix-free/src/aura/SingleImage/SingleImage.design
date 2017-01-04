@@ -1,3 +1,4 @@
-<design:component>
-	<design:attribute name="attachmentId" label="attachmentId" description="Enter the attachmentId" default=""/>
+<design:component label="Image">
+	<design:attribute name="attachmentId" label="Attachment Id" description="Enter the attachmentId" default=""/>
+	<design:attribute name="height" label="Height" description="Enter height of the container" default=""/>
 </design:component>

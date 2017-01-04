@@ -8,10 +8,9 @@
   cursor: pointer;
   background: rgb(216, 221, 230);
   border-radius: 50%;
-  box-shadow: 0 4px 4px 0 rgba(0,0,0,.16);
-  padding: 0.5rem ;
-  width: 48px;
-  height: 48px;
+  padding: 0.4rem ;
+  width: 36px;
+  height: 36px;
   position: relative;
   text-align: center;
   overflow: hidden;
@@ -31,7 +30,7 @@
 }
 @keyframes progressgreen {
   from { background: rgb(75, 202, 129); }
-  to { background: rgba(75, 202, 129, 0.5); }
+  to { background: rgba(75, 202, 129, 0.5); } 
 }
 
 .THIS .progress{
@@ -46,4 +45,7 @@
 	bottom: 0;
   height: 0;
   transition: height 5s ease-out;
+}
+.THIS .uploader-container{
+  opacity: 0.6!important;
 }

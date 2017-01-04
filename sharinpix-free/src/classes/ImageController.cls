@@ -10,7 +10,7 @@ public with sharing class ImageController {
 -- 25-OCT-2016  LBO    1.0      Initial version
 ----------------------------------------------------------------------
 **********************************************************************
-*/
+*/    
     public static Id saveTheFile(Id parentId, String fileName, String base64Data, String contentType) { 
         base64Data = EncodingUtil.urlDecode(base64Data, 'UTF-8');
         
@@ -57,13 +57,14 @@ public with sharing class ImageController {
         boolean isDeletable = Crud.isDeletable(Attachment.sObjectType);
         list<Attachment> lstAttachment = [SELECT Id, Parentid FROM Attachment WHERE Id = :id];
         if(lstAttachment.isEmpty()){
-            throw new AuraHandledException(system.label.Err_insufficient_privileges);
+            //throw new AuraHandledException(system.label.Err_insufficient_privileges);
+            return true;
         }
         if (!Crud.isDeletable(lstAttachment[0].ParentId.getSObjectType())){
             throw new AuraHandledException(system.label.Err_insufficient_privileges);
         }
-        delete [SELECT Id FROM Attachment WHERE Id = :id];
-        return true;
+        delete lstAttachment;
+        return true;    
     }
 
     private static void appendToFile(Id fileId, String base64Data) {

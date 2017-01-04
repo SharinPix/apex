@@ -1,5 +1,6 @@
 ({
-    MAX_FILE_SIZE: 4 500 000, // 6 000 000 * 3/4 to account for base64
+    // MAX_FILE_SIZE: 4 500 000, // 6 000 000 * 3/4 to account for base64
+    MAX_FILE_SIZE: 2 500 000, // 6 000 000 * 3/4 to account for base64
     //CHUNK_SIZE: 950 000, // Use a multiple of 4
     CHUNK_SIZE: 500 000,
     filetoBase64 : function(file, callback){
@@ -30,7 +31,6 @@
                     component.set('v.n_uploading', 0);
                     component.set('v.progress', 0);
                     component.set('v.done', true);
-
                     var error = JSON.parse(err)[0];
                     var event = $A.get('e.c:ErrorHandling').setParams({error: error.message});
                     event.fire();
@@ -39,7 +39,7 @@
                 component.set('v.n_uploaded', component.get('v.n_uploaded') + 1);
                 helper.update_progress(component);
                 if(component.get('v.n_uploaded') == component.get('v.n_uploading')){
-                    callback(null, component.set('v.n_uploaded'));
+                    callback(null, component.get('v.n_uploaded'));
                     component.set('v.n_uploaded', 0);
                     component.set('v.n_uploading', 0);
                     component.set('v.progress', 0);
@@ -53,8 +53,8 @@
     },
     upload_file: function(component, file, callback) {
         if (file.size > this.MAX_FILE_SIZE) {
-            return callback('File size cannot exceed ' + this.MAX_FILE_SIZE + ' bytes.\n' +
-              'Selected file size: ' + file.size, null);
+            return callback('[{"message": "File size cannot exceed ' + this.MAX_FILE_SIZE + ' bytes. ' +
+              'Selected file size: ' + file.size + '."}]', null);
         }
         var self = this;
         this.filetoBase64(file, function(err, content){

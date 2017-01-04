@@ -11,9 +11,13 @@
 	outline: none;
 }
 .THIS .uploader-btn{
+	display: inline-block;
+	vertical-align: top;
+}
+.THIS .button-container{
 	position: absolute;
 	right: 0.5em;
-	bottom: 0.5em;
+	top: 0.5em;
 }
 .THIS .uploader-no-images-btn{
 	position: absolute;
@@ -52,16 +56,79 @@
 }
 
 .THIS .delete-btn{
-	border: none;
-	background: none;
-	position: absolute;
-	right: 0.5em;
-	top: 0.5em;
+	display: inline-block;
+	vertical-align: top;
+	cursor: pointer;
+	background: rgb(230, 113, 124);
+	border-radius: 50%;
+	padding: 0.4rem ;
+	width: 36px;
+	height: 36px;
+	position: relative;
+	text-align: center;
+	overflow: hidden;
+	margin-left: 0.5em;
+}
+
+.THIS .delete-btn .slds-icon-text-default{
+	fill: white;
+}
+.THIS .delete-btn{
 	opacity: 0.6;
 }
 .THIS .delete-btn:hover{
 	opacity: 1;
 }
-.THIS .delete-btn:hover .slds-icon_container{
-	box-shadow: 0 4px 4px 0 rgba(0,0,0,.16);
+.THIS .delete-btn > label{
+  cursor: pointer;
+ }
+.THIS .toggle-area{
+	width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.THIS .img-placeholder{
+	min-width: 50px;
+	min-height: 180px;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background: rgba(0, 105, 144, 0.4);
+}
+.THIS .img-placeholder:before, 
+.THIS .img-placeholder:after{
+	position: absolute;
+	content: "";
+	display: block;
+	background: rgba(255, 255, 255, 0.5);
+}
+.THIS .img-placeholder:before {
+	top: 5%;
+	padding-bottom: 20%;
+	width: 20%;
+	left: 5%;
+	border-radius: 100%;
+}
+.THIS .img-placeholder:after {
+	-webkit-transform: translateY(20%) rotate(-45deg);
+	-moz-transform: translateY(20%) rotate(-45deg);
+	-ms-transform: translateY(20%) rotate(-45deg);
+	-o-transform: translateY(20%) rotate(-45deg);
+	transform: translateY(20%) rotate(-45deg);
+	-webkit-transform-origin: right 50%;
+	-moz-transform-origin: right 50%;
+	-ms-transform-origin: right 50%;
+	-o-transform-origin: right 50%;
+	transform-origin: right 50%;
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 100%;
+	width: 300%;
+}
+.THIS.hide-buttons .button-container{
+	display: none;
 }

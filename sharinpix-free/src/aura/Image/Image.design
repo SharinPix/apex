@@ -1,0 +1,4 @@
+<design:component label="Images">	
+	<design:attribute name="recordId" label="Record Id" description="Enter the record id" default="{!recordId}"/>
+	<design:attribute name="height" label="Height" description="Enter height of the container" default=""/>
+</design:component>
