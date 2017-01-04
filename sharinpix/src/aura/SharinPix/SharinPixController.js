@@ -16,7 +16,8 @@
                 break;
               case 'tag-image-new':
                 if (component.get('v.enableAction')===true){
-                  helper.execCommand(component.get("v.recordId"), JSON.stringify(postMessageEvent.data.payload.tag_image), component, event);
+                  var albumId = component.get('v.AlbumId') || component.get('v.recordId');
+                  helper.execCommand(albumId, JSON.stringify(postMessageEvent.data.payload.tag_image), component, event);
                 }
                 break;
               default:
