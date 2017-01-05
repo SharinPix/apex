@@ -1,4 +1,4 @@
-public without sharing class SharinPixSampleController {
+public with sharing class SharinPixSampleController {
     public string parameters {get;set;}
 
     public SharinPixSampleController(ApexPages.standardController controller) {
