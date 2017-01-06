@@ -17,6 +17,7 @@
   	<aura:attribute name="height" type="integer" access="global" />
   	<aura:attribute name="interval" type="integer" access="global" />
   	<aura:attribute name="intervalInstance" type="Object"/>
+  	<aura:attribute name="prefix" type="string"/>
     
   	<aura:if isTrue="{! !empty(v.errorMessage) }">
   		<span>
@@ -35,7 +36,7 @@
     		<aura:set attribute="else">
     			<div class="img-placeholder"></div>
     			<div class="uploader-no-images-btn sharinpix-buttons">
-    				<c:Uploader recordId="{!v.recordId}" label="Upload Images"/>
+    				<c:Uploader recordId="{!v.recordId}" filenamePrefix="{! v.prefix }" label="Upload Images"/>
     				<p>No image</p>
     			</div>
     		</aura:set>

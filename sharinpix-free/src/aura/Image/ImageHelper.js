@@ -1,7 +1,8 @@
 ({
   getImages : function(component, recordId, callback) {
     var action = component.get('c.getFiles');
-    action.setParams({ parentId : recordId, prefix: '', contentType: 'image/%' });
+    var prefix = $A.util.isEmpty(component.get('v.prefix')) ? '' : component.get('v.prefix');
+    action.setParams({ parentId : recordId, prefix: prefix, contentType: 'image/%' });
     action.setCallback(this, function(response) {
       if (response.getState() === 'SUCCESS') {
         callback(null, response.getReturnValue());

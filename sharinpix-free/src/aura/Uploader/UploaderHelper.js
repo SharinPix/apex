@@ -70,9 +70,10 @@
         var chunk = fileContents.substring(fromPos, toPos);
         
         var action = component.get("c.saveTheChunk");
+        var prefix = $A.util.isEmpty(component.get("v.filenamePrefix")) ? '' : component.get("v.filenamePrefix");
         action.setParams({
             parentId: component.get("v.recordId"),
-            fileName: file.name,
+            fileName: prefix + file.name,
             base64Data: encodeURIComponent(chunk), 
             contentType: file.type,
             fileId: attachId

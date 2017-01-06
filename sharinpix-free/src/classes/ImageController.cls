@@ -42,7 +42,7 @@ public with sharing class ImageController {
 
     @AuraEnabled
     public static list<Attachment> getFiles(Id parentId, String prefix, String contentType) { 
-        String nameLike = prefix + '%';
+        String nameLike = (string.isnotblank(prefix) ? prefix : '') + '%';
         List<Schema.SObjectField> fieldslstCRUD = new List<Schema.SObjectField>{Attachment.Fields.Id, Attachment.Fields.ParentId, Attachment.Fields.Name, Attachment.Field.CreatedDate};
         boolean isAccessible = Crud.isAccessible(parentId.getSObjectType());
         if (!isAccessible){
