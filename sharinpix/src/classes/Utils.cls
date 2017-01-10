@@ -1,0 +1,313 @@
+global with sharing class Utils {
+
+    private static final String API_URL = 'https://api.sharinpix.com';
+    private Client clientInstance = null;
+
+    /**
+     * Get Utils instance with default Client ID and secret
+     * @return Utils instance
+     */
+    global Utils() {
+        this.clientInstance = Client.getInstance();
+    }
+
+    /**
+     * Get Utils instance with specific Client ID and secret
+     * @param  clientInstance Instance of sharinpix.Client
+     * @return   Utils instance
+     */
+    global Utils(Client instance) {
+        this.clientInstance = instance;
+    }
+
+    /**
+     * Renames an album
+     * @param oldAlbumId ID of the album to be renamed
+     * @param newAlbumId ID to give the album
+     * @return           true if album is successfully renamed
+     */
+    global Boolean renameAlbum(String oldAlbumId, String newAlbumId) {
+        Map<String, Object> album = (Map<String, Object>)clientInstance.put(
+            '/albums/' + oldAlbumId,
+            Blob.valueOf(
+                JSON.serialize(
+                    new Map<String, Object> {
+                        'album' => new Map<String, String> {
+                            'public_id' => newAlbumId
+                        }
+                    }
+                )
+            ),
+            new Map<String, Object> {
+                'abilities' => new Map<String, Object> {
+                    oldAlbumId => new Map<String, Object> {
+                        'Access'  => new Map<String, Object> {
+                                'see' => true,
+                                'rename' => true
+                        }
+                    }
+                }
+            }
+        );
+        return newAlbumId == (String)album.get('public_id');
+    }
+
+    /**
+     * Get all images from an album. Cast image object as Map<String, Object> to access attributes
+     * @param albumId ID of the album to retrieve images for
+     * @return        List of image objects
+     */
+    global List<Object> getAlbumImages(String albumId) {
+        if (albumId InstanceOf Id) {
+            albumId = (Id)albumId;
+        }
+        Map<String, Object> albumParams = new Map<String, Object> {
+            'Id' => albumId,
+            'abilities' => new Map<String, Object> {
+                albumId => new Map<String, Object> {
+                    'Access' => new Map<String, Boolean> {
+                        'see' => true,
+                        'image_list' => true
+                    }
+                }
+            }
+        };
+        List<Object> albumImages = new List<Object>();
+        List<Object> pageImages;
+        Integer page = 1;
+        do {
+            pageImages = (List<Object>)clientInstance.get('/albums/' + albumId + '/images?page=' + page++, albumParams);
+            albumImages.addAll(pageImages);
+        } while (pageImages.size() != 0);
+        return albumImages;
+    }
+
+    /**
+     * Get image details
+     * @param imageId Public ID of image to fetch details on
+     * @return        Map containing image details
+     */
+    global Map<String, Object> getImageDetails(String albumId, String imageId) {
+        Object imageObj = clientInstance.get(
+            '/images/' + imageId,
+            new Map<String, Object>{
+                'abilities' => new Map<String, Object> {
+                    albumId => new Map<String, Object> {
+                        'Access' => new Map<String, Boolean> {
+                            'see' => true,
+                            'image_list' => true
+                        }
+                    }
+                }
+            }
+        );
+        return (Map<String, Object>)imageObj;
+    }
+
+    /**
+     * Get URL of transformed image
+     * @param  imageId         Public ID of image to transform
+     * @param  sharinpix       SharinPix transformations
+     * @param  transformations Image transformations
+     * @return                 URL of transformed image
+     */
+    global String getImageUrl(String imageId, Map<String, Object> sharinpix, List<Object> transformations) {
+        Map<String, Object> params = new Map<String, Object> {
+            'id' => imageId,
+            'sharinpix' => sharinpix,
+            'transformations' => transformations
+        };
+        HTTPRequest request = new HTTPRequest();
+        request.setMethod('GET');
+        request.setEndpoint(API_URL + '/images/' + imageId + '?token=' + clientInstance.token(params));
+        HTTPResponse response = (new HTTP()).send(request);
+        return response.getHeader('Location');
+    }
+
+    /**
+     * Crops or resizes an image
+     * @param imageId   Public ID of image to crop
+     * @param cropStyle Crop style to apply. Possible values: fill, fit, scale, pad, crop, thumb
+     * @param width     Width to resize to, 0 if only height is to be used
+     * @param height    Height to resize to, 0 if only width is to be used
+     * @return          URL of transformed image
+     */
+    global String croppedImageUrl(String imageId, String cropStyle, Integer width, Integer height) {
+        Matcher patternMatcher = Pattern.compile('fill|fit|scale|pad|crop|thumb').matcher(cropStyle);
+        if (!patternMatcher.matches()) {
+            throw new SharinPixException('Invalid crop style.');
+        }
+        if ((width == null && height == null) || (width == 0 && height == 0) || width < 0 || height < 0) {
+            throw new SharinPixException('Invalid width or height.');
+        }
+        Map<String, Object> transfomation = new Map<String, Object> { 'crop' => cropStyle };
+        if (width != 0) {
+            transfomation.put('width', width);
+        }
+        if (height != 0) {
+            transfomation.put('height', height);
+        }
+        return this.getImageUrl(imageId, new Map<String, Object>(), new List<Object> { transfomation });
+    }
+
+    /**
+     * Retrieves all tags from an image
+     * @param  albumId Album ID of image to get tags for
+     * @param  imageId Image ID of image to get tags for
+     * @param  tags    List of possible tags on image
+     * @return         List of tags on image
+     */
+    global List<String> getTagsOnImage(String albumId, String imageId, List<String> tags) {
+        Map<String, Object> albumTags = new Map<String, Object>();
+        for (String tag : tags) {
+            albumTags.put(tag, '');
+        }
+        Map<String, Object> params = new Map<String, Object> {
+            'abilities' => new Map<String, Object> {
+                albumId => new Map<String, Object> {
+                    'Access' => new Map<String, Object> {
+                        'see' => true,
+                        'image_tag' => true
+                    },
+                    'Tags' => albumTags
+                }
+            }
+        };
+        Integer page = 1;
+        List<Object> tagImagesPage = new List<Object>();
+        List<Object> allTagImages = new List<Object>();
+        do {
+            tagImagesPage = (List<Object>)clientInstance.get('/tag_images?album_id=' + albumId + '&image_id=' + imageId + '&page=' + page++, params);
+            allTagImages.addAll(tagImagesPage);
+        } while (tagImagesPage.size() != 0);
+        List<String> tagsOnImage = new List<String>();
+        for (Object tagImage : allTagImages) {
+            tagsOnImage.add((String)((Map<String, Object>)((Map<String, Object>)tagImage).get('tag')).get('name'));
+        }
+        return tagsOnImage;
+    }
+
+    /**
+     * Add a tag to an image
+     * @param  albumId Album ID of image to tag
+     * @param  imageId Public ID of the image to tag
+     * @param  tagName Name of tag to add to image
+     * @return         Map containing the newly created tag image details
+     */
+    global Object addTag(String albumId, String imageId, String tagName) {
+        Map<String, Object> claims = new Map<String, Object> {
+            'abilities' => new Map<String, Object> {
+                albumId => new Map<String, Object> {
+                    'Access' => new Map<String, Object> {
+                        'see' => true
+                    },
+                    'Tags' => new Map<String, Object> {
+                        tagName => ''
+                    }
+                }
+            }
+        };
+        Object tagImageObj = clientInstance.post(
+            '/tags/' + EncodingUtil.urlEncode(tagName, 'UTF-8').replaceAll('\\+', '%20') + '/tag_images',
+            Blob.valueOf('{"image_ids":["' + imageId + '"]}'),
+            claims
+        );
+        return (Map<String, Object>)tagImageObj;
+    }
+
+    /**
+     * Removes tags from a tagged image
+     * @param  albumId Album ID of image to untag
+     * @param  imageId Public ID of the image to untag
+     * @param  tags    List of tags to remove from image
+     * @return         true if tags removed, false otherwise
+     */
+    global Boolean removeTags(String albumId, String imageId, String[] tags) {
+        try {
+            Map<String, Object> albumTags = new Map<String, Object>();
+            for (String tag : tags) {
+                albumTags.put(tag, '');
+            }
+            Map<String, Object> claims = new Map<String, Object> {
+                'abilities' => new Map<String, Object> {
+                    albumId => new Map<String, Object> {
+                        'Access' => new Map<String, Object> {
+                            'see' => true
+                        },
+                        'Tags' => albumTags
+                    }
+                }
+            };
+            List<Object> tagImages = (List<Object>)clientInstance.get('/tag_images?image_id=' + imageId, claims);
+            for (Object tagImage : tagImages) {
+                clientInstance.destroy('/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'), claims);
+            }
+            return true;
+        } catch (Exception e) {
+            throw new SharinPixException(e.getCause() + '[' + e.getLineNumber() + ']: ' + e.getMessage());
+        }
+    }
+
+    /**
+     * TODO !
+     * @param  imageId [description]
+     * @return         [description]
+     */
+    global Boolean clearTags(String imageId) {
+        return false;
+    }
+
+    /**
+     * Uploads Salesforce Attachments to SharinPix albums
+     * @param  attachmentId Salesforce Attachment ID
+     * @param  albumId      SharinPix album ID to upload to
+     * @return              Object containing reply from SharinPix
+     */
+    global Object uploadAttachment(Id attachmentId, String albumId) {
+        Map<String, Object> metadatas = new Map<String, Object>();
+        return this.uploadAttachment(attachmentId, albumId, metadatas);
+    }
+
+    /**
+     * Uploads Salesforce Attachments to SharinPix albums
+     * @param  attachmentId Salesforce Attachment ID
+     * @param  albumId      SharinPix album ID to upload to
+     * @param  metadatas    Attachment metadata map
+     * @return              Object containing reply from SharinPix
+     */
+    global Object uploadAttachment(Id attachmentId, String albumId, Map<String, Object> metadatas) {
+        if (!(Schema.sObjectType.Attachment.isAccessible()
+                && Schema.sObjectType.Attachment.fields.Id.isAccessible()
+                && Schema.sObjectType.Attachment.fields.Name.isAccessible()
+                && Schema.sObjectType.Attachment.fields.Body.isAccessible())) {
+            throw new SharinPixException('Insufficient privileges.');
+        }
+        Attachment attachment = [SELECT Id, Name FROM Attachment WHERE Id = :attachmentId LIMIT 1];
+
+        Map<String, Object> claims = new Map<String, Object> {
+            'abilities' => new Map<String, Object> {
+                albumId => new Map<String, Object> {
+                    'Access' => new Map<String, Object> {
+                        'see' => true,
+                        'image_upload' => true
+                    }
+                }
+            }
+        };
+
+        if (!metadatas.containsKey('attachmentId')) {
+            metadatas.put('attachmentId', attachmentId);
+        }
+
+        Map<String, Object> importPayload = new Map<String, Object> {
+            'filename' => attachment.Name,
+            'metadatas' => metadatas,
+            'album_id' => albumId,
+            'attachment_id' => attachmentId,
+            'import_type' => 'salesforce'
+        };
+
+        return clientInstance.post('/imports/', Blob.valueOf(JSON.serialize(importPayload)), claims);
+    }
+
+}
