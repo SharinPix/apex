@@ -1,8 +1,8 @@
 ({
     // MAX_FILE_SIZE: 4 500 000, // 6 000 000 * 3/4 to account for base64
-    MAX_FILE_SIZE: 2 500 000, // 6 000 000 * 3/4 to account for base64
+    MAX_FILE_SIZE: 2500000, // 6 000 000 * 3/4 to account for base64
     //CHUNK_SIZE: 950 000, // Use a multiple of 4
-    CHUNK_SIZE: 500 000,
+    CHUNK_SIZE: 500000,
     filetoBase64 : function(file, callback){
         var fr = new FileReader();
         fr.onload = function() {
@@ -32,13 +32,13 @@
                     component.set('v.progress', 0);
                     component.set('v.done', true);
                     var error = JSON.parse(err)[0];
-                    var event = $A.get('e.c:ErrorHandling').setParams({error: error.message});
+                    var event = $A.get('e.c:ErrorHandling').setParams({error: error.message, parentCmp: component.get('v.parentCmp')});
                     event.fire();
                     return;
                 }
                 component.set('v.n_uploaded', component.get('v.n_uploaded') + 1);
                 helper.update_progress(component);
-                if(component.get('v.n_uploaded') == component.get('v.n_uploading')){
+                if(component.get('v.n_uploaded') === component.get('v.n_uploading')){
                     callback(null, component.get('v.n_uploaded'));
                     component.set('v.n_uploaded', 0);
                     component.set('v.n_uploading', 0);
@@ -63,7 +63,7 @@
     },
      
     uploadChunk : function(component, file, fileContents, fromPos, callback, attachId) {
-        if (fromPos == fileContents.length) {
+        if (fromPos === fileContents.length) {
             return callback(null, attachId);
         }
         var toPos = Math.min(fileContents.length, fromPos + this.CHUNK_SIZE);

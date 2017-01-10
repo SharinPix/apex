@@ -1,4 +1,5 @@
 <design:component label="Upload Files">
   <design:attribute name="recordId" label="RecordId" description="Enter the RecordId or leave unchanged to use the record Id" default="{!recordId}"/>
   <design:attribute name="label" label="label" description="Enter the button label" default="Upload"/>
+  <design:attribute name="filenamePrefix" label="Filename prefix" description="Enter a prefix for the uploaded images" default="sharinpix"/>
 </design:component>

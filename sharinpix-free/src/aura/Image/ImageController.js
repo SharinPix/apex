@@ -8,8 +8,10 @@
   doPrevious : function(component, event, helper){
     helper.changeImage(component, -1);
   },
-  uploaded: function(component){
-    component.reload();
+  uploaded: function(component, event){
+    if (component.getGlobalId() === event.getParam('parentCmp')){
+      component.reload();  
+    }
   },
   doReload : function(component, event, helper) {
     helper.stopInterval(component);
@@ -47,7 +49,9 @@
     });
   },
   displayError: function(component, event, helper){
-    helper.setComponentAttributes(component, {'errorMessage': event.getParams('error').error, 'loading': false, 'displayButtons': true});
+    if (component.getGlobalId() === event.getParam('parentCmp')){
+      helper.setComponentAttributes(component, {'errorMessage': event.getParams('error').error, 'loading': false, 'displayButtons': true});
+    }
   },
   toggle : function(component, event, helper) {
     helper.toggleButtons(component);
