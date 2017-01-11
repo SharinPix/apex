@@ -249,12 +249,31 @@ global with sharing class Utils {
     }
 
     /**
-     * TODO !
-     * @param  imageId [description]
-     * @return         [description]
+     * Clears an image of all its tags
+     * @param  albumId The ID in which the image is
+     * @param  imageId The ID of the image to clear tags from
+     * @return         true if all tags cleared, otherwise an exception is thrown
      */
-    global Boolean clearTags(String imageId) {
-        return false;
+    global Boolean clearTags(String albumId, String imageId) {
+        try {
+            Map<String, Object> claims = new Map<String, Object> {
+                'abilities' => new Map<String, Object> {
+                    albumId => new Map<String, Object> {
+                        'Access' => new Map<String, Object> {
+                            'see' => true
+                        }
+                    }
+                },
+                'admin' => true
+            };
+            List<Object> tagImages = (List<Object>)clientInstance.get('/tag_images?image_id=' + imageId, claims);
+            for (Object tagImage : tagImages) {
+                clientInstance.destroy('/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'), claims);
+            }
+            return true;
+        } catch (Exception e) {
+            throw new SharinPixException(e.getCause() + '[' + e.getLineNumber() + ']: ' + e.getMessage());
+        }
     }
 
     /**

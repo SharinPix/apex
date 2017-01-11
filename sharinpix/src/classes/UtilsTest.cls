@@ -140,4 +140,21 @@ private with sharing class UtilsTest {
         System.assert(tagRemoved);
     }
 
+    static testMethod void testClearTags() {
+        String albumId = 'albumId', imageId = 'imageId';
+
+        Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+            API_URL + '/tag_images?image_id=' + imageId => new SingleRequestMock(200, 'OK', '[{"id":"test"}]', null),
+            API_URL + '/tag_images/test' => new SingleRequestMock(204, 'No Content', '{"test":"test"}', null)
+        };
+        Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+        Boolean tagRemoved = false;
+        Test.startTest();
+        tagRemoved = (new Utils()).clearTags(albumId, imageId);
+        Test.stopTest();
+
+        System.assert(tagRemoved);
+    }
+
 }
