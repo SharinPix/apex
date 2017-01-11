@@ -58,27 +58,6 @@ global with sharing class Client {
   }
 
   /**
-   * Performs a GET request on a SharinPix endpoint
-   * @param  endpoint The endpoint to GET from
-   * @param  claims   The parameters to generate the auth token with
-   * @return          The object returned from the GET request
-   */
-  global Object get(String endpoint, Map<String, Object> claims) {
-    HttpRequest req = new HttpRequest();
-    req.setEndpoint(this.endpoint_url + endpoint);
-    req.setMethod('GET');
-    req.setHeader('Authorization', 'Token token="' + token(claims) + '"');
-    req.setHeader('Content-Type', 'application/json');
-    Http http = new Http();
-    HTTPResponse response = http.send(req);
-    if (response.getStatus() == 'OK') {
-      return JSON.deserializeUntyped(response.getBody());
-    } else {
-      throw new SharinPixException('API response ' + response.getStatus() + ': ' + response.getBody());
-    }
-  }
-
-  /**
    * Performs a POST request on a SharinPix endpoint
    * @param  endpoint The endpoint to POST to
    * @param  body     The body of the request
@@ -115,6 +94,27 @@ global with sharing class Client {
     req.setHeader('Authorization', 'Token token="' + token(claims) + '"');
     req.setHeader('Content-Type', 'application/json');
     req.setBodyAsBlob(body);
+    Http http = new Http();
+    HTTPResponse response = http.send(req);
+    if (response.getStatus() == 'OK') {
+      return JSON.deserializeUntyped(response.getBody());
+    } else {
+      throw new SharinPixException('API response ' + response.getStatus() + ': ' + response.getBody());
+    }
+  }
+
+  /**
+   * Performs a GET request on a SharinPix endpoint
+   * @param  endpoint The endpoint to GET from
+   * @param  claims   The parameters to generate the auth token with
+   * @return          The object returned from the GET request
+   */
+  global Object get(String endpoint, Map<String, Object> claims) {
+    HttpRequest req = new HttpRequest();
+    req.setEndpoint(this.endpoint_url + endpoint);
+    req.setMethod('GET');
+    req.setHeader('Authorization', 'Token token="' + token(claims) + '"');
+    req.setHeader('Content-Type', 'application/json');
     Http http = new Http();
     HTTPResponse response = http.send(req);
     if (response.getStatus() == 'OK') {
