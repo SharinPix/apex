@@ -10,7 +10,7 @@ public with sharing class ImageController {
 -- 25-OCT-2016  LBO    1.0      Initial version
 ----------------------------------------------------------------------
 **********************************************************************
-*/    
+*/
     public static Id saveTheFile(Id parentId, String fileName, String base64Data, String contentType) { 
         base64Data = EncodingUtil.urlDecode(base64Data, 'UTF-8');
         
@@ -41,15 +41,40 @@ public with sharing class ImageController {
     }
 
     @AuraEnabled
-    public static list<Attachment> getFiles(Id parentId, String prefix, String contentType) { 
+    public static object getFiles(Id parentId, String prefix, String contentType) { 
         String nameLike = prefix + '%';
-        List<Schema.SObjectField> fieldslstCRUD = new List<Schema.SObjectField>{Attachment.Fields.Id, Attachment.Fields.ParentId, Attachment.Fields.Name, Attachment.Field.CreatedDate};
+        //List<Schema.SObjectField> fieldslstCRUD = new List<Schema.SObjectField>{Attachment.Fields.Id, Attachment.Fields.ParentId, Attachment.Fields.Name, Attachment.Field.CreatedDate};
         boolean isAccessible = Crud.isAccessible(parentId.getSObjectType());
         if (!isAccessible){
             throw new AuraHandledException(system.label.Err_insufficient_privileges);
             return null;
         }
-        return [SELECT ID FROM Attachment WHERE ParentId = :parentId AND ContentType LIKE :contentType AND Name LIKE :nameLike ORDER BY CreatedDate DESC LIMIT 50];
+        list<map<string, Id>> lstImages = new list<map<string, Id>>();
+        for(Attachment att: [SELECT ID 
+                            FROM Attachment 
+                            WHERE ParentId = :parentId 
+                            AND ContentType LIKE :contentType 
+                            AND Name LIKE :nameLike 
+                            ORDER BY CreatedDate 
+                            DESC LIMIT 50]){
+            lstImages.add(new map<string, Id>{'Id'=> att.Id});
+        }
+        set<id> setContentId = new set<id>();
+        set<string> filetype = new set<string>{'jpg', 'jpeg', 'png', 'gif'};
+        for(ContentDocumentLink content: [SELECT ContentDocumentId, 
+                                                ContentDocument.FileType 
+                                         FROM ContentDocumentLink 
+                                         WHERE LinkedEntityId = :parentId
+                                         AND ContentDocument.FileType IN :filetype]){
+            setContentId.add(content.ContentDocumentId);
+        }
+        for(ContentVersion version: [SELECT ContentDocumentId, 
+                                            Id 
+                                    FROM ContentVersion 
+                                    WHERE ContentDocumentId IN :setContentId]){
+            lstImages.add(new map<string, Id>{'Id'=> version.Id});
+        }
+        return lstImages;
     }
     
     @AuraEnabled
@@ -57,14 +82,13 @@ public with sharing class ImageController {
         boolean isDeletable = Crud.isDeletable(Attachment.sObjectType);
         list<Attachment> lstAttachment = [SELECT Id, Parentid FROM Attachment WHERE Id = :id];
         if(lstAttachment.isEmpty()){
-            //throw new AuraHandledException(system.label.Err_insufficient_privileges);
-            return true;
+            throw new AuraHandledException(system.label.Err_insufficient_privileges);
         }
         if (!Crud.isDeletable(lstAttachment[0].ParentId.getSObjectType())){
             throw new AuraHandledException(system.label.Err_insufficient_privileges);
         }
-        delete lstAttachment;
-        return true;    
+        delete [SELECT Id FROM Attachment WHERE Id = :id];
+        return true;
     }
 
     private static void appendToFile(Id fileId, String base64Data) {
