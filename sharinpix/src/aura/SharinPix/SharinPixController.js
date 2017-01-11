@@ -1,31 +1,38 @@
 ({
-  doInit : function(component) {
+  doInit : function(component, event, helper) {
     component.reload();
-    /*var eventMethod = window.addEventListener ? 'addEventListener' : 'attachEvent';
-    var eventer = window[eventMethod];
-    var messageEvent = eventMethod === 'attachEvent' ? 'onmessage' : 'message';
-    eventer(messageEvent, function(e) {
-      if (e.origin !== 'https://app.sharinpix.com') { return; }
-      if (component.find('iframe') && component.find('iframe').getElement().contentWindow !== e.source) { return; }
-      switch(e.data.name) {
-        case 'viewer-image-viewed':
-          component.set('v.fullscreen', true);
-          break;
-        case 'viewer-closed':
-          component.set('v.fullscreen', false);
-          break;
-        default:
-          console.log('Unhandled event:', e.data.name);
-      }
-      var event = $A.get('e.c:Event');
-      event.setParams({
-        'name' : e.data.name,
-        'payload': e.data.payload,
-        'albumId': component.get('v.AlbumId'),
-        'source': component
-      });
-      event.fire();
-    }, false);*/
+    if (window && (window.addEventListener !== null)) {
+        window.addEventListener('message', $A.getCallback( function(postMessageEvent) {
+          if (postMessageEvent.origin !== 'https://app.sharinpix.com'){
+            return;
+          }
+          if (postMessageEvent && component.isValid() ){
+            switch(postMessageEvent.data.name) {
+              case 'viewer-image-viewed':
+                component.set('v.fullscreen', true);
+                break;
+              case 'viewer-closed':
+                component.set('v.fullscreen', false);
+                break;
+              case 'tag-image-new':
+                if (component.get('v.enableAction')===true){
+                  helper.execCommand(component.get("v.recordId"), JSON.stringify(postMessageEvent.data.payload.tag_image), component, event);
+                }
+                break;
+              default:
+                console.log('Unhandled event:', postMessageEvent.data.name);
+            }
+            var eventSharinPix = $A.get('e.sharinpix:Event');
+            eventSharinPix.setParams({
+              'name' : postMessageEvent.data.name,
+              'payload': postMessageEvent.data.payload,
+              'albumId': component.get('v.AlbumId')
+            });
+            eventSharinPix.fire();
+          }
+        })
+      );
+    }
   },
   onLoaded : function(component) {
     component.set('v.loading', false);

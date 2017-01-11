@@ -29,7 +29,7 @@
     if(!component.isValid()){
       return;
     }
-    for (var key in attributes) {
+    for (var key in attributes) { 
       component.set('v.'+key, attributes[key]);
     }
   },
@@ -44,5 +44,8 @@
       }
     });
     $A.enqueueAction(action);
+  },
+  toggleButtons: function(component){
+    $A.util.toggleClass(component.find('image-container'), "hide-buttons");
   }
 })

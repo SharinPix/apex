@@ -37,4 +37,17 @@ public with sharing class SharinPixLightningController {
       return 'https://app.sharinpix.com/pagelayout/' + id + '?token=' + SharinPix.Client.getInstance().token(params);
     }
   }
+
+  /**
+   * [executeCommandLightning Executing tag action]
+   * @param  albumId [albumId]
+   * @param  jsonfile [Tag payload]
+   * @return          [description]
+   */
+  @AuraEnabled
+  public static object executeCommandLightning(id albumId, string jsonfile) {
+    SObjectWrapper sobjwrapper = new SObjectWrapper(albumId, jsonfile);
+    Database.SaveResult result = sobjwrapper.executeAction();
+    return result.isSuccess();
+  }
 }

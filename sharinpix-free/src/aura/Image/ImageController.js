@@ -12,7 +12,7 @@
     component.reload();
   },
   doReload : function(component, event, helper) {
-    helper.setComponentAttributes(component, { loading: true, images: [], total: 0, index: 0, image: {id: ''} });
+    helper.setComponentAttributes(component, { loading: true, images: [], total: 0, index: 0, image: {id: ''}, errorMessage: null, displayButtons: true });
     helper.getImages(component, component.get('v.recordId'), function(err, images) {
       if (component.isValid() && images != null) {
         helper.setComponentAttributes(component, {
@@ -20,10 +20,11 @@
           index: 0,
           images: images,
           image: images[0],
-          loading: false
+          loading: false,
+          displayButtons: true
         });
       } else {
-        helper.setComponentAttributes(component, {'errorMessage': '{!$label.sharinpix_free.err_unknown}', 'loading': false});
+        helper.setComponentAttributes(component, {'errorMessage': '{!$label.sharinpix_free.err_unknown}', 'loading': false, displayButtons: false});
       }
     });
   },
@@ -36,11 +37,16 @@
         helper.setComponentAttributes(component, {'errorMessage': error.message, 'loading': false});
       }
       else {
-        component.reload();
+        component.reload();        
       }
     });
   },
   displayError: function(component, event, helper){
-    helper.setComponentAttributes(component, {'errorMessage': event.getParams('error').error, 'loading': false});
+    helper.setComponentAttributes(component, {'errorMessage': event.getParams('error').error, 'loading': false, 'displayButtons': true});      
+    // component.set('v.displayButtons', false);
+    // console.log(component.get('v.displayButtons'));
+  },
+  toggle : function(component, event, helper) {
+    helper.toggleButtons(component);
   }
 })

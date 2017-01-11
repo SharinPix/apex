@@ -9,10 +9,22 @@
     action.setParams({ albumId : albumId });
     action.setCallback(this, function(response) {
       if (response.getState() === 'SUCCESS') {
-        callback(null, response.getReturnValue());
+        callback(null, response.getReturnValue());
       } else {
         callback(JSON.stringify(response.getError()));
       }
+    });
+    $A.enqueueAction(action);
+  },
+  execCommand: function(recordId, payload, component,event) {
+    var action = component.get("c.executeCommandLightning");
+    action.setParams({"recordId": recordId,
+                      "jsonfile": payload});
+    action.setCallback(this, function(response) {
+        var state = response.getState();
+        if(state === "SUCCESS"){
+          // $A.get("e.force:refreshView").fire();
+        }
     });
     $A.enqueueAction(action);
   }
