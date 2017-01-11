@@ -169,15 +169,10 @@ global with sharing class Client {
     }
   }
 
-  /* Moved : */
+  /* Moved to Utils : */
   @deprecated
-  global Object add_tag_image(String albumId, String imageId, String tagName) {
-    return (new Utils()).addTag(albumId, imageId, tagName);
-  }
-
-  @deprecated
-  global Boolean clear_tag_image(String albumId, String imageId, String[] tags) {
-    return (new Utils()).removeTags(albumId, imageId, tags);
+  global Boolean renameAlbum(String oldAlbumId, String newAlbumId) {
+    return (new Utils()).renameAlbum(oldAlbumId, newAlbumId);
   }
 
   @deprecated
@@ -188,6 +183,16 @@ global with sharing class Client {
   @deprecated
   global Object upload_attachment(Id attachmentId, String albumId) {
     return (new Utils()).uploadAttachment(attachmentId, albumId);
+  }
+
+  @deprecated
+  global Boolean clear_tag_image(String albumId, String imageId, String[] tags) {
+    return (new Utils()).removeTags(albumId, imageId, tags);
+  }
+
+  @deprecated
+  global Object add_tag_image(String albumId, String imageId, String tagName) {
+    return (new Utils()).addTag(albumId, imageId, tagName);
   }
 
   /* AirRefund : */
@@ -219,11 +224,6 @@ global with sharing class Client {
   }
 
   /* Unused : */
-  @deprecated
-  global Boolean renameAlbum(String oldAlbumId, String newAlbumId) {
-    return false;
-  }
-
   @deprecated
   global List<String> getTagsOnImage(String albumId, String imageId, List<String> tags) {
     return null;
