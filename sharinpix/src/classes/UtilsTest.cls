@@ -43,7 +43,7 @@ private with sharing class UtilsTest {
         Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
 
         Test.startTest();
-        Map<String, Object> response = (new Utils()).getImageDetails('albumId', 'imageId');
+        Map<String, Object> response = (new Utils()).getImageDetails('imageId');
         Test.stopTest();
 
         System.assertEquals('imageId', response.get('imageId'));
@@ -57,7 +57,7 @@ private with sharing class UtilsTest {
 
         Test.startTest();
         String imageUrl = (new Utils()).getImageUrl(
-        'imageId',
+            'imageId',
             new Map<String, Object> { 'download' => false },
             new List<Object> { new Map<String, Object> { 'crop' => 'fit', 'width' => 500 } }
         );
@@ -68,7 +68,7 @@ private with sharing class UtilsTest {
 
     static testMethod void testCroppedImageUrl() {
         Utils sharinpixUtils = new Utils();
-        String albumId = 'albumId', imageId = 'imageId';
+        String imageId = 'imageId';
         String cropErrorMessage, sizeErrorMessage;
 
         Test.setMock(
@@ -79,12 +79,12 @@ private with sharing class UtilsTest {
         Test.startTest();
         String transformedImageUrl = sharinpixUtils.croppedImageUrl(imageId, 'fit', 200, 200);
         try {
-            sharinpixUtils.croppedImageUrl(albumId, 'plop', 200, 200);
+            sharinpixUtils.croppedImageUrl(imageId, 'plop', 200, 200);
         } catch (Exception e) {
             cropErrorMessage = e.getMessage();
         }
         try {
-            sharinpixUtils.croppedImageUrl(albumId, 'fit', 0, 0);
+            sharinpixUtils.croppedImageUrl(imageId, 'fit', 0, 0);
         } catch (Exception e) {
             sizeErrorMessage = e.getMessage();
         }
@@ -95,16 +95,16 @@ private with sharing class UtilsTest {
     }
 
     static testMethod void testGetTagsOnImage() {
-        String albumId = 'albumId', imageId = 'imageId';
+        String imageId = 'imageId';
 
         Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
-            API_URL + '/tag_images?album_id=' + albumId + '&image_id=' + imageId + '&page=1' => new SingleRequestMock(200, 'OK','[{"tag":{"name":"name"}}]', null),
-            API_URL + '/tag_images?album_id=' + albumId + '&image_id=' + imageId + '&page=2' => new SingleRequestMock(200, 'OK','[]', null)
+            API_URL + '/tag_images?image_id=' + imageId + '&page=1' => new SingleRequestMock(200, 'OK','[{"tag":{"name":"name"}}]', null),
+            API_URL + '/tag_images?image_id=' + imageId + '&page=2' => new SingleRequestMock(200, 'OK','[]', null)
         };
         Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
 
         Test.startTest();
-        List<String> response = (List<String>)(new Utils()).getTagsOnImage('albumId', 'imageId', new List<String> { 'tagName' });
+        List<String> response = (List<String>)(new Utils()).getTagsOnImage('imageId');
         Test.stopTest();
 
         System.assertEquals(response[0], 'name');
@@ -117,31 +117,31 @@ private with sharing class UtilsTest {
         Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
 
         Test.startTest();
-        Map<String, Object> response = (Map<String, Object>)(new Utils()).addTag('albumId', 'imageId', 'tagName');
+        Map<String, Object> response = (Map<String, Object>)(new Utils()).addTag('imageId', 'tagName');
         Test.stopTest();
 
         System.assertEquals(String.valueof(response.get('test')), 'test');
     }
 
     static testMethod void testRemoveTags() {
-        String albumId = 'albumId', imageId = 'imageId';
+        String imageId = 'imageId';
 
         Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
-            API_URL + '/tag_images?image_id=' + imageId => new SingleRequestMock(200, 'OK', '[{"id":"test"}]', null),
-            API_URL + '/tag_images/test' => new SingleRequestMock(204, 'No Content', '{"test":"test"}', null)
+            API_URL + '/tag_images?image_id=' + imageId => new SingleRequestMock(200, 'OK', '[{"id":"tagImageId","tag":{"name":"tagName"}}]', null),
+            API_URL + '/tag_images/tagImageId' => new SingleRequestMock(204, 'No Content', '{"test":"test"}', null)
         };
         Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
 
         Boolean tagRemoved = false;
         Test.startTest();
-        tagRemoved = (new Utils()).removeTags(albumId, imageId, new List<String> { 'tag' });
+        tagRemoved = (new Utils()).removeTags(imageId, new List<String> { 'tagName' });
         Test.stopTest();
 
         System.assert(tagRemoved);
     }
 
     static testMethod void testClearTags() {
-        String albumId = 'albumId', imageId = 'imageId';
+        String imageId = 'imageId';
 
         Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
             API_URL + '/tag_images?image_id=' + imageId => new SingleRequestMock(200, 'OK', '[{"id":"test"}]', null),
@@ -151,10 +151,20 @@ private with sharing class UtilsTest {
 
         Boolean tagRemoved = false;
         Test.startTest();
-        tagRemoved = (new Utils()).clearTags(albumId, imageId);
+        tagRemoved = (new Utils()).clearTags(imageId);
         Test.stopTest();
 
         System.assert(tagRemoved);
+    }
+
+    // TO DO !
+    static testMethod void testUploadAttachmentWithMetadatas() {
+
+    }
+
+    // TO DO !
+    static testMethod void testUploadAttachmentWithoutMetadatas() {
+
     }
 
 }

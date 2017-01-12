@@ -87,19 +87,10 @@ global with sharing class Utils {
      * @param imageId Public ID of image to fetch details on
      * @return        Map containing image details
      */
-    global Map<String, Object> getImageDetails(String albumId, String imageId) {
+    global Map<String, Object> getImageDetails(String imageId) {
         Object imageObj = clientInstance.get(
             '/images/' + imageId,
-            new Map<String, Object>{
-                'abilities' => new Map<String, Object> {
-                    albumId => new Map<String, Object> {
-                        'Access' => new Map<String, Boolean> {
-                            'see' => true,
-                            'image_list' => true
-                        }
-                    }
-                }
-            }
+            new Map<String, Object> { 'admin' => true }
         );
         return (Map<String, Object>)imageObj;
     }
@@ -152,32 +143,16 @@ global with sharing class Utils {
 
     /**
      * Retrieves all tags from an image
-     * @param  albumId Album ID of image to get tags for
      * @param  imageId Image ID of image to get tags for
-     * @param  tags    List of possible tags on image
      * @return         List of tags on image
      */
-    global List<String> getTagsOnImage(String albumId, String imageId, List<String> tags) {
-        Map<String, Object> albumTags = new Map<String, Object>();
-        for (String tag : tags) {
-            albumTags.put(tag, '');
-        }
-        Map<String, Object> params = new Map<String, Object> {
-            'abilities' => new Map<String, Object> {
-                albumId => new Map<String, Object> {
-                    'Access' => new Map<String, Object> {
-                        'see' => true,
-                        'image_tag' => true
-                    },
-                    'Tags' => albumTags
-                }
-            }
-        };
+    global List<String> getTagsOnImage(String imageId) {
+        Map<String, Object> params = new Map<String, Object> { 'admin' => true };
         Integer page = 1;
         List<Object> tagImagesPage = new List<Object>();
         List<Object> allTagImages = new List<Object>();
         do {
-            tagImagesPage = (List<Object>)clientInstance.get('/tag_images?album_id=' + albumId + '&image_id=' + imageId + '&page=' + page++, params);
+            tagImagesPage = (List<Object>)clientInstance.get('/tag_images?image_id=' + imageId + '&page=' + page++, params);
             allTagImages.addAll(tagImagesPage);
         } while (tagImagesPage.size() != 0);
         List<String> tagsOnImage = new List<String>();
@@ -189,58 +164,37 @@ global with sharing class Utils {
 
     /**
      * Add a tag to an image
-     * @param  albumId Album ID of image to tag
      * @param  imageId Public ID of the image to tag
      * @param  tagName Name of tag to add to image
      * @return         Map containing the newly created tag image details
      */
-    global Object addTag(String albumId, String imageId, String tagName) {
-        Map<String, Object> claims = new Map<String, Object> {
-            'abilities' => new Map<String, Object> {
-                albumId => new Map<String, Object> {
-                    'Access' => new Map<String, Object> {
-                        'see' => true
-                    },
-                    'Tags' => new Map<String, Object> {
-                        tagName => ''
-                    }
-                }
-            }
-        };
-        Object tagImageObj = clientInstance.post(
+    global Object addTag(String imageId, String tagName) {
+        Map<String, Object> claims = new Map<String, Object> { 'admin' => true };
+        return clientInstance.post(
             '/tags/' + EncodingUtil.urlEncode(tagName, 'UTF-8').replaceAll('\\+', '%20') + '/tag_images',
             Blob.valueOf('{"image_ids":["' + imageId + '"]}'),
             claims
         );
-        return (Map<String, Object>)tagImageObj;
     }
 
     /**
      * Removes tags from a tagged image
-     * @param  albumId Album ID of image to untag
      * @param  imageId Public ID of the image to untag
      * @param  tags    List of tags to remove from image
      * @return         true if tags removed, false otherwise
      */
-    global Boolean removeTags(String albumId, String imageId, String[] tags) {
+    global Boolean removeTags(String imageId, String[] tags) {
         try {
-            Map<String, Object> albumTags = new Map<String, Object>();
-            for (String tag : tags) {
-                albumTags.put(tag, '');
-            }
-            Map<String, Object> claims = new Map<String, Object> {
-                'abilities' => new Map<String, Object> {
-                    albumId => new Map<String, Object> {
-                        'Access' => new Map<String, Object> {
-                            'see' => true
-                        },
-                        'Tags' => albumTags
+            Map<String, Object> claims = new Map<String, Object> { 'admin' => true };
+            List<Object> tagImages = (List<Object>)clientInstance.get('/tag_images?image_id=' + imageId, claims);
+            System.debug('/tag_images?image_id=' + imageId);
+            for (Object tagImage : tagImages) {
+                for (String tag : tags) {
+                    if ( ((String)(((Map<String, Object>)((Map<String, Object>)tagImage).get('tag')).get('name'))).equals(tag) ) {
+                        System.debug('/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'));
+                        clientInstance.destroy('/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'), claims);
                     }
                 }
-            };
-            List<Object> tagImages = (List<Object>)clientInstance.get('/tag_images?image_id=' + imageId, claims);
-            for (Object tagImage : tagImages) {
-                clientInstance.destroy('/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'), claims);
             }
             return true;
         } catch (Exception e) {
@@ -250,22 +204,12 @@ global with sharing class Utils {
 
     /**
      * Clears an image of all its tags
-     * @param  albumId The ID in which the image is
      * @param  imageId The ID of the image to clear tags from
      * @return         true if all tags cleared, otherwise an exception is thrown
      */
-    global Boolean clearTags(String albumId, String imageId) {
+    global Boolean clearTags(String imageId) {
         try {
-            Map<String, Object> claims = new Map<String, Object> {
-                'abilities' => new Map<String, Object> {
-                    albumId => new Map<String, Object> {
-                        'Access' => new Map<String, Object> {
-                            'see' => true
-                        }
-                    }
-                },
-                'admin' => true
-            };
+            Map<String, Object> claims = new Map<String, Object> { 'admin' => true };
             List<Object> tagImages = (List<Object>)clientInstance.get('/tag_images?image_id=' + imageId, claims);
             for (Object tagImage : tagImages) {
                 clientInstance.destroy('/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'), claims);

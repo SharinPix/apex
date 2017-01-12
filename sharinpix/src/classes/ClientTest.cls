@@ -48,43 +48,6 @@ public with sharing class ClientTest {
     System.assertEquals(ret, '');
   }
 
-  static testMethod void testAddTagImage() {
-    Client clientInstance = Client.getInstance();
-
-    Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String, HttpCalloutMock>();
-    SingleRequestMock res = new SingleRequestMock(200, 'Ok','{"test": "test"}', null);
-    endpoint2TestResp.put(API_URL + '/tags/tagName/tag_images', res);
-    HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
-    Test.setMock(HttpCalloutMock.class, multiCalloutMock);
-
-    Test.startTest();
-    Map<String, Object> ret = (Map<String, Object>) clientInstance.add_tag_image('albumId', 'imageId', 'tagName');
-    Test.stopTest();
-
-    System.assertEquals(String.valueof(ret.get('test')), 'test');
-  }
-
-  static testMethod void testClearTagImage() {
-    String imageId = 'imageId';
-    String albumId = 'albumId';
-    Client clientInstance = Client.getInstance();
-
-    Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String, HttpCalloutMock>();
-    SingleRequestMock first = new SingleRequestMock(200, 'Ok','[{"id": "test"}]',null);
-    SingleRequestMock second = new SingleRequestMock(204, 'No content','{"test": "test"}',null);
-    endpoint2TestResp.put(API_URL+'/tag_images?image_id='+imageId, first);
-    endpoint2TestResp.put(API_URL+'/tag_images/test', second);
-    HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
-    Test.setMock(HttpCalloutMock.class, multiCalloutMock);
-
-    Boolean ret = false;
-    Test.startTest();
-    ret = clientInstance.clear_tag_image(albumId, imageId, new List<String> {'tag'});
-    Test.stopTest();
-
-    System.assert(ret);
-  }
-
   static testMethod void testClientInstance() {
     Test.startTest();
     Client clientInstance = Client.getInstance();

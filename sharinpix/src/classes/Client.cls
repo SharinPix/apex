@@ -187,12 +187,12 @@ global with sharing class Client {
 
   @deprecated
   global Boolean clear_tag_image(String albumId, String imageId, String[] tags) {
-    return (new Utils()).removeTags(albumId, imageId, tags);
+    return (new Utils()).removeTags(imageId, tags);
   }
 
   @deprecated
   global Object add_tag_image(String albumId, String imageId, String tagName) {
-    return (new Utils()).addTag(albumId, imageId, tagName);
+    return (new Utils()).addTag(imageId, tagName);
   }
 
   /* AirRefund : */
