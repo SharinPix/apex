@@ -28,9 +28,9 @@
 		</aura:if>
 		<div class="{!v.verticalAlign + ' ' + V.textSize}">
 			<aura:if isTrue="{! !empty(v.linkText)}">
-				<p><a style="{! 'color: '+v.color}" href="{!v.linkText}" target="_blank">{! !empty(v.text) ? v.text : v.linkText }</a></p>
+				<p><a class="{!v.color}" href="{!v.linkText}" target="_blank">{! !empty(v.text) ? v.text : v.linkText }</a></p>
 			<aura:set attribute="else">
-				<p style="{! 'color: '+v.color}">{!v.text}</p>
+				<p class="{!v.color}">{!v.text}</p>
 			</aura:set>
 			</aura:if>
 		</div>

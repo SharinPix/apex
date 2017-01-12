@@ -100,3 +100,21 @@
 	font-size: large;
 	font-weight: bold;
 }
+.THIS .red {
+	color: #c23934;
+}
+.THIS .blue {
+	color: #0070d2;
+}
+.THIS .yellow {
+	color: #fff03f;
+}
+.THIS .green {
+	color: #028048;
+}
+.THIS .white {
+	color: #fff;
+}
+.THIS .black {
+	color: #000;
+}
