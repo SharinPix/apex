@@ -2,6 +2,7 @@
 	<design:attribute name="attachmentId" label="Attachment Id" description="Enter the attachmentId" default=""/>
 	<design:attribute name="height" label="Height" description="Enter height of the container" default=""/>
 
+	<design:attribute name="linkText" label="Link" />
 	<design:attribute name="text" label="Text" />
 	<design:attribute name="verticalAlign" label="Vertical align" datasource="top, middle, bottom" default="middle"/>
 	<design:attribute name="textSize" label="Text size" datasource="small, medium, large" default="medium"/>

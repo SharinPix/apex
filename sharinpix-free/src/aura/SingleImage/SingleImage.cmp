@@ -4,6 +4,7 @@
 	<aura:attribute name="loading" type="Boolean"/>
 	
 	<aura:attribute name="text" type="String" />
+	<aura:attribute name="linkText" type="String" />
 	<aura:attribute name="verticalAlign" type="String" />
 	<aura:attribute name="textSize" type="String" />
 	<aura:attribute name="color" type="String" />
@@ -25,8 +26,13 @@
 		<aura:if isTrue="{! v.loading }">
 			<lightning:spinner />
 		</aura:if>
-		<div class="{!v.verticalAlign + ' ' + V.textSize}" style="{! 'color: '+v.color}">
-			<p>{!v.text}</p>
+		<div class="{!v.verticalAlign + ' ' + V.textSize}">
+			<aura:if isTrue="{! !empty(v.linkText)}">
+				<p><a style="{! 'color: '+v.color}" href="{!v.linkText}" target="_blank">{! !empty(v.text) ? v.text : v.linkText }</a></p>
+			<aura:set attribute="else">
+				<p style="{! 'color: '+v.color}">{!v.text}</p>
+			</aura:set>
+			</aura:if>
 		</div>
 	</div>
 
