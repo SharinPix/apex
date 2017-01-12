@@ -1,4 +1,9 @@
 <design:component label="Image">
 	<design:attribute name="attachmentId" label="Attachment Id" description="Enter the attachmentId" default=""/>
 	<design:attribute name="height" label="Height" description="Enter height of the container" default=""/>
+
+	<design:attribute name="text" label="Text" />
+	<design:attribute name="verticalAlign" label="Vertical align" datasource="Top, Center, Bottom" default="Center"/>
+	<design:attribute name="textSize" label="Text size" datasource="Small, Medium, Large" />
+	<design:attribute name="color" label="Color" datasource="red, blue, yellow, green, white"/>
 </design:component>
