@@ -16,13 +16,14 @@
                 break;
               case 'tag-image-new':
                 if (component.get('v.enableAction')===true){
-                  helper.execCommand(component.get("v.recordId"), JSON.stringify(postMessageEvent.data.payload.tag_image), component, event);
+                  var albumId = component.get('v.AlbumId') || component.get('v.recordId');
+                  helper.execCommand(albumId, JSON.stringify(postMessageEvent.data.payload.tag_image), component, event);
                 }
                 break;
               default:
                 console.log('Unhandled event:', postMessageEvent.data.name);
             }
-            var eventSharinPix = $A.get('e.sharinpix:Event');
+            var eventSharinPix = $A.get('e.c:Event');
             eventSharinPix.setParams({
               'name' : postMessageEvent.data.name,
               'payload': postMessageEvent.data.payload,
