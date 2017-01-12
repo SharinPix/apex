@@ -25,5 +25,9 @@
 		<aura:if isTrue="{! v.loading }">
 			<lightning:spinner />
 		</aura:if>
+		<div class="{!v.verticalAlign + ' ' + V.textSize}" style="{! 'color: '+v.color}">
+			<p>{!v.text}</p>
+		</div>
 	</div>
+
 </aura:component>

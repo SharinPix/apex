@@ -65,3 +65,38 @@
     right: 0;
     left: 0;
 }
+.THIS .top {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	line-height: 1.5em;
+}
+.THIS .bottom {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	line-height: 1.5em;
+}
+.THIS .middle {
+	position: absolute;
+	top: 45%;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	line-height: 1.5em;
+}
+.THIS .small {
+	font-size: small;
+	font-weight: bold;
+}
+.THIS .medium {
+	font-size: medium;
+	font-weight: bold;
+}
+.THIS .large {
+	font-size: large;
+	font-weight: bold;
+}
