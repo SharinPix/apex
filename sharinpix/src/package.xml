@@ -29,7 +29,7 @@
         <name>ApexClass</name>
     </types>
     <types>
-        <members>*</members>
+        <members>TagAction</members>
         <name>ApexComponent</name>
     </types>
     <types>
