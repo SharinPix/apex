@@ -16,9 +16,9 @@
     });
     $A.enqueueAction(action);
   },
-  execCommand: function(recordId, payload, component,event) {
+  execCommand: function(recordId, payload, component, event) {
     var action = component.get("c.executeCommandLightning");
-    action.setParams({"recordId": recordId,
+    action.setParams({"albumId": recordId,
                       "jsonfile": payload});
     action.setCallback(this, function(response) {
         var state = response.getState();
