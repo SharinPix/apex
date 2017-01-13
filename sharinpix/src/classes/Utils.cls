@@ -197,11 +197,9 @@ global with sharing class Utils {
         try {
             Map<String, Object> claims = new Map<String, Object> { 'admin' => true };
             List<Object> tagImages = (List<Object>)clientInstance.get('/tag_images?image_id=' + imageId, claims);
-            System.debug('/tag_images?image_id=' + imageId);
             for (Object tagImage : tagImages) {
                 for (String tag : tags) {
                     if ( ((String)(((Map<String, Object>)((Map<String, Object>)tagImage).get('tag')).get('name'))).equals(tag) ) {
-                        System.debug('/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'));
                         clientInstance.destroy('/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'), claims);
                     }
                 }
