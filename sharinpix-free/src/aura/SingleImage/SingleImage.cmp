@@ -2,6 +2,13 @@
 	<aura:attribute name="attachmentId" type="String" access="global"/>
     <aura:attribute name="height" type="integer" access="global" />
 	<aura:attribute name="loading" type="Boolean"/>
+	
+	<aura:attribute name="text" type="String" />
+	<aura:attribute name="linkText" type="String" />
+	<aura:attribute name="verticalAlign" type="String" />
+	<aura:attribute name="textSize" type="String" />
+	<aura:attribute name="color" type="String" />
+
 	<aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
 	<aura:registerEvent name="ImageDeleted" type="c:ImageDeleted"/>
 	<aura:attribute name="style" type="string" access="global" />
@@ -19,5 +26,14 @@
 		<aura:if isTrue="{! v.loading }">
 			<lightning:spinner />
 		</aura:if>
+		<div class="{!v.verticalAlign + ' ' + V.textSize}">
+			<aura:if isTrue="{! !empty(v.linkText)}">
+				<p><a class="{!v.color}" href="{!v.linkText}" target="_blank">{! !empty(v.text) ? v.text : v.linkText }</a></p>
+			<aura:set attribute="else">
+				<p class="{!v.color}">{!v.text}</p>
+			</aura:set>
+			</aura:if>
+		</div>
 	</div>
+
 </aura:component>
