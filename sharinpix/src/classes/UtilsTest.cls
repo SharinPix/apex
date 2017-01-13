@@ -16,7 +16,7 @@ private with sharing class UtilsTest {
         Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
 
         Test.startTest();
-        Boolean renamed = (new Utils()).renameAlbum('oldAlbumId', 'newAlbumId');
+        Boolean renamed = (new Utils(Client.getInstance())).renameAlbum('oldAlbumId', 'newAlbumId');
         Test.stopTest();
 
         System.assert(renamed);
@@ -120,7 +120,7 @@ private with sharing class UtilsTest {
         Map<String, Object> response = (Map<String, Object>)(new Utils()).addTag('imageId', 'tagName');
         Test.stopTest();
 
-        System.assertEquals(String.valueof(response.get('test')), 'test');
+        System.assertEquals(String.valueOf(response.get('test')), 'test');
     }
 
     static testMethod void testRemoveTags() {
@@ -157,14 +157,22 @@ private with sharing class UtilsTest {
         System.assert(tagRemoved);
     }
 
-    // TO DO !
-    static testMethod void testUploadAttachmentWithMetadatas() {
+    static testMethod void testUploadAttachment() {
+        Case cs = new Case(Status='New', Origin='Email');
+        insert cs;
+        Attachment att = new Attachment(Name='Image.jpg', ContentType='image/jpeg', Body=Blob.valueof('This is an image'), ParentId=cs.Id);
+        insert att;
 
-    }
+        Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+            API_URL + '/imports/' => new SingleRequestMock(200, 'OK', '{}', null)
+        };
+        Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
 
-    // TO DO !
-    static testMethod void testUploadAttachmentWithoutMetadatas() {
+        Test.startTest();
+        Object response = (new Utils()).uploadAttachment(att.Id, cs.Id);
+        Test.stopTest();
 
+        System.assertEquals(JSON.serialize(response), '{}');
     }
 
 }
