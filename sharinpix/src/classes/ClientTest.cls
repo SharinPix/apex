@@ -229,4 +229,17 @@ public with sharing class ClientTest {
     Map<String, Object> tokenPayload = (Map<String, Object>)JSON.deserializeUntyped(EncodingUtil.base64Decode(base64Payload).toString());
     System.assertEquals(300, (Integer)tokenPayload.get('exp') - (Integer)tokenPayload.get('iat'));
   }
+
+  static testMethod void coverageForDeprecatedUnused() {
+    Client clientInstance = Client.getInstance();
+    Test.startTest();
+    System.assertEquals(null, clientInstance.getTagsOnImage('albumId', 'imageId', null));
+    System.assertEquals(false, clientInstance.removeTag('albumId', 'imageId', null));
+    System.assertEquals(null, clientInstance.addTag('albumId', 'imageId', 'tagName'));
+    System.assertEquals(null, clientInstance.getImageDetails('albumId', 'imageId'));
+    System.assertEquals(null, clientInstance.croppedImageUrl('imageId', 'cropStyle', 0, 0));
+    System.assertEquals(null, clientInstance.getAlbumImages('albumId'));
+    System.assertEquals(null, clientInstance.getImageUrl('imageId', null, null));
+    Test.stopTest();
+  }
 }

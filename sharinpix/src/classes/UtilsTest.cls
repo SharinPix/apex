@@ -94,7 +94,7 @@ private with sharing class UtilsTest {
         System.assertEquals('Invalid width or height.', sizeErrorMessage);
     }
 
-    static testMethod void testGetTagsOnImage() {
+    static testMethod void testGetTagNamesOnImage() {
         String imageId = 'imageId';
 
         Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
@@ -104,7 +104,7 @@ private with sharing class UtilsTest {
         Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
 
         Test.startTest();
-        List<String> response = (List<String>)(new Utils()).getTagsOnImage('imageId');
+        List<String> response = (List<String>)(new Utils()).getTagNamesOnImage('imageId');
         Test.stopTest();
 
         System.assertEquals(response[0], 'name');

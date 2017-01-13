@@ -146,7 +146,7 @@ global with sharing class Utils {
      * @param  imageId Image ID of image to get tags for
      * @return         List of tags on image
      */
-    global List<String> getTagsOnImage(String imageId) {
+    global List<Object> getTagsOnImage(String imageId) {
         Map<String, Object> params = new Map<String, Object> { 'admin' => true };
         Integer page = 1;
         List<Object> tagImagesPage = new List<Object>();
@@ -155,6 +155,16 @@ global with sharing class Utils {
             tagImagesPage = (List<Object>)clientInstance.get('/tag_images?image_id=' + imageId + '&page=' + page++, params);
             allTagImages.addAll(tagImagesPage);
         } while (tagImagesPage.size() != 0);
+        return allTagImages;
+    }
+
+    /**
+     * Retrieves all tag names from an image
+     * @param  imageId Image ID of image to get tags for
+     * @return         List of tags on image
+     */
+    global List<String> getTagNamesOnImage(String imageId) {
+        List<Object> allTagImages = getTagsOnImage(imageId);
         List<String> tagsOnImage = new List<String>();
         for (Object tagImage : allTagImages) {
             tagsOnImage.add((String)((Map<String, Object>)((Map<String, Object>)tagImage).get('tag')).get('name'));
