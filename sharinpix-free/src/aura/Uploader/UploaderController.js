@@ -11,7 +11,7 @@
 		helper.upload(component, component.find("file").getElement().files, function(err, res){
 			if (err !== 'Error occurred'){
 				var eventUploaded = $A.get('e.c:Uploaded')
-				eventUploaded.setParam('parentCmp', component.get('v.parentCmp'));
+				eventUploaded.setParam('eventIdentifier', component.get('v.eventIdentifier'));
         		eventUploaded.fire();
 			}
 		});	

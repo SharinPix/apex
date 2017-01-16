@@ -9,7 +9,7 @@
     helper.changeImage(component, -1);
   },
   uploaded: function(component, event){
-    if (component.getGlobalId() === event.getParam('parentCmp')){
+    if (component.getGlobalId() === event.getParam('eventIdentifier')){
       component.reload();  
     }
   },
@@ -49,7 +49,7 @@
     });
   },
   displayError: function(component, event, helper){
-    if (component.getGlobalId() === event.getParam('parentCmp')){
+    if (component.getGlobalId() === event.getParam('eventIdentifier')){
       helper.setComponentAttributes(component, {'errorMessage': event.getParams('error').error, 'loading': false, 'displayButtons': true});
     }
   },

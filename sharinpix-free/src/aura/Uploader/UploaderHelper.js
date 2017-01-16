@@ -32,7 +32,7 @@
                     component.set('v.progress', 0);
                     component.set('v.done', true);
                     var error = JSON.parse(err)[0];
-                    var event = $A.get('e.c:ErrorHandling').setParams({error: error.message, parentCmp: component.get('v.parentCmp')});
+                    var event = $A.get('e.c:ErrorHandling').setParams({error: error.message, eventIdentifier: component.get('v.eventIdentifier')});
                     event.fire();
                     return;
                 }
