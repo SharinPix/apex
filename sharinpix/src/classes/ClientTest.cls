@@ -230,6 +230,38 @@ public with sharing class ClientTest {
     System.assertEquals(300, (Integer)tokenPayload.get('exp') - (Integer)tokenPayload.get('iat'));
   }
 
+  static testMethod void coverageForDeprecatedMoved() {
+    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+      API_URL + '/albums/oldAlbumId' => new SingleRequestMock(200, 'OK', '{"public_id":"newAlbumId"}', null),
+      API_URL + '/imports/' => new SingleRequestMock(200, 'OK', '{}', null),
+      API_URL + '/tags/tagName/tag_images' => new SingleRequestMock(200, 'OK','{"test":"test"}', null),
+      API_URL + '/tag_images?image_id=imageId' => new SingleRequestMock(200, 'OK', '[{"id":"tagImageId","tag":{"name":"tagName"}}]', null),
+      API_URL + '/tag_images/tagImageId' => new SingleRequestMock(204, 'No Content', '{"test":"test"}', null)
+    };
+    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+    Client c = Client.getInstance();
+    Case cs = new Case(Status='New', Origin='Email');
+    insert cs;
+    Attachment att = new Attachment(Name='Image.jpg', ContentType='image/jpeg', Body=Blob.valueof('This is an image'), ParentId=cs.Id);
+    insert att;
+    Boolean tagRemoved = false;
+
+    Test.startTest();
+    Boolean renamed = c.renameAlbum('oldAlbumId', 'newAlbumId');
+    Object uploadAttachmentResponse = c.upload_attachment(att.Id, cs.Id);
+    Object uploadAttachmentWithMetadatasResponse = c.upload_attachment(att.Id, cs.Id, new Map<String, Object>());
+    Map<String, Object> addTagResponse = (Map<String, Object>)c.add_tag_image('', 'imageId', 'tagName');
+    tagRemoved = c.clear_tag_image('', 'imageId', new List<String> { 'tagName' });
+    Test.stopTest();
+
+    System.assert(renamed);
+    System.assertEquals(JSON.serialize(uploadAttachmentResponse), '{}');
+    System.assertEquals(JSON.serialize(uploadAttachmentWithMetadatasResponse), '{}');
+    System.assertEquals(String.valueOf(addTagResponse.get('test')), 'test');
+    System.assert(tagRemoved);
+  }
+
   static testMethod void coverageForDeprecatedUnused() {
     Client clientInstance = Client.getInstance();
     Test.startTest();
