@@ -1,6 +1,8 @@
 ({
 	doInit : function(component, event, helper) {
 		//component.set('v.style', 'height: 300px; line-height: 300px;');
+		helper.reloadSource(component);
+
 		if (component.get('v.attachmentId') === undefined){
 			component.set('v.loading', false);
 		}else {
@@ -14,7 +16,9 @@
 		}
 		component.set('v.style', 'height: '+height+'px; line-height: '+height+'px;');
 	},
-	doReload: function(component){
+	doReload: function(component, event, helper){
+		helper.reloadSource(component);
+		
 		component.set('v.loading', true);
 	},
 	onLoaded: function (component) {
