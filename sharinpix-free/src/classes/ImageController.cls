@@ -71,7 +71,8 @@ public with sharing class ImageController {
         for(ContentVersion version: [SELECT ContentDocumentId, 
                                             Id 
                                     FROM ContentVersion 
-                                    WHERE ContentDocumentId IN :setContentId]){
+                                    WHERE ContentDocumentId IN :setContentId
+                                    AND IsLatest = true]){
             lstImages.add(new map<string, Id>{'Id'=> version.Id});
         }
         return lstImages;
@@ -79,15 +80,33 @@ public with sharing class ImageController {
     
     @AuraEnabled
     public static Boolean deleteAttachment(Id Id){
-        boolean isDeletable = Crud.isDeletable(Attachment.sObjectType);
-        list<Attachment> lstAttachment = [SELECT Id, Parentid FROM Attachment WHERE Id = :id];
-        if(lstAttachment.isEmpty()){
-            throw new AuraHandledException(system.label.Err_insufficient_privileges);
+        Schema.sObjectType sobjectType = Id.getSobjectType();
+        string objectname = sObjectType.getDescribe().getName();
+        boolean isDeletable = false;
+        if (objectname == 'Attachment') {
+            isDeletable = Crud.isDeletable(Attachment.sObjectType);
+            list<Attachment> lstAttachment = [SELECT Id, Parentid FROM Attachment WHERE Id = :id];
+            if(lstAttachment.isEmpty()){
+                throw new AuraHandledException(system.label.Err_insufficient_privileges);
+            }
+            if (!Crud.isDeletable(lstAttachment[0].ParentId.getSObjectType())){
+                throw new AuraHandledException(system.label.Err_insufficient_privileges);
+            }
+            delete lstAttachment;
         }
-        if (!Crud.isDeletable(lstAttachment[0].ParentId.getSObjectType())){
-            throw new AuraHandledException(system.label.Err_insufficient_privileges);
+        else if (objectname == 'ContentVersion') {
+            isDeletable = (Crud.isDeletable(ContentDocument.sobjecttype));
+            list<ContentDocument> lstContentDocument =  [SELECT Id 
+                                                        FROM ContentDocument 
+                                                        WHERE Id = :[SELECT ContentDocumentId 
+                                                                    FROM ContentVersion 
+                                                                    WHERE Id = :Id].ContentDocumentId];
+            if(lstContentDocument.isEmpty() || !isDeletable){
+                throw new AuraHandledException(system.label.Err_insufficient_privileges);
+            }
+            delete lstContentDocument;
         }
-        delete [SELECT Id FROM Attachment WHERE Id = :id];
+        
         return true;
     }
 
