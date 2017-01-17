@@ -127,7 +127,8 @@ private with sharing class UtilsTest {
         String imageId = 'imageId';
 
         Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
-            API_URL + '/tag_images?image_id=' + imageId => new SingleRequestMock(200, 'OK', '[{"id":"tagImageId","tag":{"name":"tagName"}}]', null),
+            API_URL + '/tag_images?image_id=' + imageId + '&page=1' => new SingleRequestMock(200, 'OK','[{"id":"tagImageId","tag":{"name":"name"}}]', null),
+            API_URL + '/tag_images?image_id=' + imageId + '&page=2' => new SingleRequestMock(200, 'OK','[]', null),
             API_URL + '/tag_images/tagImageId' => new SingleRequestMock(204, 'No Content', '{"test":"test"}', null)
         };
         Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
@@ -144,8 +145,9 @@ private with sharing class UtilsTest {
         String imageId = 'imageId';
 
         Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
-            API_URL + '/tag_images?image_id=' + imageId => new SingleRequestMock(200, 'OK', '[{"id":"test"}]', null),
-            API_URL + '/tag_images/test' => new SingleRequestMock(204, 'No Content', '{"test":"test"}', null)
+            API_URL + '/tag_images?image_id=' + imageId + '&page=1' => new SingleRequestMock(200, 'OK','[{"id":"tagImageId","tag":{"name":"name"}}]', null),
+            API_URL + '/tag_images?image_id=' + imageId + '&page=2' => new SingleRequestMock(200, 'OK','[]', null),
+            API_URL + '/tag_images/tagImageId' => new SingleRequestMock(204, 'No Content', '{"test":"test"}', null)
         };
         Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
 

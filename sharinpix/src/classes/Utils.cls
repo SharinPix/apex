@@ -195,12 +195,14 @@ global with sharing class Utils {
      */
     global Boolean removeTags(String imageId, String[] tags) {
         try {
-            Map<String, Object> claims = new Map<String, Object> { 'admin' => true };
-            List<Object> tagImages = (List<Object>)clientInstance.get('/tag_images?image_id=' + imageId, claims);
+            List<Object> tagImages = this.getTagsOnImage(imageId);
             for (Object tagImage : tagImages) {
                 for (String tag : tags) {
                     if ( ((String)(((Map<String, Object>)((Map<String, Object>)tagImage).get('tag')).get('name'))).equals(tag) ) {
-                        clientInstance.destroy('/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'), claims);
+                        clientInstance.destroy(
+                            '/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'),
+                            new Map<String, Object> { 'admin' => true }
+                        );
                     }
                 }
             }
@@ -217,10 +219,12 @@ global with sharing class Utils {
      */
     global Boolean clearTags(String imageId) {
         try {
-            Map<String, Object> claims = new Map<String, Object> { 'admin' => true };
-            List<Object> tagImages = (List<Object>)clientInstance.get('/tag_images?image_id=' + imageId, claims);
+            List<Object> tagImages = this.getTagsOnImage(imageId);
             for (Object tagImage : tagImages) {
-                clientInstance.destroy('/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'), claims);
+                clientInstance.destroy(
+                    '/tag_images/' + (String)((Map<String, Object>)tagImage).get('id'),
+                    new Map<String, Object> { 'admin' => true }
+                );
             }
             return true;
         } catch (Exception e) {

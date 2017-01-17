@@ -235,7 +235,8 @@ public with sharing class ClientTest {
       API_URL + '/albums/oldAlbumId' => new SingleRequestMock(200, 'OK', '{"public_id":"newAlbumId"}', null),
       API_URL + '/imports/' => new SingleRequestMock(200, 'OK', '{}', null),
       API_URL + '/tags/tagName/tag_images' => new SingleRequestMock(200, 'OK','{"test":"test"}', null),
-      API_URL + '/tag_images?image_id=imageId' => new SingleRequestMock(200, 'OK', '[{"id":"tagImageId","tag":{"name":"tagName"}}]', null),
+      API_URL + '/tag_images?image_id=imageId&page=1' => new SingleRequestMock(200, 'OK', '[{"id":"tagImageId","tag":{"name":"tagName"}}]', null),
+      API_URL + '/tag_images?image_id=imageId&page=2' => new SingleRequestMock(200, 'OK', '[]', null),
       API_URL + '/tag_images/tagImageId' => new SingleRequestMock(204, 'No Content', '{"test":"test"}', null)
     };
     Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
