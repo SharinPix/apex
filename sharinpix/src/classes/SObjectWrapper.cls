@@ -16,6 +16,9 @@ public class SObjectWrapper {
 	}
 
 	public Database.SaveResult executeAction(){
+		if (tagImg.tag.action.actions == null) {
+			return null;
+		}
 		for(Action action: tagImg.tag.action.actions){
 			if (fieldMap().containsKey(action.field_name)){
 				Schema.SobjectField field = fieldMap().get(action.field_name);

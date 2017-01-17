@@ -61,6 +61,30 @@ private class ImageController_TEST {
 		}
 	}
 
+	@isTest static void deleteContentDocument() {
+		ContentVersion contentVersion_1 = new ContentVersion(
+		Title='Header_Picture1', 
+		PathOnClient ='/Header_Picture1.jpg',
+		VersionData = Blob.valueOf('Body'), 
+		origin = 'H'
+		);
+		insert contentVersion_1;
+
+		ContentVersion contentVersion_2 = [SELECT Id, Title, ContentDocumentId FROM ContentVersion WHERE Id = :contentVersion_1.Id LIMIT 1];
+
+		ContentDocumentLink contentlink = new ContentDocumentLink();
+		contentlink.LinkedEntityId = contact.id;
+		contentlink.contentdocumentid = contentVersion_2.contentdocumentid;
+		contentlink.ShareType = 'V';
+		insert contentlink; 
+
+		Test.startTest();
+		boolean deleted = ImageController.deleteAttachment(contentVersion_1.Id);
+		Test.stopTest();
+
+		system.assert(deleted);
+	}
+
 	@isTest static void saveTheChunk() {
 		system.runas(u){
 			Attachment attach = new Attachment(Name='image', parentId = contact.Id, body=Blob.valueOf('Test'));
@@ -98,7 +122,6 @@ private class ImageController_TEST {
 				//can't get the error message from the class
 				system.assert(e != null);
 			}
-			
 		}
 	}
 
@@ -124,7 +147,7 @@ private class ImageController_TEST {
 		insert lstAttImages;
 
 		Test.startTest();
-		list<attachment> lstAttachment = ImageController.getFiles(contact.Id, 'img', 'image/jpeg');
+		list<map<string, id>> lstAttachment = (list<map<string, id>>) ImageController.getFiles(contact.Id, 'img', 'image/jpeg');
 		Test.stopTest();
 
 		system.assertEquals(lstAttachment.size(), 4);
@@ -141,9 +164,63 @@ private class ImageController_TEST {
 
 		system.runas(u){
 			Test.startTest();
-			list<attachment> lstAttachment = ImageController.getFiles(contact2.Id, 'img', 'image/jpeg');
+			list<map<string, id>> lstAttachment = (list<map<string, id>>) ImageController.getFiles(contact2.Id, 'img', 'image/jpeg');
 			Test.stopTest();	
 			system.assertEquals(lstAttachment.size(), 0);
 		}
+	}
+
+	@isTest static void getFiles_3() {
+		ContentVersion contentVersion_1 = new ContentVersion(
+		Title='Header_Picture1', 
+		PathOnClient ='/Header_Picture1.jpg',
+		VersionData = Blob.valueOf('Body'), 
+		origin = 'H'
+		);
+		insert contentVersion_1;
+
+		ContentVersion contentVersion_2 = [SELECT Id, Title, ContentDocumentId FROM ContentVersion WHERE Id = :contentVersion_1.Id LIMIT 1];
+
+		ContentDocumentLink contentlink = new ContentDocumentLink();
+		contentlink.LinkedEntityId = contact.id;
+		contentlink.contentdocumentid = contentVersion_2.contentdocumentid;
+		contentlink.ShareType = 'V';
+		insert contentlink; 
+
+		Test.startTest();
+		list<map<string, id>> lstAttachment = (list<map<string, id>>) ImageController.getFiles(contact.Id, 'img', 'image/jpeg');
+		Test.stopTest();
+		system.assertEquals(lstAttachment.size(), 1);
+	}
+
+	@isTest static void getFiles_4() {
+		list<Attachment> lstAttImages = new list<Attachment>{
+			new Attachment(Name='img_1', parentId = contact.Id, body=Blob.valueOf('Test1'), contenttype='image/jpeg'),
+			new Attachment(Name='img_2', parentId = contact.Id, body=Blob.valueOf('Test2'), contenttype='image/jpeg'),
+			new Attachment(Name='img_3', parentId = contact.Id, body=Blob.valueOf('Test3'), contenttype='image/jpeg'),
+			new Attachment(Name='img_4', parentId = contact.Id, body=Blob.valueOf('Test4'), contenttype='image/jpeg')
+		};
+		insert lstAttImages;
+
+		ContentVersion contentVersion_1 = new ContentVersion(
+		Title='Header_Picture1', 
+		PathOnClient ='/Header_Picture1.jpg',
+		VersionData = Blob.valueOf('Body'), 
+		origin = 'H'
+		);
+		insert contentVersion_1;
+
+		ContentVersion contentVersion_2 = [SELECT Id, Title, ContentDocumentId FROM ContentVersion WHERE Id = :contentVersion_1.Id LIMIT 1];
+
+		ContentDocumentLink contentlink = new ContentDocumentLink();
+		contentlink.LinkedEntityId = contact.id;
+		contentlink.contentdocumentid = contentVersion_2.contentdocumentid;
+		contentlink.ShareType = 'V';
+		insert contentlink; 
+
+		Test.startTest();
+		list<map<string, id>> lstAttachment = (list<map<string, id>>) ImageController.getFiles(contact.Id, 'img', 'image/jpeg');
+		Test.stopTest();
+		system.assertEquals(lstAttachment.size(), 5);
 	}
 }

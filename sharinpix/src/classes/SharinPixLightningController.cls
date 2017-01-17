@@ -45,9 +45,12 @@ public with sharing class SharinPixLightningController {
    * @return          [description]
    */
   @AuraEnabled
-  public static object executeCommandLightning(id albumId, string jsonfile) {
+  public static object executeCommandLightning(Id albumId, string jsonfile) {
     SObjectWrapper sobjwrapper = new SObjectWrapper(albumId, jsonfile);
     Database.SaveResult result = sobjwrapper.executeAction();
+    if (result == null){
+      return false;
+    }
     return result.isSuccess();
   }
 }

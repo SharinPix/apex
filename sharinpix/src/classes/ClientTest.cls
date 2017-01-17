@@ -48,58 +48,6 @@ public with sharing class ClientTest {
     System.assertEquals(ret, '');
   }
 
-  static testMethod void testRenameAlbum() {
-    Client clientInstance = Client.getInstance();
-
-    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
-      API_URL + '/albums/oldAlbumId' => new SingleRequestMock(200, 'OK', '{"public_id":"newAlbumId"}', null)
-    };
-    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
-
-    Test.startTest();
-    Boolean renamed = clientInstance.renameAlbum('oldAlbumId', 'newAlbumId');
-    Test.stopTest();
-
-    System.assert(renamed);
-  }
-
-  static testMethod void testAddTagImage() {
-    Client clientInstance = Client.getInstance();
-
-    Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String, HttpCalloutMock>();
-    SingleRequestMock res = new SingleRequestMock(200, 'Ok','{"test": "test"}',null);
-    endpoint2TestResp.put(API_URL+'/tags/tagName/tag_images', res);
-    HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
-    Test.setMock(HttpCalloutMock.class, multiCalloutMock);
-
-    Test.startTest();
-    Map<String, Object> ret = (Map<String, Object>) clientInstance.add_tag_image('albumId', 'imageId', 'tagName');
-    Test.stopTest();
-
-    System.assertEquals(String.valueof(ret.get('test')), 'test');
-  }
-
-  static testMethod void testClearTagImage() {
-    String imageId = 'imageId';
-    String albumId = 'albumId';
-    Client clientInstance = Client.getInstance();
-
-    Map<String, HttpCalloutMock> endpoint2TestResp = new Map<String, HttpCalloutMock>();
-    SingleRequestMock first = new SingleRequestMock(200, 'Ok','[{"id": "test"}]',null);
-    SingleRequestMock second = new SingleRequestMock(204, 'No content','{"test": "test"}',null);
-    endpoint2TestResp.put(API_URL+'/tag_images?image_id='+imageId, first);
-    endpoint2TestResp.put(API_URL+'/tag_images/test', second);
-    HttpCalloutMock multiCalloutMock = new MultiRequestMock(endpoint2TestResp);
-    Test.setMock(HttpCalloutMock.class, multiCalloutMock);
-
-    Boolean ret = false;
-    Test.startTest();
-    ret = clientInstance.clear_tag_image(albumId, imageId, new List<String> {'tag'});
-    Test.stopTest();
-
-    System.assert(ret);
-  }
-
   static testMethod void testClientInstance() {
     Test.startTest();
     Client clientInstance = Client.getInstance();
@@ -110,8 +58,19 @@ public with sharing class ClientTest {
     System.assertEquals(clientInstance.endpoint_url, API_URL);
   }
 
+  static testMethod void testNewClient() {
+    Test.startTest();
+    Client clientInstance = new Client('clientid', 'clientsecret', 'https://api.sharinpix.com/api/v1');
+    Test.stopTest();
+    System.assertEquals('clientid', clientInstance.client_id);
+    System.assertEquals('clientsecret', clientInstance.client_secret);
+    System.assertEquals(API_URL, clientInstance.endpoint_url);
+  }
+
   static testMethod void testNewClientFromValidURL() {
+    Test.startTest();
     Client clientInstance = new Client('sharinpix://clientid:clientsecret@api.sharinpix.com/api/v1');
+    Test.stopTest();
     System.assertEquals('clientid', clientInstance.client_id);
     System.assertEquals('clientsecret', clientInstance.client_secret);
     System.assertEquals(API_URL, clientInstance.endpoint_url);
@@ -119,7 +78,9 @@ public with sharing class ClientTest {
 
   static testMethod void testNewClientFromInvalidURL() {
     try {
+      Test.startTest();
       Client clientIns = new Client('sharinpix://clientcredential@api.sharinpix.com/api/v1');
+      Test.stopTest();
       System.assert(false);
     } catch (Exception e) {
       System.assertEquals('Invalid SharinPix URL', e.getMessage());
@@ -206,6 +167,36 @@ public with sharing class ClientTest {
     System.assertEquals(ret, null);
   }
 
+  static testMethod void testTestApiSuccess() {
+    Client clientInstance = Client.getInstance();
+
+    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+      API_URL + '/organization' => new SingleRequestMock(200, 'OK', '{"id":"orgId"}', null)
+    };
+    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+    Test.startTest();
+    Boolean isValid = clientInstance.test_api();
+    Test.stopTest();
+
+    System.assert(isValid);
+  }
+
+  static testMethod void testTestApiFailure() {
+    Client clientInstance = Client.getInstance();
+
+    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+      API_URL + '/organization' => new SingleRequestMock(404, 'Not Found', '', null)
+    };
+    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+    Test.startTest();
+    Boolean isValid = clientInstance.test_api();
+    Test.stopTest();
+
+    System.assert(!isValid);
+  }
+
   static testMethod void testPermanentToken() {
     Map<String, Object> params = new Map<String, Object> { 'exp' => 0 };
     Client clientInstance = Client.getInstance();
@@ -237,5 +228,50 @@ public with sharing class ClientTest {
     String base64Payload = token.substring(token.indexOf('.') + 1, token.lastIndexOf('.'));
     Map<String, Object> tokenPayload = (Map<String, Object>)JSON.deserializeUntyped(EncodingUtil.base64Decode(base64Payload).toString());
     System.assertEquals(300, (Integer)tokenPayload.get('exp') - (Integer)tokenPayload.get('iat'));
+  }
+
+  static testMethod void coverageForDeprecatedMoved() {
+    Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+      API_URL + '/albums/oldAlbumId' => new SingleRequestMock(200, 'OK', '{"public_id":"newAlbumId"}', null),
+      API_URL + '/imports/' => new SingleRequestMock(200, 'OK', '{}', null),
+      API_URL + '/tags/tagName/tag_images' => new SingleRequestMock(200, 'OK','{"test":"test"}', null),
+      API_URL + '/tag_images?image_id=imageId' => new SingleRequestMock(200, 'OK', '[{"id":"tagImageId","tag":{"name":"tagName"}}]', null),
+      API_URL + '/tag_images/tagImageId' => new SingleRequestMock(204, 'No Content', '{"test":"test"}', null)
+    };
+    Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+    Client c = Client.getInstance();
+    Case cs = new Case(Status='New', Origin='Email');
+    insert cs;
+    Attachment att = new Attachment(Name='Image.jpg', ContentType='image/jpeg', Body=Blob.valueof('This is an image'), ParentId=cs.Id);
+    insert att;
+    Boolean tagRemoved = false;
+
+    Test.startTest();
+    Boolean renamed = c.renameAlbum('oldAlbumId', 'newAlbumId');
+    Object uploadAttachmentResponse = c.upload_attachment(att.Id, cs.Id);
+    Object uploadAttachmentWithMetadatasResponse = c.upload_attachment(att.Id, cs.Id, new Map<String, Object>());
+    Map<String, Object> addTagResponse = (Map<String, Object>)c.add_tag_image('', 'imageId', 'tagName');
+    tagRemoved = c.clear_tag_image('', 'imageId', new List<String> { 'tagName' });
+    Test.stopTest();
+
+    System.assert(renamed);
+    System.assertEquals(JSON.serialize(uploadAttachmentResponse), '{}');
+    System.assertEquals(JSON.serialize(uploadAttachmentWithMetadatasResponse), '{}');
+    System.assertEquals(String.valueOf(addTagResponse.get('test')), 'test');
+    System.assert(tagRemoved);
+  }
+
+  static testMethod void coverageForDeprecatedUnused() {
+    Client clientInstance = Client.getInstance();
+    Test.startTest();
+    System.assertEquals(null, clientInstance.getTagsOnImage('albumId', 'imageId', null));
+    System.assertEquals(false, clientInstance.removeTag('albumId', 'imageId', null));
+    System.assertEquals(null, clientInstance.addTag('albumId', 'imageId', 'tagName'));
+    System.assertEquals(null, clientInstance.getImageDetails('albumId', 'imageId'));
+    System.assertEquals(null, clientInstance.croppedImageUrl('imageId', 'cropStyle', 0, 0));
+    System.assertEquals(null, clientInstance.getAlbumImages('albumId'));
+    System.assertEquals(null, clientInstance.getImageUrl('imageId', null, null));
+    Test.stopTest();
   }
 }
