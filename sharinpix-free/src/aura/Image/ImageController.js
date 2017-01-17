@@ -8,10 +8,13 @@
   doPrevious : function(component, event, helper){
     helper.changeImage(component, -1);
   },
-  uploaded: function(component){
-    component.reload();
+  uploaded: function(component, event){
+    if (component.getGlobalId() === event.getParam('eventIdentifier')){
+      component.reload();  
+    }
   },
   doReload : function(component, event, helper) {
+    helper.stopInterval(component);
     helper.setComponentAttributes(component, { loading: true, images: [], total: 0, index: 0, image: {id: ''}, errorMessage: null, displayButtons: true });
     helper.getImages(component, component.get('v.recordId'), function(err, images) {
       if (component.isValid() && images != null) {
@@ -23,6 +26,10 @@
           loading: false,
           displayButtons: true
         });
+        var interval = component.get('v.interval');
+        if (interval !== undefined && interval > 0 && images.length > 1){
+          helper.startInterval(component, interval);
+        }
       } else {
         helper.setComponentAttributes(component, {'errorMessage': '{!$label.sharinpix_free.err_unknown}', 'loading': false, displayButtons: false});
       }
@@ -42,9 +49,9 @@
     });
   },
   displayError: function(component, event, helper){
-    helper.setComponentAttributes(component, {'errorMessage': event.getParams('error').error, 'loading': false, 'displayButtons': true});      
-    // component.set('v.displayButtons', false);
-    // console.log(component.get('v.displayButtons'));
+    if (component.getGlobalId() === event.getParam('eventIdentifier')){
+      helper.setComponentAttributes(component, {'errorMessage': event.getParams('error').error, 'loading': false, 'displayButtons': true});
+    }
   },
   toggle : function(component, event, helper) {
     helper.toggleButtons(component);

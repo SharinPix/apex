@@ -1,5 +1,5 @@
 <design:component label="Image">
-	<design:attribute name="attachmentId" label="Attachment Id" description="Enter the attachmentId" default=""/>
+	<design:attribute name="attachmentId" label="Source" description="Enter an attachmentId or an image link" default=""/>
 	<design:attribute name="height" label="Height" description="Enter height of the container" default=""/>
 
 	<design:attribute name="linkText" label="Link" />

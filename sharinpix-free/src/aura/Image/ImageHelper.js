@@ -1,7 +1,8 @@
 ({
   getImages : function(component, recordId, callback) {
     var action = component.get('c.getFiles');
-    action.setParams({ parentId : recordId, prefix: '', contentType: 'image/%' });
+    var prefix = $A.util.isEmpty(component.get('v.prefix')) ? '' : component.get('v.prefix');
+    action.setParams({ parentId : recordId, prefix: prefix, contentType: 'image/%' });
     action.setCallback(this, function(response) {
       if (response.getState() === 'SUCCESS') {
         callback(null, response.getReturnValue());
@@ -47,5 +48,18 @@
   },
   toggleButtons: function(component){
     $A.util.toggleClass(component.find('image-container'), "hide-buttons");
+  },
+  startInterval: function(component, intervalValue){
+    var self = this;
+    var interval = setInterval(
+      $A.getCallback(function(){
+        self.changeImage(component, 1);
+      }), intervalValue
+    );
+    component.set("v.intervalInstance", interval);
+  },
+  stopInterval: function(component){
+    var interval = component.get("v.intervalInstance");
+    clearInterval(interval);
   }
 })

@@ -43,7 +43,6 @@ public with sharing class ImageController {
     @AuraEnabled
     public static object getFiles(Id parentId, String prefix, String contentType) { 
         String nameLike = prefix + '%';
-        //List<Schema.SObjectField> fieldslstCRUD = new List<Schema.SObjectField>{Attachment.Fields.Id, Attachment.Fields.ParentId, Attachment.Fields.Name, Attachment.Field.CreatedDate};
         boolean isAccessible = Crud.isAccessible(parentId.getSObjectType());
         if (!isAccessible){
             throw new AuraHandledException(system.label.Err_insufficient_privileges);
@@ -111,16 +110,8 @@ public with sharing class ImageController {
     }
 
     private static void appendToFile(Id fileId, String base64Data) {
-        base64Data = EncodingUtil.urlDecode(base64Data, 'UTF-8');
-        Attachment a = [
-            SELECT Id, Body
-            FROM Attachment
-            WHERE Id = :fileId
-        ];
-
-        String existingBody = EncodingUtil.base64Encode(a.Body);
-        a.Body = EncodingUtil.base64Decode(existingBody + base64Data); 
-        
+        Attachment a = new Attachment(Id=fileId);
+        a.Body = EncodingUtil.base64Decode(EncodingUtil.base64Encode([Select Body From Attachment Where Id = :fileId].body) + EncodingUtil.urlDecode(base64Data, 'UTF-8')); 
         update a;
     }
 }

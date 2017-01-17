@@ -6,8 +6,10 @@
 		if (component.get('v.attachmentId') === undefined){
 			component.set('v.loading', false);
 		}else {
-			component.set('v.loading', true);	
+			component.set('v.loading', false);	
 		}
+		
+		helper.reloadSource(component)
 		var height = component.get('v.height');
 		if (typeof height !== "undefined" && height !== null && height > 200) {
 			
@@ -20,6 +22,7 @@
 		helper.reloadSource(component);
 		
 		component.set('v.loading', true);
+		helper.reloadSource(component)
 	},
 	onLoaded: function (component) {
 		component.set('v.loading', false);

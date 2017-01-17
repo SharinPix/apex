@@ -1,4 +1,6 @@
 <design:component label="Images">	
 	<design:attribute name="recordId" label="Record Id" description="Enter the record id" default="{!recordId}"/>
 	<design:attribute name="height" label="Height" description="Enter height of the container" default=""/>
+	<design:attribute name="interval" label="Interval" description="Interval between image change" default="0"/>
+	<design:attribute name="prefix" label="Prefix" description="Add a prefix to the component" default=""/>
 </design:component>
