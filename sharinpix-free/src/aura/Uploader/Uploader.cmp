@@ -10,7 +10,7 @@
 	<aura:attribute name="progress" type="Integer"/>
 	<aura:attribute name="filenamePrefix" type="string" access="global"/>
 	<aura:attribute name="eventIdentifier" type="string" access="global" />
-	<aura:attribute name="singleUpload" type="Boolean" access="global" />
+	<aura:attribute name="singleImage" type="Boolean" access="global" />
 	<aura:registerEvent name="Uploaded" type="c:Uploaded"/>
 	<aura:registerEvent name="ErrorHandling" type="c:ErrorHandling"/>
 	<div aura:id="uploader" class="uploader-container">
