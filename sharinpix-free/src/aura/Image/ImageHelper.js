@@ -61,5 +61,12 @@
   stopInterval: function(component){
     var interval = component.get("v.intervalInstance");
     clearInterval(interval);
+  },
+  restartInterval: function(component, intervalValue){
+    var self = this;
+    self.stopInterval(component);
+    setTimeout($A.getCallback(function(){
+      self.startInterval(component, intervalValue);
+    }), intervalValue);
   }
 })

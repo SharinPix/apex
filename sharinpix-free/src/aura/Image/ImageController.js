@@ -55,5 +55,9 @@
   },
   toggle : function(component, event, helper) {
     helper.toggleButtons(component);
+    var interval = component.get('v.interval');
+    if (interval !== undefined && interval > 0 && component.get('v.images').length > 1){
+      helper.restartInterval(component, interval);
+    }
   }
 })
