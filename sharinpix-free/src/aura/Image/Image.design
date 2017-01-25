@@ -3,4 +3,5 @@
 	<design:attribute name="height" label="Height" description="Enter height of the container" default=""/>
 	<design:attribute name="interval" label="Interval" description="Interval between image change" default="0"/>
 	<design:attribute name="prefix" label="Prefix" description="Add a prefix to the component" default=""/>
+	<design:attribute name="uploadChoice" label="Type of upload" description="Choose how to save the uploaded images" datasource="Attachment, ContentDocument" default="ContentDocument"  />
 </design:component>
