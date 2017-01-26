@@ -26,10 +26,7 @@
           loading: false,
           displayButtons: true
         });
-        var interval = component.get('v.interval');
-        if (interval !== undefined && interval > 0 && images.length > 1){
-          helper.startInterval(component, interval);
-        }
+        helper.startInterval(component);
       } else {
         helper.setComponentAttributes(component, {'errorMessage': '{!$label.sharinpix_free.err_unknown}', 'loading': false, displayButtons: false});
       }
@@ -55,9 +52,6 @@
   },
   toggle : function(component, event, helper) {
     helper.toggleButtons(component);
-    var interval = component.get('v.interval');
-    if (interval !== undefined && interval > 0 && component.get('v.images').length > 1){
-      helper.restartInterval(component, interval);
-    }
+    helper.restartInterval(component);  
   }
 })
