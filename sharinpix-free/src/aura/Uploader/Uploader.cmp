@@ -10,7 +10,7 @@
 	<aura:attribute name="progress" type="Integer"/>
 	<aura:attribute name="filenamePrefix" type="string" access="global"/>
 	<aura:attribute name="eventIdentifier" type="string" access="global" />
-	<aura:attribute name="singleImage" type="Boolean" access="global" />
+	<aura:attribute name="multiple" type="Boolean" access="global" />
 	<aura:registerEvent name="Uploaded" type="c:Uploaded"/>
 	<aura:registerEvent name="ErrorHandling" type="c:ErrorHandling"/>
 	<div aura:id="uploader" class="uploader-container">
@@ -18,6 +18,6 @@
 			<lightning:icon iconName="utility:upload" size="x-small" alternativeText="Upload Images"/>
 			<div class="progress" style="{! 'height: ' + v.progress+'%;' }"></div>
 		</label>
-		<input id="{!v.uploaderId}" type="file" name="file" class="file" aura:id="file" onchange="{!c.fileInputChange}" multiple="{! !v.singleImage }" accept="image/*"/>
+		<input id="{!v.uploaderId}" type="file" name="file" class="file" aura:id="file" onchange="{!c.fileInputChange}" multiple="{! v.multiple }" accept="image/*"/>
 	</div>
 </aura:component>
