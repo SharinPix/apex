@@ -50,8 +50,10 @@
     $A.util.toggleClass(component.find('image-container'), "hide-buttons");
   },
   startInterval: function(component){
+    var intervalInstance = component.get("v.intervalInstance");
     var intervalValue = component.get('v.interval');
-    if (intervalValue !== undefined && intervalValue > 0 && component.get('v.images').length > 1){
+
+    if (intervalInstance == undefined && intervalValue !== undefined && intervalValue > 0 && component.get('v.images').length > 1){
       var self = this;
       var interval = setInterval(
         $A.getCallback(function(){
@@ -63,9 +65,10 @@
   },
   stopInterval: function(component){
     var interval = component.get("v.intervalInstance");
-    if (interval != null){
+    if (interval != undefined){
       clearInterval(interval);  
     }
+    component.set('v.intervalInstance', undefined);
   },
   restartInterval: function(component){
     var self = this;
