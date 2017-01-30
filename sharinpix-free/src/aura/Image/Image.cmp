@@ -18,6 +18,7 @@
   	<aura:attribute name="interval" type="integer" access="global" />
   	<aura:attribute name="intervalInstance" type="Object"/>
   	<aura:attribute name="prefix" type="string" access="global"/>
+  	<aura:attribute name="multiple" type="Boolean" access="global" />
     
   	<aura:if isTrue="{! !empty(v.errorMessage) }">
   		<span>
@@ -36,7 +37,7 @@
     		<aura:set attribute="else">
     			<div class="img-placeholder"></div>
     			<div class="uploader-no-images-btn sharinpix-buttons">
-    				<c:Uploader recordId="{!v.recordId}" filenamePrefix="{! v.prefix }" label="Upload Images" eventIdentifier="{! globalId }"/>
+    				<c:Uploader recordId="{!v.recordId}" filenamePrefix="{! v.prefix }" label="Upload Images" eventIdentifier="{! globalId }" multiple="{! v.multiple }" />
     				<p>No image</p>
     			</div>
     		</aura:set>
@@ -54,9 +55,11 @@
 		    </aura:if>
 		    <aura:if isTrue="{! v.total > 0 &amp;&amp; v.displayButtons }">
 		    	<div class="button-container" aura:id="sharinpix-action-buttons">
-		    		<div class="uploader-btn">
-			    		<c:Uploader recordId="{!v.recordId}" filenamePrefix="{! v.prefix }"  eventIdentifier="{! globalId }" />
-			    	</div>
+					<aura:if isTrue="{! v.multiple }">
+						<div class="uploader-btn">
+							<c:Uploader recordId="{!v.recordId}" filenamePrefix="{! v.prefix }"  eventIdentifier="{! globalId }" multiple="{! v.multiple }" />
+						</div>
+					</aura:if>
 					<div class="delete-btn" onclick="{! c.doDelete }">
 						<label title="Delete">
 							<lightning:icon iconName="utility:delete" size="x-small" alternativeText="Delete"/>
