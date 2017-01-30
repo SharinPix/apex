@@ -13,6 +13,9 @@
 	<aura:attribute name="uploadChoice" type="string" access="global" />
 	<aura:registerEvent name="Uploaded" type="c:Uploaded"/>
 	<aura:registerEvent name="ErrorHandling" type="c:ErrorHandling"/>
+
+	<aura:attribute name="iframeUrl" type="string" />
+
 	<div aura:id="uploader" class="uploader-container">
 		<label for="{!v.uploaderId}" title="Upload">
 			<lightning:icon iconName="utility:upload" size="x-small" alternativeText="Upload Images"/>
@@ -20,4 +23,6 @@
 		</label>
 		<input id="{!v.uploaderId}" type="file" name="file" class="file" aura:id="file" onchange="{!c.fileInputChange}" multiple="multiple" accept="image/*"/>
 	</div>
+
+	<iframe aura:id="upload-iframe" src="{! v.iframeUrl }" height="50px" width="25%" />
 </aura:component>

@@ -19,6 +19,8 @@
   	<aura:attribute name="intervalInstance" type="Object"/>
   	<aura:attribute name="prefix" type="string" access="global"/>
 	<aura:attribute name="uploadChoice" type="string" access="global" />
+
+	
     
   	<aura:if isTrue="{! !empty(v.errorMessage) }">
   		<span>
