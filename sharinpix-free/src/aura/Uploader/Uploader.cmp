@@ -25,5 +25,5 @@
 		<input id="{!v.uploaderId}" type="file" name="file" class="file" aura:id="file" onchange="{!c.fileInputChange}" multiple="{! v.multiple }" accept="image/*"/>
 	</div>
 
-	<iframe aura:id="upload-iframe" src="{! v.iframeUrl }" height="50px" width="25%" />
+	<iframe aura:id="upload-iframe" src="{! v.iframeUrl }" style="display: none;" />
 </aura:component>
