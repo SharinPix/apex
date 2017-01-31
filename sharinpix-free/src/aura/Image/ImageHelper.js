@@ -49,17 +49,32 @@
   toggleButtons: function(component){
     $A.util.toggleClass(component.find('image-container'), "hide-buttons");
   },
-  startInterval: function(component, intervalValue){
-    var self = this;
-    var interval = setInterval(
-      $A.getCallback(function(){
-        self.changeImage(component, 1);
-      }), intervalValue
-    );
-    component.set("v.intervalInstance", interval);
+  startInterval: function(component){
+    var intervalInstance = component.get("v.intervalInstance");
+    var intervalValue = component.get('v.interval');
+
+    if (intervalInstance == undefined && intervalValue !== undefined && intervalValue > 0 && component.get('v.images').length > 1){
+      var self = this;
+      var interval = setInterval(
+        $A.getCallback(function(){
+          self.changeImage(component, 1);
+        }), intervalValue
+      );
+      component.set("v.intervalInstance", interval);
+    }
   },
   stopInterval: function(component){
     var interval = component.get("v.intervalInstance");
-    clearInterval(interval);
+    if (interval != undefined){
+      clearInterval(interval);  
+    }
+    component.set('v.intervalInstance', undefined);
+  },
+  restartInterval: function(component){
+    var self = this;
+    self.stopInterval(component);
+    setTimeout($A.getCallback(function(){
+      self.startInterval(component);
+    }), 5000);
   }
 })
