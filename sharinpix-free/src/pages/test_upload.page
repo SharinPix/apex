@@ -6,7 +6,12 @@
         console.log('event: ', event);
         console.log('received response:  ',event.data);
         if (event.data.name == 'new-upload'){
-          upload(event.data, event.data.eventIdentifier);
+          if (event.data.fileType === 'Attachment'){
+            upload_attachment(event.data, event.data.eventIdentifier);
+          }
+          if (event.data.fileType === 'ContentDocument'){
+            upload_content_document(event.data, event.data.eventIdentifier);
+          }
         }
       },false);
 
@@ -16,12 +21,11 @@
       
       var uploading = 0;
       var uploaded = 0;
-      //TODO: cater for prefix also
 
-      var upload = function(payload, eventIdentifier){
+      var upload_attachment = function(payload, eventIdentifier){
         for (var i = 0; i < payload.files.length; i++) {
           uploading += 1;
-          upload_file(payload.files[i], payload.recordId, eventIdentifier, '', function(err, res){
+          upload_file(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, function(err, res){
               console.log(res);
               if (uploading === uploaded){
                 console.log('uploaded');
@@ -34,15 +38,15 @@
       var upload_file = function(file, parentId, eventIdentifier, prefix, callback) {
         filetoBase64(file, function(err, content){
           
-          var js = {
+          var attachment_object = {
                     parentId: parentId,
                     Body: content, 
-                    Name: file.name, 
+                    Name: prefix + file.name, 
                     ContentType: file.type 
                   };
           $.ajax({
               url: '/services/data/v38.0/sobjects/Attachment',
-              data: JSON.stringify(js),
+              data: JSON.stringify(attachment_object),
               type: 'POST',
               processData: false,
               contentType: false,
@@ -66,6 +70,10 @@
               }
            });
         })
+      }
+
+      var upload_content_document = function(payload, eventIdentifier){
+        console.log('content document here');
       }
 
       var filetoBase64 = function(file, callback){

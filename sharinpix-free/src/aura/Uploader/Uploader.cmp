@@ -12,6 +12,9 @@
 	<aura:attribute name="eventIdentifier" type="string" access="global" />
 	<aura:attribute name="uploadChoice" type="string" access="global" />
 	<aura:attribute name="multiple" type="Boolean" access="global" />
+
+	<aura:attribute name="loaded" type="Boolean" />
+
 	<aura:registerEvent name="Uploaded" type="c:Uploaded"/>
 	<aura:registerEvent name="ErrorHandling" type="c:ErrorHandling"/>
 

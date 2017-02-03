@@ -1,7 +1,5 @@
 ({
-    // MAX_FILE_SIZE: 4 500 000, // 6 000 000 * 3/4 to account for base64
     MAX_FILE_SIZE: 2500000, // 6 000 000 * 3/4 to account for base64
-    //CHUNK_SIZE: 950 000, // Use a multiple of 4
     CHUNK_SIZE: 500000,
     filetoBase64 : function(file, callback){
         var fr = new FileReader();

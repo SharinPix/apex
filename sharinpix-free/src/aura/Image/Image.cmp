@@ -38,7 +38,7 @@
     		<aura:set attribute="else">
     			<div class="img-placeholder"></div>
     			<div class="uploader-no-images-btn sharinpix-buttons">
-    				<c:Uploader recordId="{!v.recordId}" filenamePrefix="{! v.prefix }" label="Upload Images" eventIdentifier="{! globalId }" multiple="{! v.multiple }" />
+    				<c:Uploader recordId="{!v.recordId}" filenamePrefix="{! v.prefix }" label="Upload Images" eventIdentifier="{! globalId }" multiple="{! v.multiple }" uploadChoice="{! v.uploadChoice }" />
     				<p>No image</p>
     			</div>
     		</aura:set>
@@ -58,7 +58,7 @@
 		    	<div class="button-container" aura:id="sharinpix-action-buttons">
 					<aura:if isTrue="{! v.multiple }">
 						<div class="uploader-btn">
-							<c:Uploader recordId="{!v.recordId}" filenamePrefix="{! v.prefix }"  eventIdentifier="{! globalId }" multiple="{! v.multiple }" />
+							<c:Uploader recordId="{!v.recordId}" filenamePrefix="{! v.prefix }"  eventIdentifier="{! globalId }" multiple="{! v.multiple }" uploadChoice="{! v.uploadChoice }" />
 						</div>
 					</aura:if>
 					<div class="delete-btn" onclick="{! c.doDelete }">
