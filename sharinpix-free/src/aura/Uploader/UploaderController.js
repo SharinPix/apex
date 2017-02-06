@@ -15,14 +15,14 @@
 
 		window.addEventListener('message', $A.getCallback( function(postMessageEvent) {
 			if (postMessageEvent && component.isValid() ){
-				if (postMessageEvent.data.name=='loaded'){
+				if (postMessageEvent.data.name==='loaded'){
 					component.set('v.loaded', true);
 				}
-				if (postMessageEvent.data.eventIdentifier == component.getGlobalId()){
-					if (postMessageEvent.data.name=='uploading'){
+				if (postMessageEvent.data.eventIdentifier === component.getGlobalId()){
+					if (postMessageEvent.data.name==='uploading'){
 						component.set('v.progress', postMessageEvent.data.percent);
 					}
-					if (postMessageEvent.data.name=='uploaded'){
+					if (postMessageEvent.data.name==='uploaded'){
 						component.set('v.n_uploaded', 0);
 						component.set('v.n_uploading', 0);
 						component.set('v.progress', 0);
@@ -35,7 +35,7 @@
 						eventUploaded.setParam('eventIdentifier', component.get('v.eventIdentifier'));
 						eventUploaded.fire();
 					}
-					if (postMessageEvent.data.name=='error'){
+					if (postMessageEvent.data.name==='error'){
 						var error = JSON.parse(postMessageEvent.data.message)[0];
             var event = $A.get('e.c:ErrorHandling').setParams({error: error.message, eventIdentifier: component.get('v.eventIdentifier')});
             event.fire();
