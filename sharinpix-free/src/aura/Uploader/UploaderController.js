@@ -10,10 +10,7 @@
 
 	    if (component.isValid()){
 	      var baseUrl = window.location.protocol + '//' + window.location.hostname;
-	      console.log(component);
-	      component.set('v.iframeUrl', '/apex/SharinPixUploadApi?url='+baseUrl);
-
-	      console.log('uploadchoice: ',component.get('v.uploadChoice'));
+	      component.set('v.iframeUrl', '/apex/sharinpix_free__SharinPixUploadApi?url='+baseUrl);
 	    }
 
 		window.addEventListener('message', $A.getCallback( function(postMessageEvent) {
@@ -38,7 +35,11 @@
 						eventUploaded.setParam('eventIdentifier', component.get('v.eventIdentifier'));
 						eventUploaded.fire();
 					}
-					//TODO: Handle error if any
+					if (postMessageEvent.data.name=='error'){
+						var error = JSON.parse(postMessageEvent.data.message)[0];
+            var event = $A.get('e.c:ErrorHandling').setParams({error: error.message, eventIdentifier: component.get('v.eventIdentifier')});
+            event.fire();
+					}
 				}
 			}
 			})
@@ -46,21 +47,18 @@
 	},
 	fileInputChange: function(component, event, helper) {
 		var loaded = component.get('v.loaded');
-		console.log('loaded', loaded);
 		if (loaded){
-			console.log('uploading via api');
 			//TODO: add this to helper
-			//TODO: add choice of attachment or content document
-			component.find('upload-iframe').getElement().contentWindow.postMessage({name: 'new-upload', 
-																					recordId: component.get('v.recordId'),
-																					eventIdentifier: component.getGlobalId(), 
-																					files: component.find('file').getElement().files,
-																					prefix: component.get('v.filenamePrefix'),
-																					fileType: component.get('v.uploadChoice')
-																					}, '*');	
+			var payload = {name: 'new-upload', 
+							recordId: component.get('v.recordId'),
+							eventIdentifier: component.getGlobalId(), 
+							files: component.find('file').getElement().files,
+							prefix: component.get('v.filenamePrefix'),
+							fileType: 'Attachment'
+						};
+			helper.upload_via_api(component, payload);
 		}
 		else {
-			console.log('fallback upload');
 			helper.upload(component, component.find("file").getElement().files, function(err, res){
 				if (err !== 'Error occurred'){
 					var eventUploaded = $A.get('e.c:Uploaded');

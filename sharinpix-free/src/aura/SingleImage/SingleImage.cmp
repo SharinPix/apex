@@ -25,7 +25,7 @@
 		</aura:set>
 		</aura:if>
 		<aura:if isTrue="{! !empty(v.attachmentId) &amp;&amp; v.loading }">
-			<lightning:spinner />
+			<lightning:spinner alternativeText="loading in progress" />
 		</aura:if>
 		<div class="{!v.verticalAlign + ' ' + V.textSize}">
 			<aura:if isTrue="{! !empty(v.linkText)}">

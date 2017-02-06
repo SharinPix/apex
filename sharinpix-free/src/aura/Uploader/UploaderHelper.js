@@ -88,5 +88,9 @@
         });
 
         $A.enqueueAction(action);
+    },
+
+    upload_via_api: function(component, payload){
+        component.find('upload-iframe').getElement().contentWindow.postMessage(payload, '*');
     }
 })//

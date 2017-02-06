@@ -1,15 +1,7 @@
 ({
 	doInit : function(component, event, helper) {
-		//component.set('v.style', 'height: 300px; line-height: 300px;');
 		helper.reloadSource(component);
 
-		if (component.get('v.attachmentId') === undefined){
-			component.set('v.loading', false);
-		}else {
-			component.set('v.loading', false);	
-		}
-		
-		helper.reloadSource(component)
 		var height = component.get('v.height');
 		if (typeof height !== "undefined" && height !== null && height > 200) {
 			
@@ -18,9 +10,7 @@
 		}
 		component.set('v.style', 'height: '+height+'px; line-height: '+height+'px;');
 	},
-	doReload: function(component, event, helper){
-		helper.reloadSource(component);
-		
+	doReload: function(component, event, helper){		
 		component.set('v.loading', true);
 		helper.reloadSource(component)
 	},
