@@ -11,7 +11,7 @@
 	    if (component.isValid()){
 	      var baseUrl = window.location.protocol + '//' + window.location.hostname;
 	      console.log(component);
-	      component.set('v.iframeUrl', '/apex/test_upload?url='+baseUrl);
+	      component.set('v.iframeUrl', '/apex/SharinPixUploadApi?url='+baseUrl);
 
 	      console.log('uploadchoice: ',component.get('v.uploadChoice'));
 	    }
@@ -56,14 +56,14 @@
 																					eventIdentifier: component.getGlobalId(), 
 																					files: component.find('file').getElement().files,
 																					prefix: component.get('v.filenamePrefix'),
-																					fileType: component.get('v.uploadchoice')
+																					fileType: component.get('v.uploadChoice')
 																					}, '*');	
 		}
 		else {
 			console.log('fallback upload');
 			helper.upload(component, component.find("file").getElement().files, function(err, res){
 				if (err !== 'Error occurred'){
-					var eventUploaded = $A.get('e.c:Uploaded')
+					var eventUploaded = $A.get('e.c:Uploaded');
 					eventUploaded.setParam('eventIdentifier', component.get('v.eventIdentifier'));
 	        		eventUploaded.fire();
 				}
