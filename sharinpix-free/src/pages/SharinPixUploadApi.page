@@ -58,7 +58,6 @@
                 xhr.upload.addEventListener("progress", function(evt){
                   if (evt.lengthComputable) {
                     var percentComplete = evt.loaded / evt.total;
-                    console.log(percentComplete);
                     window.parent.postMessage({name: 'uploading', percent: 30 + Math.round(uploaded/uploading * 70), eventIdentifier: eventIdentifier}, '*');
                   }
                 }, false);
