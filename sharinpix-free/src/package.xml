@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <types>
-        <members>*</members>
-        <name>ApexClass</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>ApexPage</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>AuraDefinitionBundle</name>
-    </types>
-    <version>38.0</version>
+	<types>
+		<members>Crud</members>
+		<members>ImageController</members>
+		<members>ImageController_TEST</members>
+		<name>ApexClass</name>
+	</types>
+	<types>
+		<members>ErrorHandling</members>
+		<members>Image</members>
+		<members>ImageDeleted</members>
+		<members>SingleImage</members>
+		<members>Uploaded</members>
+		<members>Uploader</members>
+		<name>AuraDefinitionBundle</name>
+	</types>
+	<types>
+		<members>SharinPixUploadApi</members>
+		<name>ApexPage</name>
+	</types>
+	<version>38.0</version>
 </Package>

@@ -8,14 +8,15 @@
 		component.set('v.uploaderId', 'uploader_'+component.getGlobalId());
 		component.set('v.loaded', false);
 
-	    if (component.isValid()){
-	      var baseUrl = window.location.protocol + '//' + window.location.hostname;
-	      component.set('v.iframeUrl', '/apex/sharinpix_free__SharinPixUploadApi?url='+baseUrl);
-	    }
+    if (component.isValid()){
+      var baseUrl = window.location.protocol + '//' + window.location.hostname;
+      component.set('v.iframeUrl', '/apex/sharinpix_free__SharinPixUploadApi?url='+baseUrl+'&eventIdentifier='+component.getGlobalId());
+    }
 
 		window.addEventListener('message', $A.getCallback( function(postMessageEvent) {
 			if (postMessageEvent && component.isValid() ){
-				if (postMessageEvent.data.name==='loaded'){
+				if (postMessageEvent.data.name==='loaded' && postMessageEvent.data.eventIdentifier === component.getGlobalId()){
+					console.log('api enabled');
 					component.set('v.loaded', true);
 				}
 				if (postMessageEvent.data.eventIdentifier === component.getGlobalId()){

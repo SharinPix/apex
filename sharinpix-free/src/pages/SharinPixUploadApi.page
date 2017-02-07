@@ -11,7 +11,12 @@
         }
       },false);
 
-      window.parent.postMessage({name: 'loaded'}, '*'); 
+      var orgId = '{!$Organization.Id}'.substring(0, 15);
+
+      var sessionId = '{!$Api.Session_ID}';
+      if (sessionId.includes(orgId)){
+        window.parent.postMessage({name: 'loaded', eventIdentifier: '{!$CurrentPage.parameters.eventIdentifier}'}, '*');
+      }
       
       var uploading = 0;
       var uploaded = 0;
