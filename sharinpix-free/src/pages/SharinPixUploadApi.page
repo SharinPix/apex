@@ -1,5 +1,5 @@
-<apex:page  sidebar="false" showHeader="false" >
-	<apex:includeScript value="{!$Resource.sharinpix_free__jquery}"/>
+<apex:page sidebar="false" showHeader="false" >
+	<apex:includeScript value="{!$Resource.jquery}"/>
   <script>
   	var MAX_SIZE = 25000000;
     jQuery(document).ready(function($) {
