@@ -114,4 +114,9 @@ public with sharing class ImageController {
         a.Body = EncodingUtil.base64Decode(EncodingUtil.base64Encode([Select Body From Attachment Where Id = :fileId].body) + EncodingUtil.urlDecode(base64Data, 'UTF-8')); 
         update a;
     }
+
+    @AuraEnabled
+    public static string site(){
+        return Site.getBaseUrl();
+    }
 }

@@ -92,5 +92,14 @@
 
     upload_via_api: function(component, payload){
         component.find('upload-iframe').getElement().contentWindow.postMessage(payload, '*');
+    },
+
+    site_url: function(component){
+        var action = component.get("c.site");
+        action.setCallback(this, function(response) {
+            var baseUrl = window.location.protocol + '//' + window.location.hostname;
+            component.set('v.iframeUrl', response.getReturnValue()+'/apex/sharinpix_free__SharinPixUploadApi?url='+baseUrl+'&eventIdentifier='+component.getGlobalId());
+        });
+        $A.enqueueAction(action);
     }
 })//

@@ -1,5 +1,5 @@
 ({
-	init : function(component) {
+	init : function(component, event, helper) {
 		component.set('v.uploading', false);
 		component.set('v.n_uploading', 0);
 		component.set('v.n_uploaded', 0);
@@ -9,8 +9,7 @@
 		component.set('v.loaded', false);
 
 		if (component.isValid()){
-			var baseUrl = window.location.protocol + '//' + window.location.hostname;
-			component.set('v.iframeUrl', '/apex/sharinpix_free__SharinPixUploadApi?url='+baseUrl+'&eventIdentifier='+component.getGlobalId());
+			helper.site_url(component);
 		}
 
 		window.addEventListener('message', $A.getCallback( function(postMessageEvent) {
