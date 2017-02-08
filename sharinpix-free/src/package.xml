@@ -23,5 +23,9 @@
         <members>CustomLabels</members>
         <name>CustomLabels</name>
     </types>
+    <types>
+        <members>jquery</members>
+        <name>StaticResource</name>
+    </types>
     <version>38.0</version>
 </Package>
