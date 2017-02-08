@@ -1,6 +1,6 @@
 global with sharing class Utils {
 
-    private static final String API_URL = 'https://api.sharinpix.com';
+    private String API_URL = 'https://api.sharinpix.com';
     private Client clientInstance = null;
 
     /**
@@ -18,6 +18,7 @@ global with sharing class Utils {
      */
     global Utils(Client instance) {
         this.clientInstance = instance;
+        this.API_URL = instance.endpoint_url.substring(0, instance.endpoint_url.indexOf('/', 8));
     }
 
     /**
@@ -103,6 +104,8 @@ global with sharing class Utils {
      * @return                 URL of transformed image
      */
     global String getImageUrl(String imageId, Map<String, Object> sharinpix, List<Object> transformations) {
+        if (sharinpix == null) sharinpix = new Map<String, Object>();
+        if (transformations == null) transformations = new List<Object>();
         Map<String, Object> params = new Map<String, Object> {
             'id' => imageId,
             'sharinpix' => sharinpix,
@@ -141,6 +144,63 @@ global with sharing class Utils {
         return this.getImageUrl(imageId, new Map<String, Object>(), new List<Object> { transfomation });
     }
 
+    private Object externalUrlPost(Object body) {
+        Blob blobBody = Blob.valueOf(JSON.serialize(body));
+        Map<String, Object> params = new Map<String, Object> {
+            'abilities' => new Map<String, Object> {
+                'image_urls' => true
+            }
+        };
+        return clientInstance.post('/image_external_urls', blobBody, params);
+    }
+
+    /**
+     * Apply transformations on image and get external url
+     * @param  images List of Map objects specifying image_id, sharinpix options and transformations
+     * @return        List of Map objects containing 'image_id' and 'url' as keys
+     */
+    global Map<String, Object> getExternalImageUrl(Map<String, Object> imageTransformation) {
+        Map<String, Object> body = new Map<String, Object> {
+            'image_external_url' => imageTransformation
+        };
+        return (Map<String, Object>)externalUrlPost(body);
+    }
+
+    /**
+     * Apply transformations on images and get external image urls
+     * @param  images List of Map objects specifying image_id, sharinpix options and transformations
+     * @return        List of Map objects containing 'image_id' and 'url' as keys
+     */
+    global List<Object> getExternalImageUrls(List<Map<String, Object>> imageTransformations) {
+        Map<String, Object> body = new Map<String, Object> {
+            'image_external_urls' => imageTransformations
+        };
+        return (List<Object>)externalUrlPost(body);
+    }
+
+    /**
+     * Retrieve all TagImages from an album with a specified tagName
+     * @param  albumId albumId to get tag images from
+     * @param  tagName name of tag to get images with
+     * @return         List of tags on image
+     */
+    global List<Object> getAlbumTagImages(String albumId, String tagName) {
+        albumId = (albumId InstanceOf Id) ? String.valueOf((Id)albumId) : albumId;
+        Map<String, Object> params = new Map<String, Object> { 'admin' => true };
+        Integer page = 1;
+        List<Object> tagImagesPage = new List<Object>();
+        List<Object> allTagImages = new List<Object>();
+        do {
+            tagImagesPage = (List<Object>)clientInstance.get(
+                '/tag_images?album_id=' + albumId +
+                '&tag_name=' + EncodingUtil.urlEncode(tagName, 'UTF-8').replaceAll('\\+', '%20') +
+                '&page=' + page++
+            , params);
+            allTagImages.addAll(tagImagesPage);
+        } while (tagImagesPage.size() != 0);
+        return allTagImages;
+    }
+
     /**
      * Retrieves all tags from an image
      * @param  imageId Image ID of image to get tags for
@@ -161,7 +221,7 @@ global with sharing class Utils {
     /**
      * Retrieves all tag names from an image
      * @param  imageId Image ID of image to get tags for
-     * @return         List of tags on image
+     * @return         List of tag names on image
      */
     global List<String> getTagNamesOnImage(String imageId) {
         List<Object> allTagImages = getTagsOnImage(imageId);

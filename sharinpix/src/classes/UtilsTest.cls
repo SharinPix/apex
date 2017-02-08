@@ -94,6 +94,78 @@ private with sharing class UtilsTest {
         System.assertEquals('Invalid width or height.', sizeErrorMessage);
     }
 
+    static testMethod void testGetExternalImageUrl() {
+        Map<String, Object> image = new Map<String, Object> {
+            'image_id' => 'imageId',
+            'sharinpix' => new Map<String, Object> {
+                'download' => false
+            },
+            'transformations' => new Map<String, Object> {
+                'crop' => 'fit',
+                'height' => 300,
+                'width' => 300
+            }
+        };
+
+        Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+            API_URL + '/image_external_urls' => new SingleRequestMock(200, 'OK','{"image_id":"imageId","url":"https://cloudinary.url"}', null)
+        };
+        Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+        Test.startTest();
+        Map<String, Object> imageObj = (new Utils()).getExternalImageUrl(image);
+        Test.stopTest();
+
+        System.assertEquals('imageId', (String)imageObj.get('image_id'));
+        System.assertEquals('https://cloudinary.url', (String)imageObj.get('url'));
+    }
+
+    static testMethod void testGetExternalImageUrls() {
+        List<Map<String, Object>> images = new List<Map<String, Object>> {
+            new Map<String, Object> {
+                'image_id' => 'imageId',
+                'sharinpix' => new Map<String, Object> {
+                    'download' => false
+                },
+                'transformations' => new Map<String, Object> {
+                    'crop' => 'fit',
+                    'height' => 300,
+                    'width' => 300
+                }
+            }
+        };
+
+        Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+            API_URL + '/image_external_urls' => new SingleRequestMock(200, 'OK','[{"image_id":"imageId","url":"https://cloudinary.url"}]', null)
+        };
+        Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+        Test.startTest();
+        List<Object> response = (List<Object>)(new Utils()).getExternalImageUrls(images);
+        Test.stopTest();
+
+        Map<String, Object> imageObj = (Map<String, Object>)response[0];
+        System.assertEquals('imageId', (String)imageObj.get('image_id'));
+        System.assertEquals('https://cloudinary.url', (String)imageObj.get('url'));
+    }
+
+    static testMethod void testGetAlbumTagImages() {
+        Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+            API_URL + '/tag_images?album_id=albumId&tag_name=tagName&page=1' => new SingleRequestMock(200, 'OK','[{"tag":{"name":"tagName"}}]', null),
+            API_URL + '/tag_images?album_id=albumId&tag_name=tagName&page=2' => new SingleRequestMock(200, 'OK','[]', null)
+        };
+        Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+        Test.startTest();
+        List<Object> tagImages = (new Utils()).getAlbumTagImages('albumId', 'tagName');
+        Test.stopTest();
+
+        Map<String, Object> tagImage = (Map<String, Object>)tagImages[0];
+        String tagName = (String)((Map<String, Object>)tagImage.get('tag')).get('name');
+
+        System.assertEquals('tagName', tagName);
+    }
+
     static testMethod void testGetTagNamesOnImage() {
         String imageId = 'imageId';
 
@@ -135,7 +207,7 @@ private with sharing class UtilsTest {
 
         Boolean tagRemoved = false;
         Test.startTest();
-        tagRemoved = (new Utils()).removeTags(imageId, new List<String> { 'tagName' });
+        tagRemoved = (new Utils()).removeTags(imageId, new List<String> { 'name' });
         Test.stopTest();
 
         System.assert(tagRemoved);
