@@ -59,24 +59,24 @@
             self.uploadChunk(component, file, content, 0, callback);
         });
     },
-     
+
     uploadChunk : function(component, file, fileContents, fromPos, callback, attachId) {
         if (fromPos === fileContents.length) {
             return callback(null, attachId);
         }
         var toPos = Math.min(fileContents.length, fromPos + this.CHUNK_SIZE);
         var chunk = fileContents.substring(fromPos, toPos);
-        
+
         var action = component.get("c.saveTheChunk");
         var prefix = $A.util.isEmpty(component.get("v.filenamePrefix")) ? '' : component.get("v.filenamePrefix");
         action.setParams({
             parentId: component.get("v.recordId"),
             fileName: prefix + file.name,
-            base64Data: encodeURIComponent(chunk), 
+            base64Data: encodeURIComponent(chunk),
             contentType: file.type,
             fileId: attachId
         });
-       
+
         var self = this;
         action.setCallback(this, function(response) {
             if (response.getState() === 'SUCCESS') {
@@ -101,5 +101,11 @@
             component.set('v.iframeUrl', response.getReturnValue()+'/apex/sharinpix_free__SharinPixUploadApi?url='+baseUrl+'&eventIdentifier='+component.getGlobalId());
         });
         $A.enqueueAction(action);
+    },
+
+    fireUpload: function(component) {
+        var eventUploaded = $A.get('e.c:Uploaded');
+        eventUploaded.setParam('eventIdentifier', component.get('v.eventIdentifier'));
+        eventUploaded.fire();
     }
-})//
+})
