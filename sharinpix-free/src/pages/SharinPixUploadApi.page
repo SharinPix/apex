@@ -17,7 +17,7 @@
       if (sessionId.includes(orgId)){
         window.parent.postMessage({name: 'loaded', eventIdentifier: '{!$CurrentPage.parameters.eventIdentifier}'}, '*');
       }
-      
+
       var uploading = 0;
       var uploaded = 0;
 
@@ -47,9 +47,9 @@
         filetoBase64(file, function(err, content){
           var attachment_object = {
                     parentId: parentId,
-                    Body: content, 
-                    Name: prefix + file.name, 
-                    ContentType: file.type 
+                    Body: content,
+                    Name: (prefix == undefined ? '' : prefix) + file.name,
+                    ContentType: file.type
                   };
           $.ajax({
               url: '/services/data/v38.0/sobjects/Attachment',
