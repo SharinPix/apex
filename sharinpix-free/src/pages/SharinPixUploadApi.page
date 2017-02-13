@@ -1,12 +1,16 @@
 <apex:page sidebar="false" showHeader="false" >
-	<apex:includeScript value="{!$Resource.jquery}"/>
+  <apex:includeScript value="{!$Resource.jquery}"/>
   <script>
-  	var MAX_SIZE = 25000000;
+    var MAX_SIZE = 25000000;
+    var API_VERSION = 'v38.0';
     jQuery(document).ready(function($) {
       window.addEventListener('message',function(event) {
         if (event.data.name == 'new-upload'){
           if (event.data.fileType === 'Attachment'){
             upload_attachment(event.data, event.data.eventIdentifier);
+          }
+          else if (event.data.fileType === 'ContentDocument'){
+            upload_content_document(event.data, event.data.eventIdentifier);
           }
         }
       },false);
@@ -15,7 +19,7 @@
 
       var sessionId = '{!$Api.Session_ID}';
       if (sessionId.includes(orgId)){
-        window.parent.postMessage({name: 'loaded', eventIdentifier: '{!$CurrentPage.parameters.eventIdentifier}'}, '*');
+        broadcast_message({name: 'loaded', eventIdentifier: '{!$CurrentPage.parameters.eventIdentifier}'});
       }
 
       var uploading = 0;
@@ -23,27 +27,27 @@
 
       var upload_attachment = function(payload, eventIdentifier){
         for (var i = 0; i < payload.files.length; i++) {
-        	if (payload.files[i].size > MAX_SIZE){
-        		window.parent.postMessage({name: 'error', message: '[{"message": "File size cannot exceed ' + MAX_SIZE + ' bytes. ' +
-              'Selected file size: ' + payload.files[i].size + '."}]', eventIdentifier: eventIdentifier}, '*');
-        		continue;
-        	}
+          if (payload.files[i].size > MAX_SIZE){
+            broadcast_message({name: 'error', message: '[{"message": "File size cannot exceed ' + MAX_SIZE + ' bytes. ' +
+              'Selected file size: ' + payload.files[i].size + '."}]', eventIdentifier: eventIdentifier});
+            continue;
+          }
           uploading += 1;
-          upload_file(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, function(err, res){
-          	if (res === true){
-          		uploaded += 1;
-	            if (uploading === uploaded){
-	              window.parent.postMessage({name: 'uploaded', eventIdentifier: eventIdentifier}, '*');
-	            }
-          	}
-          	if (err != null){
-          		window.parent.postMessage({name: 'error', message: err, eventIdentifier: eventIdentifier}, '*');
-          	}
+          upload_file_as_attachment(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, function(err, res){
+            if (res === true){
+              uploaded += 1;
+              if (uploading === uploaded){
+                broadcast_message({name: 'uploaded', eventIdentifier: eventIdentifier});
+              }
+            }
+            if (err != null){
+              broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
+            }
           })
         }
       }
 
-      var upload_file = function(file, parentId, eventIdentifier, prefix, callback) {
+      var upload_file_as_attachment = function(file, parentId, eventIdentifier, prefix, callback) {
         filetoBase64(file, function(err, content){
           var attachment_object = {
                     parentId: parentId,
@@ -52,7 +56,7 @@
                     ContentType: file.type
                   };
           $.ajax({
-              url: '/services/data/v38.0/sobjects/Attachment',
+              url: '/services/data/'+ API_VERSION + '/sobjects/Attachment',
               data: JSON.stringify(attachment_object),
               type: 'POST',
               processData: false,
@@ -63,7 +67,7 @@
                 xhr.upload.addEventListener("progress", function(evt){
                   if (evt.lengthComputable) {
                     var percentComplete = evt.loaded / evt.total;
-                    window.parent.postMessage({name: 'uploading', percent: 30 + Math.round(uploaded/uploading * 70), eventIdentifier: eventIdentifier}, '*');
+                    broadcast_message({name: 'uploading', percent: 30 + Math.round(uploaded/uploading * 70), eventIdentifier: eventIdentifier});
                   }
                 }, false);
                 return xhr;
@@ -72,7 +76,7 @@
                   callback(null, true)
               },
               error: function(errorObj, errorMessage, errorThrown){
-              	callback(errorObj.responseText, false);
+                callback(errorObj.responseText, false);
               }
            });
         })
@@ -88,6 +92,92 @@
           callback(null, fileContents);
         }
         reader.readAsDataURL(file);
+      }
+
+
+      /* Uploading content document here DRAFT */
+      var upload_content_document = function(payload, eventIdentifier){
+        for (var i = 0; i < payload.files.length; i++) {
+          if (payload.files[i].size > MAX_SIZE){
+            broadcast_message({name: 'error', message: '[{"message": "File size cannot exceed ' + MAX_SIZE + ' bytes. ' +
+              'Selected file size: ' + payload.files[i].size + '."}]', eventIdentifier: eventIdentifier});
+            continue;
+          }
+          uploading += 1;
+          upload_file_as_content_document(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, function(err, res){
+            if (res === true){
+              uploaded += 1;
+              if (uploading === uploaded){
+                broadcast_message({name: 'uploaded', eventIdentifier: eventIdentifier});
+              }
+            }
+            if (err != null){
+              broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
+            }
+          })
+        }
+      }
+
+      var upload_file_as_content_document = function(file, parentId, eventIdentifier, prefix, callback){
+        filetoBase64(file, function(err, content){
+          var contentDocument = {
+            compositeRequest: [
+              {
+                method: "POST",
+                url: "/services/data/"+ API_VERSION + "/sobjects/ContentVersion",
+                referenceId: "refVersion",
+                body: {
+                  PathOnClient: (prefix == undefined ? '' : prefix) + file.name,
+                  Versiondata: content
+                }
+              },
+              {
+                method: "GET",
+                url: "/services/data/"+ API_VERSION + "/sobjects/ContentVersion/@{refVersion.id}/",
+                referenceId: "refVersionGet"
+              },
+              {
+                method: "POST",
+                url: "/services/data/"+ API_VERSION + "/sobjects/ContentDocumentLink",
+                referenceId: "refLink",
+                body: {
+                  LinkedEntityId: parentId,
+                  ContentDocumentId: "@{refVersionGet.ContentDocumentId}",
+                  ShareType: "V",
+                  Visibility: "AllUsers"
+                }
+              }
+            ]
+          }
+          $.ajax({
+            url: '/services/data/"+ API_VERSION + "/composite',
+            data: JSON.stringify(contentDocument),
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            headers: {'Authorization': 'Bearer {!$Api.Session_ID}', 'Content-Type': 'application/json'},
+            xhr: function(){
+              var xhr = new window.XMLHttpRequest();
+              xhr.upload.addEventListener("progress", function(evt){
+                if (evt.lengthComputable) {
+                  var percentComplete = evt.loaded / evt.total;
+                  broadcast_message({name: 'uploading', percent: 30 + Math.round(uploaded/uploading * 70), eventIdentifier: eventIdentifier});
+                }
+              }, false);
+              return xhr;
+            },
+            success: function(response) {
+                callback(null, true)
+            },
+            error: function(errorObj, errorMessage, errorThrown){
+              callback(errorObj.responseText, false);
+            }
+          });
+        });
+      }
+
+      var broadcast_message = function(payload){
+        window.parent.postMessage(payload, '*');
       }
     });
   </script>
