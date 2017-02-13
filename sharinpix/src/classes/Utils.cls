@@ -1,6 +1,5 @@
 global with sharing class Utils {
 
-    private String API_URL = 'https://api.sharinpix.com';
     private Client clientInstance = null;
 
     /**
@@ -18,7 +17,6 @@ global with sharing class Utils {
      */
     global Utils(Client instance) {
         this.clientInstance = instance;
-        this.API_URL = instance.endpoint_url.substring(0, instance.endpoint_url.indexOf('/', 8));
     }
 
     /**
@@ -113,7 +111,7 @@ global with sharing class Utils {
         };
         HTTPRequest request = new HTTPRequest();
         request.setMethod('GET');
-        request.setEndpoint(API_URL + '/images/' + imageId + '?token=' + clientInstance.token(params));
+        request.setEndpoint(clientInstance.getUrl() + '/images/' + imageId + '?token=' + clientInstance.token(params));
         HTTPResponse response = (new HTTP()).send(request);
         return response.getHeader('Location');
     }
@@ -146,11 +144,7 @@ global with sharing class Utils {
 
     private Object externalUrlPost(Object body) {
         Blob blobBody = Blob.valueOf(JSON.serialize(body));
-        Map<String, Object> params = new Map<String, Object> {
-            'abilities' => new Map<String, Object> {
-                'image_urls' => true
-            }
-        };
+        Map<String, Object> params = new Map<String, Object> { 'admin' => true };
         return clientInstance.post('/image_external_urls', blobBody, params);
     }
 
@@ -193,7 +187,7 @@ global with sharing class Utils {
         do {
             tagImagesPage = (List<Object>)clientInstance.get(
                 '/tag_images?album_id=' + albumId +
-                '&tag_name=' + EncodingUtil.urlEncode(tagName, 'UTF-8').replaceAll('\\+', '%20') +
+                '&tag_name=' + clientInstance.urlEncode(tagName) +
                 '&page=' + page++
             , params);
             allTagImages.addAll(tagImagesPage);
@@ -241,7 +235,7 @@ global with sharing class Utils {
     global Object addTag(String imageId, String tagName) {
         Map<String, Object> claims = new Map<String, Object> { 'admin' => true };
         return clientInstance.post(
-            '/tags/' + EncodingUtil.urlEncode(tagName, 'UTF-8').replaceAll('\\+', '%20') + '/tag_images',
+            '/tags/' + clientInstance.urlEncode(tagName) + '/tag_images',
             Blob.valueOf('{"image_ids":["' + imageId + '"]}'),
             claims
         );
