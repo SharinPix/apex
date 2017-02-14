@@ -10,12 +10,6 @@
     jQuery(document).ready(function($) {
       window.addEventListener('message',function(event) {
         if (event.data.name == 'new-upload'){
-          if (event.data.fileType === 'Attachment'){
-            upload_attachment(event.data, event.data.eventIdentifier);
-          }
-          else if (event.data.fileType === 'ContentDocument'){
-            upload_content_document(event.data, event.data.eventIdentifier);
-          }
           upload_images(event.data, event.data.eventIdentifier);
         }
       },false);
@@ -38,143 +32,66 @@
             continue;
           }
           uploading += 1;
-          if (payload.fileType === 'Attachment'){
-            upload_file_as_attachment(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, handleCallback);
-          }
-          else if (payload.fileType === 'ContentDocument'){
-            upload_file_as_content_document(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, handleCallback);
-          }
+
+          upload_image(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, payload.fileType, handleCallback);
         }
       }
 
-/*      var upload_attachment = function(payload, eventIdentifier){
-        for (var i = 0; i < payload.files.length; i++) {
-          if (payload.files[i].size > MAX_SIZE){
-            broadcast_message({name: 'error', message: '[{"message": "File size cannot exceed ' + MAX_SIZE + ' bytes. ' +
-              'Selected file size: ' + payload.files[i].size + '."}]', eventIdentifier: eventIdentifier});
-            continue;
-          }
-          uploading += 1;
-          // upload_file_as_attachment(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, function(err, res){
-          //   if (res === true){
-          //     uploaded += 1;
-          //     if (uploading === uploaded){
-          //       broadcast_message({name: 'uploaded', eventIdentifier: eventIdentifier});
-          //     }
-          //   }
-          //   if (err != null){
-          //     broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
-          //   }
-          // })
-          upload_file_as_attachment(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, handleCallback);
-        }
-      }
-*/
-      var handleCallback = function(err, res){
-        if (res === true){
-          uploaded += 1;
-          if (uploading === uploaded){
-            broadcast_message({name: 'uploaded', eventIdentifier: eventIdentifier});
-          }
-        }
-        if (err != null){
-          broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
-        }
-      }
-
-      /*
-      var upload_content_document = function(payload, eventIdentifier){
-        for (var i = 0; i < payload.files.length; i++) {
-          if (payload.files[i].size > MAX_SIZE){
-            broadcast_message({name: 'error', message: '[{"message": "File size cannot exceed ' + MAX_SIZE + ' bytes. ' +
-              'Selected file size: ' + payload.files[i].size + '."}]', eventIdentifier: eventIdentifier});
-            continue;
-          }
-          uploading += 1;
-          // upload_file_as_content_document(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, function(err, res){
-          //   if (res === true){
-          //     uploaded += 1;
-          //     if (uploading === uploaded){
-          //       broadcast_message({name: 'uploaded', eventIdentifier: eventIdentifier});
-          //     }
-          //   }
-          //   if (err != null){
-          //     broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
-          //   }
-          // })
-          upload_file_as_content_document(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, handleCallback);
-        }
-      }
-      */
-
-      var upload_file_as_attachment = function(file, parentId, eventIdentifier, prefix, callback) {
+      var upload_image = function(file, parentId, eventIdentifier, prefix, fileType, callback){
         filetoBase64(file, function(err, content){
-          var attachment_object = {
+          var body = {}
+          if (fileType === 'ContentDocument') {
+            var body = {
+              compositeRequest: [
+                {
+                  method: "POST",
+                  url: "/services/data/"+ API_VERSION + "/sobjects/ContentVersion",
+                  referenceId: "refVersion",
+                  body: {
+                    PathOnClient: (prefix == undefined ? '' : prefix) + file.name,
+                    Versiondata: content
+                  }
+                },
+                {
+                  method: "GET",
+                  url: "/services/data/"+ API_VERSION + "/sobjects/ContentVersion/@{refVersion.id}/",
+                  referenceId: "refVersionGet"
+                },
+                {
+                  method: "POST",
+                  url: "/services/data/"+ API_VERSION + "/sobjects/ContentDocumentLink",
+                  referenceId: "refLink",
+                  body: {
+                    LinkedEntityId: parentId,
+                    ContentDocumentId: "@{refVersionGet.ContentDocumentId}",
+                    ShareType: "V",
+                    Visibility: "AllUsers"
+                  }
+                }
+              ]
+            };
+          }
+          else if (fileType === 'Attachment') {
+            var body = {
+              compositeRequest: [
+                {
+                  method: "POST",
+                  url: '/services/data/'+ API_VERSION + '/sobjects/Attachment',
+                  referenceId: "refVersion",
+                  body: {
                     parentId: parentId,
                     Body: content,
                     Name: (prefix == undefined ? '' : prefix) + file.name,
                     ContentType: file.type
-                  };
-          $.ajax({
-              url: '/services/data/'+ API_VERSION + '/sobjects/Attachment',
-              data: JSON.stringify(attachment_object),
-              type: 'POST',
-              processData: false,
-              contentType: false,
-              headers: {'Authorization': 'Bearer {!$Api.Session_ID}', 'Content-Type': 'application/json'},
-              xhr: function(){
-                var xhr = new window.XMLHttpRequest();
-                xhr.upload.addEventListener("progress", function(evt){
-                  if (evt.lengthComputable) {
-                    broadcast_message({name: 'uploading', percent: 30 + Math.round(uploaded/uploading * 70), eventIdentifier: eventIdentifier});
                   }
-                }, false);
-                return xhr;
-              },
-              success: function(response) {
-                  callback(null, true)
-              },
-              error: function(errorObj, errorMessage, errorThrown){
-                callback(errorObj.responseText, false);
-              }
-           });
-        })
-      }
+                }
+              ]
+            };
+          }
 
-      var upload_file_as_content_document = function(file, parentId, eventIdentifier, prefix, callback){
-        filetoBase64(file, function(err, content){
-          var contentDocument = {
-            compositeRequest: [
-              {
-                method: "POST",
-                url: "/services/data/"+ API_VERSION + "/sobjects/ContentVersion",
-                referenceId: "refVersion",
-                body: {
-                  PathOnClient: (prefix == undefined ? '' : prefix) + file.name,
-                  Versiondata: content
-                }
-              },
-              {
-                method: "GET",
-                url: "/services/data/"+ API_VERSION + "/sobjects/ContentVersion/@{refVersion.id}/",
-                referenceId: "refVersionGet"
-              },
-              {
-                method: "POST",
-                url: "/services/data/"+ API_VERSION + "/sobjects/ContentDocumentLink",
-                referenceId: "refLink",
-                body: {
-                  LinkedEntityId: parentId,
-                  ContentDocumentId: "@{refVersionGet.ContentDocumentId}",
-                  ShareType: "V",
-                  Visibility: "AllUsers"
-                }
-              }
-            ]
-          };
           $.ajax({
-            url: '/services/data/"+ API_VERSION + "/composite',
-            data: JSON.stringify(contentDocument),
+            url: '/services/data/'+ API_VERSION + '/composite',
+            data: JSON.stringify(body),
             type: 'POST',
             processData: false,
             contentType: false,
@@ -189,14 +106,14 @@
               return xhr;
             },
             success: function(response) {
-              callback(null, true)
+              callback(null, true, eventIdentifier)
             },
             error: function(errorObj, errorMessage, errorThrown){
-              callback(errorObj.responseText, false);
+              callback(errorObj.responseText, false, eventIdentifier);
             }
           });
         });
-      }
+      };
 
       var filetoBase64 = function(file, callback){
         var reader = new FileReader();
@@ -210,7 +127,7 @@
         reader.readAsDataURL(file);
       }
 
-      var handleCallback = function(err, res){
+      var handleCallback = function(err, res, eventIdentifier){
         if (res === true){
           uploaded += 1;
           if (uploading === uploaded){
@@ -221,7 +138,6 @@
           broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
         }
       }
-
     });
   </script>
 </apex:page>
