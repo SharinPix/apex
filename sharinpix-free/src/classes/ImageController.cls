@@ -11,9 +11,9 @@ public with sharing class ImageController {
 ----------------------------------------------------------------------
 **********************************************************************
 */
-    public static Id saveTheFile(Id parentId, String fileName, String base64Data, String contentType) { 
+    public static Id saveTheFile(Id parentId, String fileName, String base64Data, String contentType) {
         base64Data = EncodingUtil.urlDecode(base64Data, 'UTF-8');
-        
+
         Attachment a = new Attachment();
         a.parentId = parentId;
         a.Body = EncodingUtil.base64Decode(base64Data);
@@ -22,9 +22,9 @@ public with sharing class ImageController {
         insert a;
         return a.Id;
     }
-    
+
     @AuraEnabled
-    public static Id saveTheChunk(Id parentId, String fileName, String base64Data, String contentType, String fileId) { 
+    public static Id saveTheChunk(Id parentId, String fileName, String base64Data, String contentType, String fileId) {
         if (fileId == null) {
             boolean isCreateable = Crud.isCreateable(parentId.getSObjectType());
             if (!isCreateable  || !Crud.isCreateable(Attachment.sObjectType)){
@@ -41,7 +41,7 @@ public with sharing class ImageController {
     }
 
     @AuraEnabled
-    public static object getFiles(Id parentId, String prefix, String contentType) { 
+    public static object getFiles(Id parentId, String prefix, String contentType) {
         String nameLike = prefix + '%';
         boolean isAccessible = Crud.isAccessible(parentId.getSObjectType());
         if (!isAccessible){
@@ -49,34 +49,34 @@ public with sharing class ImageController {
             return null;
         }
         list<map<string, Id>> lstImages = new list<map<string, Id>>();
-        for(Attachment att: [SELECT ID 
-                            FROM Attachment 
-                            WHERE ParentId = :parentId 
-                            AND ContentType LIKE :contentType 
-                            AND Name LIKE :nameLike 
-                            ORDER BY CreatedDate 
+        for(Attachment att: [SELECT ID
+                            FROM Attachment
+                            WHERE ParentId = :parentId
+                            AND ContentType LIKE :contentType
+                            AND Name LIKE :nameLike
+                            ORDER BY CreatedDate
                             DESC LIMIT 50]){
             lstImages.add(new map<string, Id>{'Id'=> att.Id});
         }
         set<id> setContentId = new set<id>();
         set<string> filetype = new set<string>{'jpg', 'jpeg', 'png', 'gif'};
-        for(ContentDocumentLink content: [SELECT ContentDocumentId, 
-                                                ContentDocument.FileType 
-                                         FROM ContentDocumentLink 
+        for(ContentDocumentLink content: [SELECT ContentDocumentId,
+                                                ContentDocument.FileType
+                                         FROM ContentDocumentLink
                                          WHERE LinkedEntityId = :parentId
                                          AND ContentDocument.FileType IN :filetype]){
             setContentId.add(content.ContentDocumentId);
         }
-        for(ContentVersion version: [SELECT ContentDocumentId, 
-                                            Id 
-                                    FROM ContentVersion 
+        for(ContentVersion version: [SELECT ContentDocumentId,
+                                            Id
+                                    FROM ContentVersion
                                     WHERE ContentDocumentId IN :setContentId
                                     AND IsLatest = true]){
             lstImages.add(new map<string, Id>{'Id'=> version.Id});
         }
         return lstImages;
     }
-    
+
     @AuraEnabled
     public static Boolean deleteAttachment(Id Id){
         Schema.sObjectType sobjectType = Id.getSobjectType();
@@ -95,23 +95,23 @@ public with sharing class ImageController {
         }
         else if (objectname == 'ContentVersion') {
             isDeletable = (Crud.isDeletable(ContentDocument.sobjecttype));
-            list<ContentDocument> lstContentDocument =  [SELECT Id 
-                                                        FROM ContentDocument 
-                                                        WHERE Id = :[SELECT ContentDocumentId 
-                                                                    FROM ContentVersion 
+            list<ContentDocument> lstContentDocument =  [SELECT Id
+                                                        FROM ContentDocument
+                                                        WHERE Id = :[SELECT ContentDocumentId
+                                                                    FROM ContentVersion
                                                                     WHERE Id = :Id].ContentDocumentId];
             if(lstContentDocument.isEmpty() || !isDeletable){
                 throw new AuraHandledException(system.label.Err_insufficient_privileges);
             }
             delete lstContentDocument;
         }
-        
+
         return true;
     }
 
     private static void appendToFile(Id fileId, String base64Data) {
         Attachment a = new Attachment(Id=fileId);
-        a.Body = EncodingUtil.base64Decode(EncodingUtil.base64Encode([Select Body From Attachment Where Id = :fileId].body) + EncodingUtil.urlDecode(base64Data, 'UTF-8')); 
+        a.Body = EncodingUtil.base64Decode(EncodingUtil.base64Encode([Select Body From Attachment Where Id = :fileId].body) + EncodingUtil.urlDecode(base64Data, 'UTF-8'));
         update a;
     }
 
