@@ -3,6 +3,10 @@
   <script>
     var MAX_SIZE = 25000000;
     var API_VERSION = 'v38.0';
+    var broadcast_message = function(payload){
+      window.parent.postMessage(payload, '*');
+    }
+
     jQuery(document).ready(function($) {
       window.addEventListener('message',function(event) {
         if (event.data.name == 'new-upload'){
@@ -12,6 +16,7 @@
           else if (event.data.fileType === 'ContentDocument'){
             upload_content_document(event.data, event.data.eventIdentifier);
           }
+          upload_images(event.data, event.data.eventIdentifier);
         }
       },false);
 
@@ -25,7 +30,7 @@
       var uploading = 0;
       var uploaded = 0;
 
-      var upload_attachment = function(payload, eventIdentifier){
+      var upload_images = function(payload, eventIdentifier){
         for (var i = 0; i < payload.files.length; i++) {
           if (payload.files[i].size > MAX_SIZE){
             broadcast_message({name: 'error', message: '[{"message": "File size cannot exceed ' + MAX_SIZE + ' bytes. ' +
@@ -33,19 +38,74 @@
             continue;
           }
           uploading += 1;
-          upload_file_as_attachment(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, function(err, res){
-            if (res === true){
-              uploaded += 1;
-              if (uploading === uploaded){
-                broadcast_message({name: 'uploaded', eventIdentifier: eventIdentifier});
-              }
-            }
-            if (err != null){
-              broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
-            }
-          })
+          if (payload.fileType === 'Attachment'){
+            upload_file_as_attachment(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, handleCallback);
+          }
+          else if (payload.fileType === 'ContentDocument'){
+            upload_file_as_content_document(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, handleCallback);
+          }
         }
       }
+
+/*      var upload_attachment = function(payload, eventIdentifier){
+        for (var i = 0; i < payload.files.length; i++) {
+          if (payload.files[i].size > MAX_SIZE){
+            broadcast_message({name: 'error', message: '[{"message": "File size cannot exceed ' + MAX_SIZE + ' bytes. ' +
+              'Selected file size: ' + payload.files[i].size + '."}]', eventIdentifier: eventIdentifier});
+            continue;
+          }
+          uploading += 1;
+          // upload_file_as_attachment(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, function(err, res){
+          //   if (res === true){
+          //     uploaded += 1;
+          //     if (uploading === uploaded){
+          //       broadcast_message({name: 'uploaded', eventIdentifier: eventIdentifier});
+          //     }
+          //   }
+          //   if (err != null){
+          //     broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
+          //   }
+          // })
+          upload_file_as_attachment(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, handleCallback);
+        }
+      }
+*/
+      var handleCallback = function(err, res){
+        if (res === true){
+          uploaded += 1;
+          if (uploading === uploaded){
+            broadcast_message({name: 'uploaded', eventIdentifier: eventIdentifier});
+          }
+        }
+        if (err != null){
+          broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
+        }
+      }
+
+      /*
+      var upload_content_document = function(payload, eventIdentifier){
+        for (var i = 0; i < payload.files.length; i++) {
+          if (payload.files[i].size > MAX_SIZE){
+            broadcast_message({name: 'error', message: '[{"message": "File size cannot exceed ' + MAX_SIZE + ' bytes. ' +
+              'Selected file size: ' + payload.files[i].size + '."}]', eventIdentifier: eventIdentifier});
+            continue;
+          }
+          uploading += 1;
+          // upload_file_as_content_document(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, function(err, res){
+          //   if (res === true){
+          //     uploaded += 1;
+          //     if (uploading === uploaded){
+          //       broadcast_message({name: 'uploaded', eventIdentifier: eventIdentifier});
+          //     }
+          //   }
+          //   if (err != null){
+          //     broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
+          //   }
+          // })
+          upload_file_as_content_document(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, handleCallback);
+        }
+      }
+      */
 
       var upload_file_as_attachment = function(file, parentId, eventIdentifier, prefix, callback) {
         filetoBase64(file, function(err, content){
@@ -66,7 +126,6 @@
                 var xhr = new window.XMLHttpRequest();
                 xhr.upload.addEventListener("progress", function(evt){
                   if (evt.lengthComputable) {
-                    var percentComplete = evt.loaded / evt.total;
                     broadcast_message({name: 'uploading', percent: 30 + Math.round(uploaded/uploading * 70), eventIdentifier: eventIdentifier});
                   }
                 }, false);
@@ -80,42 +139,6 @@
               }
            });
         })
-      }
-
-      var filetoBase64 = function(file, callback){
-        var reader = new FileReader();
-        reader.onload = function() {
-          var fileContents = reader.result;
-          var base64Mark = 'base64,';
-          var dataStart = fileContents.indexOf(base64Mark) + base64Mark.length;
-          fileContents = fileContents.substring(dataStart);
-          callback(null, fileContents);
-        }
-        reader.readAsDataURL(file);
-      }
-
-
-      /* Uploading content document here DRAFT */
-      var upload_content_document = function(payload, eventIdentifier){
-        for (var i = 0; i < payload.files.length; i++) {
-          if (payload.files[i].size > MAX_SIZE){
-            broadcast_message({name: 'error', message: '[{"message": "File size cannot exceed ' + MAX_SIZE + ' bytes. ' +
-              'Selected file size: ' + payload.files[i].size + '."}]', eventIdentifier: eventIdentifier});
-            continue;
-          }
-          uploading += 1;
-          upload_file_as_content_document(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, function(err, res){
-            if (res === true){
-              uploaded += 1;
-              if (uploading === uploaded){
-                broadcast_message({name: 'uploaded', eventIdentifier: eventIdentifier});
-              }
-            }
-            if (err != null){
-              broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
-            }
-          })
-        }
       }
 
       var upload_file_as_content_document = function(file, parentId, eventIdentifier, prefix, callback){
@@ -148,7 +171,7 @@
                 }
               }
             ]
-          }
+          };
           $.ajax({
             url: '/services/data/"+ API_VERSION + "/composite',
             data: JSON.stringify(contentDocument),
@@ -160,14 +183,13 @@
               var xhr = new window.XMLHttpRequest();
               xhr.upload.addEventListener("progress", function(evt){
                 if (evt.lengthComputable) {
-                  var percentComplete = evt.loaded / evt.total;
                   broadcast_message({name: 'uploading', percent: 30 + Math.round(uploaded/uploading * 70), eventIdentifier: eventIdentifier});
                 }
               }, false);
               return xhr;
             },
             success: function(response) {
-                callback(null, true)
+              callback(null, true)
             },
             error: function(errorObj, errorMessage, errorThrown){
               callback(errorObj.responseText, false);
@@ -176,9 +198,30 @@
         });
       }
 
-      var broadcast_message = function(payload){
-        window.parent.postMessage(payload, '*');
+      var filetoBase64 = function(file, callback){
+        var reader = new FileReader();
+        reader.onload = function() {
+          var fileContents = reader.result;
+          var base64Mark = 'base64,';
+          var dataStart = fileContents.indexOf(base64Mark) + base64Mark.length;
+          fileContents = fileContents.substring(dataStart);
+          callback(null, fileContents);
+        }
+        reader.readAsDataURL(file);
       }
+
+      var handleCallback = function(err, res){
+        if (res === true){
+          uploaded += 1;
+          if (uploading === uploaded){
+            broadcast_message({name: 'uploaded', eventIdentifier: eventIdentifier});
+          }
+        }
+        if (err != null){
+          broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
+        }
+      }
+
     });
   </script>
 </apex:page>
