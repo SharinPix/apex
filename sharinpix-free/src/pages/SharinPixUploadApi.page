@@ -5,14 +5,14 @@
     <script>
       var MAX_SIZE = 25000000;
       var API_VERSION = 'v38.0';
-      var broadcast_message = function(payload){
+      var broadcastMessage = function(payload){
         window.parent.postMessage(payload, '*');
       }
 
       jQuery(document).ready(function($) {
         window.addEventListener('message',function(event) {
           if (event.data.name == 'new-upload'){
-            upload_images(event.data, event.data.eventIdentifier);
+            uploadImages(event.data, event.data.eventIdentifier);
           }
         },false);
 
@@ -20,26 +20,26 @@
 
         var sessionId = '{!$Api.Session_ID}';
         if (sessionId.includes(orgId)){
-          broadcast_message({name: 'loaded', eventIdentifier: '{!$CurrentPage.parameters.eventIdentifier}'});
+          broadcastMessage({name: 'loaded', eventIdentifier: '{!$CurrentPage.parameters.eventIdentifier}'});
         }
 
         var uploading = 0;
         var uploaded = 0;
 
-        var upload_images = function(payload, eventIdentifier){
+        var uploadImages = function(payload, eventIdentifier){
           for (var i = 0; i < payload.files.length; i++) {
             if (payload.files[i].size > MAX_SIZE){
-              broadcast_message({name: 'error', message: '[{"message": "File size cannot exceed ' + MAX_SIZE + ' bytes. ' +
+              broadcastMessage({name: 'error', message: '[{"message": "File size cannot exceed ' + MAX_SIZE + ' bytes. ' +
                 'Selected file size: ' + payload.files[i].size + '."}]', eventIdentifier: eventIdentifier});
               continue;
             }
             uploading += 1;
 
-            upload_image(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, payload.fileType, handleCallback);
+            uploadImage(payload.files[i], payload.recordId, eventIdentifier, payload.prefix, payload.fileType, handleCallback);
           }
         }
 
-        var upload_image = function(file, parentId, eventIdentifier, prefix, fileType, callback){
+        var uploadImage = function(file, parentId, eventIdentifier, prefix, fileType, callback){
           filetoBase64(file, function(err, content){
             var body = {}
             if (fileType === 'ContentDocument') {
@@ -102,7 +102,7 @@
                 var xhr = new window.XMLHttpRequest();
                 xhr.upload.addEventListener("progress", function(evt){
                   if (evt.lengthComputable) {
-                    broadcast_message({name: 'uploading', percent: 30 + Math.round(uploaded/uploading * 70), eventIdentifier: eventIdentifier});
+                    broadcastMessage({name: 'uploading', percent: 30 + Math.round(uploaded/uploading * 70), eventIdentifier: eventIdentifier});
                   }
                 }, false);
                 return xhr;
@@ -133,11 +133,11 @@
           if (res === true){
             uploaded += 1;
             if (uploading === uploaded){
-              broadcast_message({name: 'uploaded', eventIdentifier: eventIdentifier});
+              broadcastMessage({name: 'uploaded', eventIdentifier: eventIdentifier});
             }
           }
           if (err != null){
-            broadcast_message({name: 'error', message: err, eventIdentifier: eventIdentifier});
+            broadcastMessage({name: 'error', message: err, eventIdentifier: eventIdentifier});
           }
         }
       });
