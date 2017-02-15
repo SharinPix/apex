@@ -13,7 +13,7 @@
             component.set('v.source', source);
         }
     },
-    site_url: function(component){
+    siteUrl: function(component){
         var action = component.get("c.site");
         action.setCallback(this, function(response) {
             component.set('v.siteUrl', response.getReturnValue());

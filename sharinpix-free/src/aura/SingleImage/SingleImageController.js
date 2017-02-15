@@ -1,6 +1,6 @@
 ({
 	doInit : function(component, event, helper) {
-		helper.site_url(component);
+		helper.siteUrl(component);
 		helper.reloadSource(component);
 
 		var height = component.get('v.height');
