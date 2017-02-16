@@ -1,7 +1,7 @@
 <aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" controller="ImageController">
 	<aura:attribute name="attachmentId" type="String" access="global"/>
 	<aura:attribute name="source" type="String" access="global"/>
-    <aura:attribute name="height" type="integer" access="global" />
+	<aura:attribute name="height" type="integer" access="global" />
 	<aura:attribute name="loading" type="Boolean"/>
 
 	<aura:attribute name="text" type="String" access="global"/>
