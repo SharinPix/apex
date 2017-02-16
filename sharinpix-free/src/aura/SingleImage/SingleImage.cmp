@@ -16,26 +16,32 @@
 	<aura:attribute name="style" type="string" access="global" />
 	<aura:handler name="change" value="{! v.attachmentId }" action="{! c.doReload }"/>
 	<div class="container" style="{! v.style }">
-		<aura:if isTrue="{! !empty(v.source)}">
-			<img aura:id="image" src="{! v.source }" onload="{! c.onLoaded }" alt="image"/>
-		<aura:set attribute="else">
-			<div class="img-placeholder"></div>
-			<div class="no-image">
-				No image
-			</div>
-		</aura:set>
-		</aura:if>
-		<aura:if isTrue="{! !empty(v.attachmentId) &amp;&amp; v.loading }">
-			<lightning:spinner alternativeText="loading in progress" />
-		</aura:if>
-		<div class="{!v.verticalAlign + ' ' + V.textSize}">
-			<aura:if isTrue="{! !empty(v.linkText)}">
-				<p><a class="{!v.color}" href="{!v.linkText}" target="_blank">{! !empty(v.text) ? v.text : v.linkText }</a></p>
+		<aura:if isTrue="{! !empty(v.source) }">
+			<aura:if isTrue="{! !empty(v.attachmentId)}">
+				<img aura:id="image" src="{! v.source }" onload="{! c.onLoaded }" alt="image"/>
 			<aura:set attribute="else">
-				<p class="{!v.color}">{!v.text}</p>
+				<div class="img-placeholder"></div>
+				<div class="no-image">
+					No image
+				</div>
 			</aura:set>
 			</aura:if>
-		</div>
+			<aura:if isTrue="{! !empty(v.attachmentId) &amp;&amp; v.loading }">
+				<lightning:spinner alternativeText="loading in progress" />
+			</aura:if>
+			<div class="{!v.verticalAlign + ' ' + v.textSize}">
+				<aura:if isTrue="{! !empty(v.linkText)}">
+					<p><a class="{!v.color}" href="{!v.linkText}" target="_blank">{! !empty(v.text) ? v.text : v.linkText }</a></p>
+				<aura:set attribute="else">
+					<p class="{!v.color}">{!v.text}</p>
+				</aura:set>
+				</aura:if>
+			</div>
+		<aura:set attribute="else">
+			<lightning:spinner alternativeText="loading in progress" />
+		</aura:set>
+		</aura:if>
+
 	</div>
 
 </aura:component>

@@ -10,7 +10,6 @@
 			height = 200;
 		}
 		component.set('v.style', 'height: '+height+'px; line-height: '+height+'px;');
-		component.set('v.loading', true);
 	},
 	doReload: function(component, event, helper){
 		component.set('v.loading', true);
