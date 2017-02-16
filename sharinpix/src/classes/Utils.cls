@@ -111,7 +111,7 @@ global with sharing class Utils {
         };
         HTTPRequest request = new HTTPRequest();
         request.setMethod('GET');
-        request.setEndpoint(clientInstance.getUrl() + '/images/' + imageId + '?token=' + clientInstance.token(params));
+        request.setEndpoint(clientInstance.getHost() + '/images/' + imageId + '?token=' + clientInstance.token(params));
         HTTPResponse response = (new HTTP()).send(request);
         return response.getHeader('Location');
     }
