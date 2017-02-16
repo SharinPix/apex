@@ -142,7 +142,7 @@ global with sharing class Utils {
         return this.getImageUrl(imageId, new Map<String, Object>(), new List<Object> { transfomation });
     }
 
-    private Object externalUrlPost(Object body) {
+    private Object postImageExternalUrl(Object body) {
         Blob blobBody = Blob.valueOf(JSON.serialize(body));
         Map<String, Object> params = new Map<String, Object> { 'admin' => true };
         return clientInstance.post('/image_external_urls', blobBody, params);
@@ -153,11 +153,11 @@ global with sharing class Utils {
      * @param  images List of Map objects specifying image_id, sharinpix options and transformations
      * @return        List of Map objects containing 'image_id' and 'url' as keys
      */
-    global Map<String, Object> getExternalImageUrl(Map<String, Object> imageTransformation) {
+    global Map<String, Object> getImageExternalUrl(Map<String, Object> imageTransformation) {
         Map<String, Object> body = new Map<String, Object> {
             'image_external_url' => imageTransformation
         };
-        return (Map<String, Object>)externalUrlPost(body);
+        return (Map<String, Object>)postImageExternalUrl(body);
     }
 
     /**
@@ -165,11 +165,11 @@ global with sharing class Utils {
      * @param  images List of Map objects specifying image_id, sharinpix options and transformations
      * @return        List of Map objects containing 'image_id' and 'url' as keys
      */
-    global List<Object> getExternalImageUrls(List<Map<String, Object>> imageTransformations) {
+    global List<Object> getImageExternalUrls(List<Map<String, Object>> imageTransformations) {
         Map<String, Object> body = new Map<String, Object> {
             'image_external_urls' => imageTransformations
         };
-        return (List<Object>)externalUrlPost(body);
+        return (List<Object>)postImageExternalUrl(body);
     }
 
     /**

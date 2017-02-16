@@ -94,7 +94,7 @@ private with sharing class UtilsTest {
         System.assertEquals('Invalid width or height.', sizeErrorMessage);
     }
 
-    static testMethod void testGetExternalImageUrl() {
+    static testMethod void testGetImageExternalUrl() {
         Map<String, Object> image = new Map<String, Object> {
             'image_id' => 'imageId',
             'sharinpix' => new Map<String, Object> {
@@ -113,7 +113,7 @@ private with sharing class UtilsTest {
         Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
 
         Test.startTest();
-        Map<String, Object> imageObj = (new Utils()).getExternalImageUrl(image);
+        Map<String, Object> imageObj = (new Utils()).getImageExternalUrl(image);
         Test.stopTest();
 
         System.assertEquals('imageId', (String)imageObj.get('image_id'));
@@ -141,7 +141,7 @@ private with sharing class UtilsTest {
         Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
 
         Test.startTest();
-        List<Object> response = (List<Object>)(new Utils()).getExternalImageUrls(images);
+        List<Object> response = (List<Object>)(new Utils()).getImageExternalUrls(images);
         Test.stopTest();
 
         Map<String, Object> imageObj = (Map<String, Object>)response[0];
