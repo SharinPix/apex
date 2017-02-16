@@ -48,7 +48,7 @@
 							eventIdentifier: component.getGlobalId(),
 							files: component.find('file').getElement().files,
 							prefix: component.get('v.filenamePrefix'),
-							fileType: component.get('v.uploadChoice')
+							fileType: (component.get('v.siteUrl') === '' ? component.get('v.uploadChoice') : 'Attachment')
 						};
 			helper.upload_via_api(component, payload);
 		}
