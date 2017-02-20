@@ -30,7 +30,7 @@
     if(!component.isValid()){
       return;
     }
-    for (var key in attributes) { 
+    for (var key in attributes) {
       component.set('v.'+key, attributes[key]);
     }
   },
@@ -66,7 +66,7 @@
   stopInterval: function(component){
     var interval = component.get("v.intervalInstance");
     if (interval !== undefined){
-      clearInterval(interval);  
+      clearInterval(interval);
     }
     component.set('v.intervalInstance', undefined);
   },
