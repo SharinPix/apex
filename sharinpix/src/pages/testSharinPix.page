@@ -6,6 +6,6 @@
       </head>
       <body>
         <h3>{!$CurrentPage.parameters.id}</h3>
-		<c:SharinPix parameters="{'path': '/pagelayout/{!$CurrentPage.parameters.id}', 'abilities': {'{!$CurrentPage.parameters.id}': { 'Access': {'see': true, 'image_upload': true, 'image_list': true}}}}" />
+        <c:SharinPix parameters="{'path': '/pagelayout/{!$CurrentPage.parameters.id}', 'abilities': {'{!$CurrentPage.parameters.id}': { 'Access': {'see': true, 'image_upload': true, 'image_list': true}}}}" />
       </body>
 </apex:page>

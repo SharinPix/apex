@@ -1,7 +1,7 @@
 <apex:component access="global" controller="VisualforceComponentController">
-    <apex:attribute name="height" type="string" description="Height of the component." assignTo="{!heightInput}" default="500px"/>
-    <apex:attribute name="id" type="string" description="Id of the iframe." assignTo="{!iframeIdInput}" default="sharinpix"/>
-    <apex:attribute name="parameters" type="string" description="Parameters for the components" assignTo="{!parametersInput}" default="{}" />
-    <apex:attribute name="secretUrl" type="string" description="SharinPix Secret Url" assignTo="{!secretUrlInput}" default="" />
-    <iframe id="{!iframeId}" style="{!style}" src="{!url}"/>
+  <apex:attribute name="height" type="string" description="Height of the component." assignTo="{!heightInput}" default="500px"/>
+  <apex:attribute name="id" type="string" description="Id of the iframe." assignTo="{!iframeIdInput}" default="sharinpix"/>
+  <apex:attribute name="parameters" type="string" description="Parameters for the components" assignTo="{!parametersInput}" default="{}" />
+  <apex:attribute name="secretUrl" type="string" description="SharinPix Secret Url" assignTo="{!secretUrlInput}" default="" />
+  <iframe id="{!iframeId}" style="{!style}" src="{!url}"/>
 </apex:component>
