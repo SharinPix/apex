@@ -26,10 +26,12 @@
         <members>Token</members>
         <members>Utils</members>
         <members>UtilsTest</members>
+        <members>VisualforceComponentController</members>
         <name>ApexClass</name>
     </types>
     <types>
         <members>TagAction</members>
+        <members>SharinPix</members>
         <name>ApexComponent</name>
     </types>
     <types>
@@ -37,6 +39,7 @@
         <members>SharinPixSampleCase</members>
         <members>SharinPixSampleContact</members>
         <members>SharinPixSetting</members>
+        <members>testSharinPix</members>
         <name>ApexPage</name>
     </types>
     <types>
