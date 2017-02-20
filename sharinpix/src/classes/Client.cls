@@ -58,6 +58,32 @@ global with sharing class Client {
   }
 
   /**
+   * Returns the current SharinPix domain URL
+   * @return SharinPix domain URL for client
+   */
+  global String getHost() {
+    Url u = new Url(this.endpoint_url);
+    return u.getProtocol() + '://' + u.getHost();
+  }
+
+  /**
+   * Returns the current SharinPix API URL
+   * @return SharinPix API endpoint URL for client
+   */
+  global String getApiUrl() {
+    return this.endpoint_url;
+  }
+
+  /**
+   * Encodes a URL to UTF-8 and uses %20 for spaces
+   * @param  unencoded Unencoded URL
+   * @return           Encoded URL
+   */
+  global String urlEncode(String unencoded) {
+    return EncodingUtil.urlEncode(unencoded, 'UTF-8').replaceAll('\\+', '%20');
+  }
+
+  /**
    * Performs a POST request on a SharinPix endpoint
    * @param  endpoint The endpoint to POST to
    * @param  body     The body of the request
