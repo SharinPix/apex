@@ -99,6 +99,7 @@
         action.setCallback(this, function(response) {
             var baseUrl = window.location.protocol + '//' + window.location.hostname;
             component.set('v.iframeUrl', response.getReturnValue()+'/apex/sharinpix_free__SharinPixUploadApi?url='+baseUrl+'&eventIdentifier='+component.getGlobalId());
+            component.set('v.siteUrl', response.getReturnValue());
         });
         $A.enqueueAction(action);
     },
