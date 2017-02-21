@@ -16,7 +16,7 @@
 	<aura:attribute name="style" type="string" access="global" />
 	<aura:handler name="change" value="{! v.attachmentId }" action="{! c.doReload }"/>
 	<div class="container" style="{! v.style }">
-		<aura:if isTrue="{! !empty(v.attachmentId) }">
+		<aura:if isTrue="{! !empty(v.source) }">
 			<img aura:id="image" src="{! v.source }" onload="{! c.onLoaded }" alt="image" style="{! empty(v.source) ? 'display:none;' : '' }"/>
 		<aura:set attribute="else">
 			<div class="img-placeholder"></div>

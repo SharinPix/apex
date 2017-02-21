@@ -51,7 +51,8 @@
                     referenceId: "refVersion",
                     body: {
                       PathOnClient: (prefix == undefined ? '' : prefix) + file.name,
-                      Versiondata: content
+                      Versiondata: content,
+                      Title: (prefix == undefined ? '' : prefix) + file.name
                     }
                   },
                   {
