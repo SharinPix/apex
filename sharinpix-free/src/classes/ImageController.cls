@@ -71,7 +71,8 @@ public with sharing class ImageController {
                                             Id
                                     FROM ContentVersion
                                     WHERE ContentDocumentId IN :setContentId
-                                    AND IsLatest = true]){
+                                    AND IsLatest = true
+                                    AND Title like :nameLike]){
             lstImages.add(new map<string, Id>{'Id'=> version.Id});
         }
         return lstImages;
