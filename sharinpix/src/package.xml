@@ -26,9 +26,11 @@
         <members>Token</members>
         <members>Utils</members>
         <members>UtilsTest</members>
+        <members>SharinPixComponentController</members>
         <name>ApexClass</name>
     </types>
     <types>
+        <members>SharinPix</members>
         <members>TagAction</members>
         <name>ApexComponent</name>
     </types>
@@ -37,6 +39,7 @@
         <members>SharinPixSampleCase</members>
         <members>SharinPixSampleContact</members>
         <members>SharinPixSetting</members>
+        <members>testSharinPix</members>
         <name>ApexPage</name>
     </types>
     <types>
