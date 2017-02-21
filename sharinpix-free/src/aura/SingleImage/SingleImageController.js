@@ -11,7 +11,6 @@
 		component.set('v.style', 'height: '+height+'px; line-height: '+height+'px;');
 	},
 	doReload: function(component, event, helper){
-		component.set('v.loading', true);
 		helper.reloadSource(component)
 	},
 	onLoaded: function (component) {
