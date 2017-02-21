@@ -1,4 +1,4 @@
-<apex:component access="global" controller="VisualforceComponentController">
+<apex:component access="global" controller="SharinPixComponentController">
   <apex:attribute name="height" type="string" description="Height of the component." assignTo="{!heightInput}" default="500px"/>
   <apex:attribute name="id" type="string" description="Id of the iframe." assignTo="{!iframeIdInput}" default="sharinpix"/>
   <apex:attribute name="parameters" type="string" description="Parameters for the components" assignTo="{!parametersInput}" default="{}" />

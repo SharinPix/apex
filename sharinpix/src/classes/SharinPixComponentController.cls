@@ -1,9 +1,8 @@
-public with sharing class VisualforceComponentController {
+public with sharing class SharinPixComponentController {
     public string parametersInput {get; set;}
     public string heightInput{get; set;}
     public string iframeIdInput{get; set;}
     public string secretUrlInput{get; set;}
-    public VisualforceComponentController(){}
     public sharinpix.client getClient(){
         if(secretUrlInput != ''){
             return new sharinpix.client(secretUrlInput);

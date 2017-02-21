@@ -26,12 +26,12 @@
         <members>Token</members>
         <members>Utils</members>
         <members>UtilsTest</members>
-        <members>VisualforceComponentController</members>
+        <members>SharinPixComponentController</members>
         <name>ApexClass</name>
     </types>
     <types>
-        <members>TagAction</members>
         <members>SharinPix</members>
+        <members>TagAction</members>
         <name>ApexComponent</name>
     </types>
     <types>
