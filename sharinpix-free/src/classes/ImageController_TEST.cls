@@ -19,10 +19,10 @@ private class ImageController_TEST {
   	static User u;
 	static {
 		p = [SELECT Id FROM Profile WHERE Name='Read only'
-											or Name='Lecture seule']; 
-		u = new User(Alias = 'standt', Email='standarduser@test-org.com', 
-	      EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US', 
-	      LocaleSidKey='en_US', ProfileId = p.Id, 
+											or Name='Lecture seule'];
+		u = new User(Alias = 'standt', Email='standarduser@test-org.com',
+	      EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
+	      LocaleSidKey='en_US', ProfileId = p.Id,
 	      TimeZoneSidKey='America/Los_Angeles', UserName='standarduser@test-org.com');
 		insert u;
 
@@ -33,7 +33,7 @@ private class ImageController_TEST {
 		contact2 = new Contact(Lastname='SharinPix2', Email='test2@sharinpix.test');
 		insert contact2;
 	}
-	
+
 	@isTest static void deleteAttachment() {
 		Attachment attach = new Attachment(Name='image', parentId = contact.Id, body=Blob.valueOf('Test'));
 		insert attach;
@@ -52,7 +52,7 @@ private class ImageController_TEST {
 			try {
 				Test.startTest();
 				ImageController.deleteAttachment(attach.Id);
-				Test.stopTest();		
+				Test.stopTest();
 			}
 			catch(AuraHandledException e){
 				//can't get the error message from the class
@@ -63,9 +63,9 @@ private class ImageController_TEST {
 
 	@isTest static void deleteContentDocument() {
 		ContentVersion contentVersion_1 = new ContentVersion(
-		Title='Header_Picture1', 
+		Title='Header_Picture1',
 		PathOnClient ='/Header_Picture1.jpg',
-		VersionData = Blob.valueOf('Body'), 
+		VersionData = Blob.valueOf('Body'),
 		origin = 'H'
 		);
 		insert contentVersion_1;
@@ -76,7 +76,7 @@ private class ImageController_TEST {
 		contentlink.LinkedEntityId = contact.id;
 		contentlink.contentdocumentid = contentVersion_2.contentdocumentid;
 		contentlink.ShareType = 'V';
-		insert contentlink; 
+		insert contentlink;
 
 		Test.startTest();
 		boolean deleted = ImageController.deleteAttachment(contentVersion_1.Id);
@@ -92,7 +92,7 @@ private class ImageController_TEST {
 			try{
 				Test.startTest();
 				ImageController.saveTheChunk(contact.Id, 'Image.jpeg', EncodingUtil.base64Encode(Blob.valueof('Sharinpix')), 'image/jpeg', attach.id);
-				Test.stopTest();		
+				Test.stopTest();
 			}
 			catch(Exception e){
 				//can't get the error message from the class
@@ -107,7 +107,7 @@ private class ImageController_TEST {
 
 		Test.startTest();
 		Id fileid = ImageController.saveTheChunk(contact2.Id, 'Image.jpeg', EncodingUtil.base64Encode(Blob.valueof('Sharinpix')), 'image/jpeg', attach.id);
-		Test.stopTest();	
+		Test.stopTest();
 		system.assertEquals(fileId, attach.Id);
 	}
 
@@ -116,7 +116,7 @@ private class ImageController_TEST {
 			try {
 				Test.startTest();
 				ImageController.saveTheChunk(contact.Id, 'Image.jpeg', EncodingUtil.base64Encode(Blob.valueof('Sharinpix')), 'image/jpeg', null);
-				Test.stopTest();	
+				Test.stopTest();
 			}
 			catch(Exception e){
 				//can't get the error message from the class
@@ -129,7 +129,7 @@ private class ImageController_TEST {
 		try {
 			Test.startTest();
 			ImageController.saveTheChunk(contact.Id, 'Image.jpeg', EncodingUtil.base64Encode(Blob.valueof('Sharinpix')), 'image/jpeg', null);
-			Test.stopTest();	
+			Test.stopTest();
 		}
 		catch(Exception e){
 			//can't get the error message from the class
@@ -165,16 +165,16 @@ private class ImageController_TEST {
 		system.runas(u){
 			Test.startTest();
 			list<map<string, id>> lstAttachment = (list<map<string, id>>) ImageController.getFiles(contact2.Id, 'img', 'image/jpeg');
-			Test.stopTest();	
+			Test.stopTest();
 			system.assertEquals(lstAttachment.size(), 0);
 		}
 	}
 
 	@isTest static void getFiles_3() {
 		ContentVersion contentVersion_1 = new ContentVersion(
-		Title='Header_Picture1', 
+		Title='img_Header_Picture1',
 		PathOnClient ='/Header_Picture1.jpg',
-		VersionData = Blob.valueOf('Body'), 
+		VersionData = Blob.valueOf('Body'),
 		origin = 'H'
 		);
 		insert contentVersion_1;
@@ -185,7 +185,7 @@ private class ImageController_TEST {
 		contentlink.LinkedEntityId = contact.id;
 		contentlink.contentdocumentid = contentVersion_2.contentdocumentid;
 		contentlink.ShareType = 'V';
-		insert contentlink; 
+		insert contentlink;
 
 		Test.startTest();
 		list<map<string, id>> lstAttachment = (list<map<string, id>>) ImageController.getFiles(contact.Id, 'img', 'image/jpeg');
@@ -203,9 +203,9 @@ private class ImageController_TEST {
 		insert lstAttImages;
 
 		ContentVersion contentVersion_1 = new ContentVersion(
-		Title='Header_Picture1', 
+		Title='img_Header_Picture1',
 		PathOnClient ='/Header_Picture1.jpg',
-		VersionData = Blob.valueOf('Body'), 
+		VersionData = Blob.valueOf('Body'),
 		origin = 'H'
 		);
 		insert contentVersion_1;
@@ -216,7 +216,7 @@ private class ImageController_TEST {
 		contentlink.LinkedEntityId = contact.id;
 		contentlink.contentdocumentid = contentVersion_2.contentdocumentid;
 		contentlink.ShareType = 'V';
-		insert contentlink; 
+		insert contentlink;
 
 		Test.startTest();
 		list<map<string, id>> lstAttachment = (list<map<string, id>>) ImageController.getFiles(contact.Id, 'img', 'image/jpeg');
