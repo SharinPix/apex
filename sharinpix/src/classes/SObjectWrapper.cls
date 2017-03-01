@@ -22,10 +22,10 @@ public class SObjectWrapper {
         for(Action action: tagImg.tag.action.actions){
             if (fieldMap().containsKey(action.field_name)){
                 Schema.SobjectField field = fieldMap().get(action.field_name);
-                if (action.value == 'fit') {
+                if (Pattern.matches('fill|fit|scale|pad', action.value)) {
                     if (verifyPermission(new List<Schema.SObjectField> { field })) {
-                        for (String k : tagImg.fit.keySet()) {
-                            assignValue(k, tagImg.fit.get(k));
+                        for (String fieldName : tagImg.transformations.keySet()) {
+                            assignValue(fieldName, tagImg.transformations.get(fieldName));
                         }
                     }
                 } else if (action.value == 'custom') {
