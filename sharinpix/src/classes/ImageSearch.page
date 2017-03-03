@@ -1,0 +1,162 @@
+<apex:page sidebar="false"
+           standardStylesheets="false"
+           applyBodyTag="false"
+           controller="ImageSearchController">
+    <head>
+        <link rel="stylesheet" href="{! URLFOR($Resource.PrefixedBootstrap, 'bootstrap.min.prefixed.css') }"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <style>
+        .no-events {
+            pointer-events: none;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="tb-container-fluid">
+            <apex:form >
+                <apex:outputPanel id="pnlQuery" rendered="{! queryRendered }">
+                    <div class="tb-row">
+                        <div class="tb-col-md-8 tb-col-md-offset-2">
+                            <p class="tb-lead">
+                                The SharinPix Image Search tab allows you to retrieve images associated to objects listed in one of your tabular reports.
+                                <a id="popoverData" class="tb-small" href="#" rel="popover" data-placement="bottom" data-trigger="hover" data-content="Create a tabular report with your specific filter conditions. The first ID column's values is taken as search parameters. Enter or select the created report to view the images contained within the records returned by the report. Record IDs will be fetched in batches of 25. Use the first, previous, next and last buttons under the results to paginate through the report's rows and view their corresponding images.">Learn more.</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="tb-row">
+                        <div class="tb-col-md-4 tb-col-md-offset-4">
+                            <div class="tb-form-group">
+                                <label id='lblRecord' for='txtReportId'>You may either enter a report ID here:</label>
+                                <input id='txtReportId' class="tb-form-control" type='text'/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tb-row">
+                        <div class="tb-col-md-4 tb-col-md-offset-4">
+                            <div class="tb-form-group">
+                                <label id='lblReport' for='selReport'>Or select a report from your folders:</label>
+                                <select id='selReport' class="tb-form-control">
+                                    <option value=''></option>
+                                    <apex:repeat value="{! reportFolders }" var="key">
+                                        <optgroup label='{! key }'>
+                                            <apex:repeat value="{! reportFolders[key] }" var="report">
+                                                <option value='{! report.Id }'>{! report.Name }</option>
+                                            </apex:repeat>
+                                        </optgroup>
+                                    </apex:repeat>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tb-text-center">
+                        <div class="tb-row">
+                            <div class="tb-col-md-4 tb-col-md-offset-4">
+                                <button class="tb-btn tb-btn-primary" onclick="startSearch(); return false;">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+                <apex:outputPanel id="pnlResponse">
+                    <div class="tb-row">
+                        <div class="tb-col-md-4 tb-col-md-offset-4">
+                            <apex:pageMessages />
+                        </div>
+                    </div>
+                    <apex:outputPanel id="pnlResults" rendered="{! resultsRendered }">
+                        <div class="tb-row">
+                            <div class="tb-col-md-12">
+                                <apex:canvasApp developerName="Albums" width="100%" height="650px" parameters="{! parameters }"/>
+                            </div>
+                        </div>
+                        <div class="tb-row">
+                            <div class="tb-col-md-4 tb-col-md-offset-4">
+                                <div class="tb-btn-group tb-btn-group-justified">
+                                    <a id="btnFirstPage" class="tb-btn tb-btn-default" onClick="goToFirst();"><span class="glyphicon glyphicon-fast-backward"></span></a>
+                                    <a id="btnPreviousPage" class="tb-btn tb-btn-default" onClick="goToPrevious();"><span class="glyphicon glyphicon-step-backward"></span></a>
+                                    <a id="btnNextPage" class="tb-btn tb-btn-default" onClick="goToNext();"><span class="glyphicon glyphicon-step-forward"></span></a>
+                                    <a id="btnLastPage" class="tb-btn tb-btn-default" onClick="goToLast();"><span class="glyphicon glyphicon-fast-forward"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+
+                <apex:actionFunction name="search" action="{! search }" rerender="pnlResponse, paginationScript">
+                    <apex:param name="reportId" value="" assignTo="{! reportId }"/>
+                </apex:actionFunction>
+                <apex:actionFunction name="paginate" action="{! paginate }" rerender="pnlResponse, paginationScript">
+                    <apex:param name="page" value="" assignTo="{! page }"/>
+                </apex:actionFunction>
+            </apex:form>
+        </div>
+
+        <div class="tb-modal tb-fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+            <div class="tb-modal-dialog" role="document">
+                <div class="tb-modal-content">
+                    <div class="tb-modal-header">
+                        <button type="button" class="tb-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="tb-modal-title" id="modalLabel"></h4>
+                    </div>
+                    <div id="modalText" class="tb-modal-body"></div>
+                    <div class="tb-modal-footer">
+                        <button type="button" class="tb-btn tb-btn-default" data-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.slim.min.js"/>
+        <script type="text/javascript" src="{! URLFOR($Resource.PrefixedBootstrap, 'bootstrap.min.prefixed.js') }"/>
+        <script>
+        $j = jQuery.noConflict();
+        $j('#popoverData').popover();
+        var startSearch = function() {
+            var reportId = $j('#txtReportId').val() || $j('#selReport').val();
+            if (reportId == null || reportId.trim() == '') {
+                $j('#modalLabel').text('No report specified.');
+                $j('#modalText').text('Please enter a report ID or else, select one from the provided list.');
+                $j('#modal').modal();
+            } else if (reportId.trim().length != 15 && reportId.trim().length != 18) {
+                $j('#modalLabel').text('Invalid Salesforce report ID');
+                $j('#modalText').text('Please verify that the provided report ID is a valid Salesforce report ID.');
+                $j('#modal').modal();
+            } else {
+                search(reportId);
+            }
+        };
+
+        xIsEnabledIfY = function(selector, enabled) {
+            if (enabled) {
+                $j(selector).removeClass('no-events');
+                $j(selector).removeAttr('disabled');
+            } else {
+                $j(selector).addClass('no-events');
+                $j(selector).attr('disabled', true);
+            }
+        };
+        </script>
+        <apex:outputPanel id="paginationScript">
+            <script>
+            var page = parseInt('{! page }');
+            var pageSize = parseInt('{! pageSize }');
+            var totalSize = parseInt('{! totalSize }');
+
+            var firstPage = 1;
+            xIsEnabledIfY('#btnFirstPage', page != firstPage);
+            var goToFirst = function() { paginate(firstPage); };
+
+            var previousPage = page - 1;
+            xIsEnabledIfY('#btnPreviousPage', previousPage >= firstPage);
+            var goToPrevious = function() { paginate(previousPage); };
+
+            var lastPage = Math.ceil(totalSize/pageSize);
+            xIsEnabledIfY('#btnLastPage', page != lastPage);
+            var goToLast = function() { paginate(lastPage); };
+
+            var nextPage = page + 1;
+            xIsEnabledIfY('#btnNextPage', nextPage <= lastPage);
+            var goToNext = function() { paginate(nextPage); };
+            </script>
+        </apex:outputPanel>
+    </body>
+</apex:page>
