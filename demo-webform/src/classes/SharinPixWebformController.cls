@@ -39,21 +39,8 @@ public class SharinPixWebformController {
     }
 
     public PageReference renameAlbum() {
-        Map<String, Object> claims = new Map<String, Object> {
-            'abilities' => new Map<String, Object> {
-                albumId => new Map<String, Object> {
-                    'Access'  => new Map<String, Object> {
-                        'rename' => true,
-                        'see' => true
-                    }
-                }
-            }
-        };
-        System.debug(albumId);
-        System.debug(cs.Id);
-        Map<String, Object> payload = new Map<String, Object> { 'album' => new Map<String, String> { 'public_id' => cs.Id } };
         if (!Test.isRunningTest()) {
-        	sharinpix.Client.getInstance().put('/albums/' + albumId, Blob.valueof(JSON.serialize(payload)), claims);
+            (new sharinpix.Utils()).renameAlbum(albumId, cs.Id);
         }
         return null;
     }
