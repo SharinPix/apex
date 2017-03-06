@@ -4,7 +4,7 @@ public class SharinPixWebformController {
     public String url { get; set; }
     public String albumId { get; set; }
     
-    public SharinPixWebformController(ApexPages.StandardController controller) {
+    public SharinPixWebformController() {
         cs = new Case();
         Blob hash = Crypto.generateDigest('MD5', Blob.valueOf(UserInfo.getOrganizationId() + System.now()));
         albumId = EncodingUtil.convertToHex(hash);
