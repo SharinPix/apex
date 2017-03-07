@@ -4,7 +4,6 @@
            controller="ImageSearchController">
     <head>
         <link rel="stylesheet" href="{! URLFOR($Resource.PrefixedBootstrap, 'bootstrap.min.prefixed.css') }"/>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
         <style>
         .no-events {
             pointer-events: none;
@@ -18,7 +17,7 @@
                     <div class="tb-row">
                         <div class="tb-col-md-8 tb-col-md-offset-2">
                             <p class="tb-lead">
-                                The SharinPix Image Search tab allows you to retrieve images associated to objects listed in one of your tabular reports.
+                                The SharinPix Image Search tab allows you to retrieve images associated with objects listed in one of your tabular reports.
                                 <a id="popoverData" class="tb-small" href="#" rel="popover" data-placement="bottom" data-trigger="hover" data-content="Create a tabular report with your specific filter conditions. The first ID column's values is taken as search parameters. Enter or select the created report to view the images contained within the records returned by the report. Record IDs will be fetched in batches of 25. Use the first, previous, next and last buttons under the results to paginate through the report's rows and view their corresponding images.">Learn more.</a>
                             </p>
                         </div>
@@ -48,6 +47,29 @@
                             </div>
                         </div>
                     </div>
+                    <div class="tb-row">
+                        <div class="tb-col-md-4 tb-col-md-offset-4">
+                            <div class="tb-form-group">
+                                <label id='lblTags' for='selTags'>Tags</label>
+                                <div class="tb-radio">
+                                    <label>
+                                        <input type="radio" name="rdoGrpTags" id="rdoNoTag" value="noTag" checked="true" />
+                                        None
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="rdoGrpTags" id="rdoAnyTag" value="anyTag"/>
+                                        Any of
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="rdoGrpTags" id="rdoAllTags" value="allTags"/>
+                                        All of
+                                    </label>
+                                </div>
+                                <select id="selTags" class="tb-form-control no-events" multiple="true" disabled="true">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="tb-text-center">
                         <div class="tb-row">
                             <div class="tb-col-md-4 tb-col-md-offset-4">
@@ -70,11 +92,12 @@
                         </div>
                         <div class="tb-row">
                             <div class="tb-col-md-4 tb-col-md-offset-4">
+                                <div class="tb-text-center" id="divPageNo"></div>
                                 <div class="tb-btn-group tb-btn-group-justified">
-                                    <a id="btnFirstPage" class="tb-btn tb-btn-default" onClick="goToFirst();"><span class="glyphicon glyphicon-fast-backward"></span></a>
-                                    <a id="btnPreviousPage" class="tb-btn tb-btn-default" onClick="goToPrevious();"><span class="glyphicon glyphicon-step-backward"></span></a>
-                                    <a id="btnNextPage" class="tb-btn tb-btn-default" onClick="goToNext();"><span class="glyphicon glyphicon-step-forward"></span></a>
-                                    <a id="btnLastPage" class="tb-btn tb-btn-default" onClick="goToLast();"><span class="glyphicon glyphicon-fast-forward"></span></a>
+                                    <a id="btnFirstPage" class="tb-btn tb-btn-default" onClick="goToFirst();">First</a>
+                                    <a id="btnPreviousPage" class="tb-btn tb-btn-default" onClick="goToPrevious();">Previous</a>
+                                    <a id="btnNextPage" class="tb-btn tb-btn-default" onClick="goToNext();">Next</a>
+                                    <a id="btnLastPage" class="tb-btn tb-btn-default" onClick="goToLast();">Last</a>
                                 </div>
                             </div>
                         </div>
@@ -82,7 +105,7 @@
                 </apex:outputPanel>
 
                 <apex:actionFunction name="search" action="{! search }" rerender="pnlResponse, paginationScript">
-                    <apex:param name="reportId" value="" assignTo="{! reportId }"/>
+                    <apex:param name="jsonParams" value="" assignTo="{! jsonParams }"/>
                 </apex:actionFunction>
                 <apex:actionFunction name="paginate" action="{! paginate }" rerender="pnlResponse, paginationScript">
                     <apex:param name="page" value="" assignTo="{! page }"/>
@@ -105,7 +128,7 @@
             </div>
         </div>
 
-        <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.slim.min.js"/>
+        <script type="text/javascript" src="{! URLFOR($Resource.PrefixedBootstrap, 'jquery-3.1.1.slim.min.js') }"/>
         <script type="text/javascript" src="{! URLFOR($Resource.PrefixedBootstrap, 'bootstrap.min.prefixed.js') }"/>
         <script>
         $j = jQuery.noConflict();
@@ -121,9 +144,25 @@
                 $j('#modalText').text('Please verify that the provided report ID is a valid Salesforce report ID.');
                 $j('#modal').modal();
             } else {
-                search(reportId);
+                tagFilter = $j('input[name=rdoGrpTags]:checked').val() || 'noTag';
+                selectedTags = $j('#selTags').val() || [];
+                var params = { reportId: reportId, tagFilter: tagFilter, selectedTags: selectedTags };
+                search(JSON.stringify(params));
             }
         };
+        $j('input[name=rdoGrpTags]').change(function(e) {
+            if (e.currentTarget.value == 'noTag') {
+                xIsEnabledIfY('#selTags', false);
+                $j('#selTags').val([]);
+            } else {
+                xIsEnabledIfY('#selTags', true);
+            }
+        });
+        var allTags = JSON.parse('{! allTags }');
+        var select = $j('#selTags');
+        $j.each(allTags, function(i, tag) {
+            select.append($j("<option/>").attr("value", tag).text(tag));
+        });
 
         xIsEnabledIfY = function(selector, enabled) {
             if (enabled) {
@@ -156,6 +195,8 @@
             var nextPage = page + 1;
             xIsEnabledIfY('#btnNextPage', nextPage <= lastPage);
             var goToNext = function() { paginate(nextPage); };
+
+            $j('#divPageNo').html('Records ' + ((page-1)*pageSize+1)  + '-' + Math.min(page*pageSize, totalSize) + ' of ' + totalSize);
             </script>
         </apex:outputPanel>
     </body>
