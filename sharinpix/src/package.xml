@@ -27,6 +27,7 @@
         <members>Utils</members>
         <members>UtilsTest</members>
         <members>SharinPixComponentController</members>
+        <members>TokenGeneratorController</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -40,6 +41,7 @@
         <members>SharinPixSampleContact</members>
         <members>SharinPixSetting</members>
         <members>testSharinPix</members>
+        <members>SharinPixTokenGenerator</members>
         <name>ApexPage</name>
     </types>
     <types>
@@ -50,6 +52,7 @@
     </types>
     <types>
         <members>Credential__c</members>
+        <members>Token__c</members>
         <name>CustomObject</name>
     </types>
     <types>
