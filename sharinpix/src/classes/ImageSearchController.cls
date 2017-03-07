@@ -12,6 +12,14 @@ public with sharing class ImageSearchController {
     public Integer page { get; set; }
     public Integer totalSize { get; private set; }
 
+    public String allTags { get; set; }
+    public String tagFilter { get; private set; }
+    public List<String> selectedTags { get; private set; }
+
+    public String jsonParams { get; set; }
+
+    private Client clientInstance = Client.getInstance();
+
     private List<Id> albumIds;
 
     public ImageSearchController() {
@@ -34,9 +42,19 @@ public with sharing class ImageSearchController {
             }
             previousFolderName = currentFolderName;
         }
+        List<String> allTagsUnsorted = fetchAllTags();
+        allTagsUnsorted.sort();
+        allTags = JSON.serialize(allTagsUnsorted);
     }
 
     public void search() {
+        reportId = (Id)((Map<String, Object>)JSON.deserializeUntyped(jsonParams)).get('reportId');
+        tagFilter = (String)((Map<String, Object>)JSON.deserializeUntyped(jsonParams)).get('tagFilter');
+        List<Object> selectedTagsObj = (List<Object>)((Map<String, Object>)JSON.deserializeUntyped(jsonParams)).get('selectedTags');
+        selectedTags = new List<String>();
+        for (Object o : selectedTagsObj) {
+            selectedTags.add(String.valueOf(o));
+        }
         if (String.isNotEmpty(reportId)) {
             albumIds = getIdsFromReport(reportId);
             if (albumIds != null) {
@@ -96,25 +114,32 @@ public with sharing class ImageSearchController {
         if (albumIds != null) {
             Integer startIndex = (page-1) * pageSize, endIndex = page * pageSize;
             Map<String, String> params = new Map<String, String> {
-                'path' => '/search?search_bar=false&q=' + generateQueryToken(new Map<String, Object> { 'albumIds' => slice(albumIds, startIndex, endIndex) })
+                'path' => '/search?search_bar=false&q=' + generateQueryToken(slice(albumIds, startIndex, endIndex))
             };
             parameters = JSON.serialize(params);
             resultsRendered = true;
         }
     }
 
-    private String generateQueryToken(Map<String, Object> options) {
-        String queryStr = '';
-        List<Id> albumIds = (List<Id>)options.get('albumIds');
-        for (Id albumId : albumIds) {
-            queryStr += albumId + ' ';
+    private String generateQueryToken(List<Id> albumIds) {
+        String tags = '';
+        if (selectedTags != null && selectedTags.size() != 0) {
+            String tagOp = tagFilter == 'allTags' ? 'AND' : tagFilter == 'anyTag' ? 'OR' : '';
+            tags = '"' + String.join(selectedTags, '" ' + tagOp + ' "') + '"';
         }
 
-        Map<String, String> query = new Map<String, String> {
-            'q' => queryStr
-        };
+        String albums = '"' + String.join(albumIds, '" "') + '"';
 
-        return sharinpix.Client.getInstance().token(query);
+        String q;
+        if (tags != '') {
+            q = 'tags:(+(' + albums + ') +(' + tags + '))';
+        } else {
+            q = albums;
+        }
+        Map<String, String> query = new Map<String, String> {
+            'q' => q
+        };
+        return clientInstance.token(query);
     }
 
     private List<Id> slice(List<Id> original, Integer startIndex, Integer endIndex) {
@@ -123,5 +148,22 @@ public with sharing class ImageSearchController {
             sliced.add(original[i]);
         }
         return sliced;
+    }
+
+    private List<String> fetchAllTags() {
+        Map<String, Object> params = new Map<String, Object> { 'admin' => true };
+        Integer page = 1;
+        List<Object> tagsPage = new List<Object>();
+        /*List<Object> allTagObj = new List<Object>();
+        do {
+            tagsPage = (List<Object>)clientInstance.get('/tags' + '&page=' + page++, params);
+            allTagObj.addAll(tagsPage);
+        } while (tagsPage.size() != 0);*/
+        List<Object> allTagObj = (List<Object>)clientInstance.get('/tags', params);
+        List<String> tagNames = new List<String>();
+        for (Object o : allTagObj) {
+            tagNames.add((String)((Map<String, Object>)o).get('name'));
+        }
+        return tagNames;
     }
 }
