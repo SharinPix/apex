@@ -75,7 +75,7 @@
         <visibleLines>3</visibleLines>
     </fields>
     <gender>Masculine</gender>
-    <label>Token</label>
+    <label>SharinPix Permission</label>
     <listViews>
         <fullName>All</fullName>
         <filterScope>Everything</filterScope>
@@ -85,7 +85,7 @@
         <label>Name</label>
         <type>Text</type>
     </nameField>
-    <pluralLabel>Tokens</pluralLabel>
+    <pluralLabel>SharinPix Permissions</pluralLabel>
     <searchLayouts/>
     <sharingModel>ReadWrite</sharingModel>
 </CustomObject>

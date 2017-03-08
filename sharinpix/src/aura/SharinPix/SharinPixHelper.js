@@ -6,7 +6,7 @@
   },
   getSharinPixURL : function(component, albumId, callback) {
     var action = component.get('c.getToken');
-    action.setParams({ albumId : albumId });
+    action.setParams({ albumId : albumId, permissionId: component.get('v.permissionId') });
     action.setCallback(this, function(response) {
       if (response.getState() === 'SUCCESS') {
         callback(null, response.getReturnValue());

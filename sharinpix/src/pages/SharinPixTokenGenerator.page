@@ -1,43 +1,29 @@
-<apex:page standardController="Token__c" extensions="TokenGeneratorController">
-	<apex:form >
-    	<apex:actionFunction action="{!cancelEdit}" name="cancel" />
-        
+<apex:page standardController="SharinPixPermission__c" extensions="TokenGeneratorController">
+    <apex:form >
+        <apex:actionFunction action="{!cancelEdit}" name="cancel" />
+
         <apex:actionFunction action="{!updateToken}" name="update" rerender="showstate">
-			<apex:param name="name" assignTo="{!token.Name}" value="" />
+            <apex:param name="name" assignTo="{!token.Name}" value="" />
             <apex:param name="description" assignTo="{!token.Description__c}" value="" />
             <apex:param name="json" assignTo="{!token.Json__c}" value="" />
-		</apex:actionFunction>
-        
+        </apex:actionFunction>
+
     </apex:form>
-    
+
     <apex:canvasApp developerName="Albums" parameters="{path: '/abilities'}" maxheight="infinite" height="1200px" width="100%" scrolling="auto"/>
-    
+
     <script>
-    /*(function(global) {
-          var module = function() {
-            function resize(size, target) {
-              Sfdc.canvas.parent.resize(size, target)
-            }
-            return{resize:resize}
-          }();
-          global.Sfdc = global.Sfdc || {};
-          global.Sfdc.canvas = global.Sfdc.canvas || {};
-          global.Sfdc.canvas.controller = module
-        })(this);*/
-    
-    	console.log(Sfdc);
-    	(function(){
-        	window.addEventListener('message', function(event){
+        (function(){
+            window.addEventListener('message', function(event){
                 if (!event.origin.includes('kevan.ngrok.io') && !event.origin.includes('localhost:5001')){
-                	return;    
+                    return;
                 }
-            	switch(event.data.name) {
-                	case 'ability-loaded':
+                switch(event.data.name) {
+                    case 'ability-loaded':
                         loaded(event);
                         break;
-                    case 'cancel': 
-                        console.log('cancel');
-                    	cancel();
+                    case 'cancel':
+                        cancel();
                         break;
                     case 'update':
                         update(event.data.payload.name, event.data.payload.description, JSON.stringify(event.data.payload.token));
@@ -50,14 +36,13 @@
                 }
             });
         })()
-        
+
         function resize(height){
             console.log('resize: ', height);
             Sfdc.canvas.parent.resize({height: height+'px'});
         }
-        
+
         function loaded(e){
-            // console.log('Sharinpix has been loaded');
             var isNew = false;
             var recordName = '{!token.Name}';
             var description = '{!token.Description__c}';
@@ -71,8 +56,8 @@
                 readOnly = true;
             }
             if ('{!vfMode}' == 'Edit'){
-            	edit = true;    
-           	}
+                edit = true;
+            }
             e.source.postMessage({name: 'ready', payload: { isNew: isNew, readOnly: readOnly, edit: edit, name: recordName, description: description, token: JSON.parse(token) } }, e.origin);
         }
     </script>

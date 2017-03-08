@@ -1,6 +1,6 @@
 public with sharing class SharinPixLightningController {
   @AuraEnabled
-  public static String getToken(String albumId) {
+  public static String getToken(String albumId, string permissionId) {
     Id id = albumId;
     Map<String, Boolean> access = new Map<String, Boolean>();
     Map<String, Object> album_abilities = new Map<String, Object>();
@@ -9,24 +9,32 @@ public with sharing class SharinPixLightningController {
     params.put('user_id', UserInfo.getUserId());
     params.put('email', UserInfo.getUserEmail());
 
-    List<UserRecordAccess> userRecordAccessList = [SELECT RecordId, HasEditAccess, HasReadAccess
+    SharinPixPermission__c token;
+    if (string.isNotBlank(permissionId)){
+      token = [select Id, Json__c from SharinPixPermission__c where Id = :permissionId Limit 1];
+      album_abilities = (map<string, object>) Json.deserializeUntyped(token.Json__c);
+    }
+    else {
+      List<UserRecordAccess> userRecordAccessList = [SELECT RecordId, HasEditAccess, HasReadAccess
                                                    FROM UserRecordAccess
                                                    WHERE UserId = :UserInfo.getUserId()
                                                      AND RecordId = :id];
-    if (!userRecordAccessList.isEmpty()) {
-      UserRecordAccess userRecordAccess = userRecordAccessList[0];
-      if (userRecordAccess.hasReadAccess){
-        access.put('see', true);
-        access.put('image_list', true);
+      if (!userRecordAccessList.isEmpty()) {
+        UserRecordAccess userRecordAccess = userRecordAccessList[0];
+        if (userRecordAccess.hasReadAccess){
+          access.put('see', true);
+          access.put('image_list', true);
+        }
+        if (userRecordAccess.HasEditAccess) {
+          access.put('image_upload', true);
+          access.put('image_delete', true);
+          access.put('image_crop', true);
+          access.put('image_rotate', true);
+        }
       }
-      if (userRecordAccess.HasEditAccess) {
-        access.put('image_upload', true);
-        access.put('image_delete', true);
-        access.put('image_crop', true);
-        access.put('image_rotate', true);
-      }
+      album_abilities.put('Access', access);
     }
-    album_abilities.put('Access', access);
+
     abilities.put(id, album_abilities);
     params.put('abilities', abilities);
     params.put('Id', id);
@@ -34,7 +42,8 @@ public with sharing class SharinPixLightningController {
     if (Test.isRunningTest()) {
       return JSON.serialize(params);
     } else {
-      return 'https://app.sharinpix.com/pagelayout/' + id + '?token=' + SharinPix.Client.getInstance().token(params);
+      Client clientInstance = client.getInstance();
+      return clientInstance.getHost() +'/pagelayout/' + id + '?token=' + clientInstance.token(params);
     }
   }
 

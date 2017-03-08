@@ -13,6 +13,7 @@
   <aura:attribute name="loading" type="Boolean" default="true"/>
   <aura:attribute name="fullscreen" type="Boolean" default="false"/>
   <aura:attribute name="sharinpixError" type="String"/>
+  <aura:attribute name="permissionId" type="String" access="GLOBAL"/>
 
   <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
   <aura:handler event="aura:locationChange" action="{! c.doReload }"/>
