@@ -15,7 +15,7 @@
     <script>
         (function(){
             window.addEventListener('message', function(event){
-                if (!event.origin.includes('kevan.ngrok.io') && !event.origin.includes('localhost:5001')){
+                if (event.origin !== 'https://app.sharinpix.com'){
                     return;
                 }
                 switch(event.data.name) {
@@ -38,7 +38,6 @@
         })()
 
         function resize(height){
-            console.log('resize: ', height);
             Sfdc.canvas.parent.resize({height: height+'px'});
         }
 
