@@ -59,7 +59,7 @@ private class SharinPixLightningControllerTEST {
       params.put('Id', id);
 
       Test.startTest();
-      String result = SharinPixLightningController.getToken(id);
+      String result = SharinPixLightningController.getToken(id, null);
       Test.stopTest();
       System.assertEquals(JSON.serialize(params), result);
     }
@@ -86,7 +86,32 @@ private class SharinPixLightningControllerTEST {
       params.put('Id', id);
 
       Test.startTest();
-      String result = SharinPixLightningController.getToken(id);
+      String result = SharinPixLightningController.getToken(id, null);
+      Test.stopTest();
+      System.assertEquals(JSON.serialize(params), result);
+    }
+  }
+
+  static testMethod void testGetTokenCustomPermission() {
+    System.runAs(adminUser) {
+      Id id = sampleContact.Id;
+
+      SharinPixPermission__c token = new SharinPixPermission__c(Name='Contact', Description__c='Available for contact', Json__c='{"Access": {"see": true}}');
+      insert token;
+
+      Map<String, Object> album_abilities = new Map<String, Object>();
+      album_abilities = (map<string, object>) Json.deserializeUntyped(token.Json__c);
+      Map<String, Object> abilities = new Map<String, Object>();
+      abilities.put(id, album_abilities);
+      Map<String, Object> params = new Map<String, Object>();
+      params.put('user_id', UserInfo.getUserId());
+      params.put('email', UserInfo.getUserEmail());
+      params.put('abilities', abilities);
+      params.put('Id', id);
+
+
+      Test.startTest();
+      String result = SharinPixLightningController.getToken(id, token.Id);
       Test.stopTest();
       System.assertEquals(JSON.serialize(params), result);
     }
