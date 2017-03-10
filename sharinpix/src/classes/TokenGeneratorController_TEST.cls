@@ -2,17 +2,12 @@
 private class TokenGeneratorController_TEST {
 // Kevan 20170310
 
-    static {
-
-    }
-
 	@isTest static void testLoadPageNewToken() {
         SharinPixPermission__c permission = new SharinPixPermission__c();
         ApexPages.StandardController stdController = new ApexPages.StandardController(permission);
         PageReference pageRefPermission = Page.SharinPixTokenGenerator;
 
         Test.startTest();
-        //pageRefPermission.getParameters().put('id', String.valueOf(cnt.Id));
         Test.setCurrentPage(pageRefPermission);
         TokenGeneratorController controller = new TokenGeneratorController(stdController);
         Test.stopTest();
@@ -95,7 +90,6 @@ private class TokenGeneratorController_TEST {
         PageReference pageRefPermission = Page.SharinPixTokenGenerator;
 
         Test.startTest();
-        //pageRefPermission.getParameters().put('id', String.valueOf(cnt.Id));
         Test.setCurrentPage(pageRefPermission);
         TokenGeneratorController controller = new TokenGeneratorController(stdController);
         Test.stopTest();
