@@ -56,6 +56,10 @@
         <name>CustomObject</name>
     </types>
     <types>
+        <members>CustomLabels</members>
+        <name>CustomLabels</name>
+    </types>
+    <types>
         <members>ApiSharinPix</members>
         <members>ApiSharinPixImageRessources</members>
         <members>ApiSharinPixImagesTLS</members>
@@ -67,6 +71,11 @@
         <members>Logo</members>
         <members>SharinPixIcon16x16</members>
         <name>StaticResource</name>
+    </types>
+    <types>
+        <members>SharinPix_setting.tab</members>
+        <members>SharinPixPermission__c.tab</members>
+        <name>CustomTab</name>
     </types>
     <version>38.0</version>
 </Package>

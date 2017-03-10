@@ -74,7 +74,6 @@
         <type>LongTextArea</type>
         <visibleLines>3</visibleLines>
     </fields>
-    <gender>Masculine</gender>
     <label>SharinPix Permission</label>
     <listViews>
         <fullName>All</fullName>
