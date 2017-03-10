@@ -1,6 +1,6 @@
 public with sharing class TokenGeneratorController {
 //kevan 20170303
-//
+
     public Id recordId {get;set;}
     public SharinPixPermission__c token {get;set;}
     public String vfMode {get; set;}
@@ -16,11 +16,11 @@ public with sharing class TokenGeneratorController {
         }
 
         urlparams = ApexPages.currentPage().getParameters();
-        if (urlparams.get('id') == null){
+        if (recordId == null){
             vfMode = 'New';
-        } else if (urlparams.get('id') != null & urlparams.get('retURL') != null) {
+        } else if (recordId != null & urlparams.get('retURL') != null) {
             vfMode = 'Edit';
-        } else if (urlparams.get('id') != null & urlparams.get('retURL') == null){
+        } else if (recordId != null & urlparams.get('retURL') == null){
             vfMode = 'View';
         }
     }
@@ -32,7 +32,6 @@ public with sharing class TokenGeneratorController {
     }
 
     public PageReference updateToken(){
-        system.debug('#### '+token);
         upsert token;
         PageReference pageref = new PageReference('/'+token.Id);
         pageref.setRedirect(true);
