@@ -27,8 +27,10 @@
 		<members>Utils</members>
 		<members>UtilsTest</members>
 		<members>SharinPixComponentController</members>
+		<members>SharinPixComponentControllerTEST</members>
 		<members>TokenGeneratorController</members>
 		<members>TokenGeneratorController_TEST</members>
+		<members>ImageSearchController</members>
 		<name>ApexClass</name>
 	</types>
 	<types>
@@ -41,7 +43,6 @@
 		<members>SharinPixSampleCase</members>
 		<members>SharinPixSampleContact</members>
 		<members>SharinPixSetting</members>
-		<members>testSharinPix</members>
 		<members>SharinPixTokenGenerator</members>
 		<name>ApexPage</name>
 	</types>
@@ -55,10 +56,6 @@
 		<members>Credential__c</members>
 		<members>SharinPixPermission__c</members>
 		<name>CustomObject</name>
-	</types>
-	<types>
-		<members>CustomLabels</members>
-		<name>CustomLabels</name>
 	</types>
 	<types>
 		<members>ApiSharinPix</members>
