@@ -1,11 +1,11 @@
-<apex:page standardController="SharinPixPermission__c" extensions="TokenGeneratorController">
+<apex:page standardController="SharinPixPermission__c" extensions="SharinPixPermissionController">
     <apex:form >
         <apex:actionFunction action="{!cancelEdit}" name="cancel" />
 
-        <apex:actionFunction action="{!updateToken}" name="update" rerender="showstate">
-            <apex:param name="name" assignTo="{!token.Name}" value="" />
-            <apex:param name="description" assignTo="{!token.Description__c}" value="" />
-            <apex:param name="json" assignTo="{!token.Json__c}" value="" />
+        <apex:actionFunction action="{!updatePermission}" name="update" rerender="showstate">
+            <apex:param name="name" assignTo="{!permission.Name}" value="" />
+            <apex:param name="description" assignTo="{!permission.Description__c}" value="" />
+            <apex:param name="json" assignTo="{!permission.Json__c}" value="" />
         </apex:actionFunction>
 
     </apex:form>
@@ -43,9 +43,9 @@
 
         function loaded(e){
             var isNew = false;
-            var recordName = '{!token.Name}';
-            var description = '{!token.Description__c}';
-            var token = '{!token.Json__c}' == '' ? '{}' : '{!token.Json__c}';
+            var recordName = '{!permission.Name}';
+            var description = '{!permission.Description__c}';
+            var token = '{!permission.Json__c}' == '' ? '{}' : '{!permission.Json__c}';
             var readOnly = false;
             var edit = false
             if ('{!vfMode}' == 'New'){

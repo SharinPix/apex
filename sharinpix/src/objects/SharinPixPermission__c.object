@@ -10,9 +10,7 @@
     </actionOverrides>
     <actionOverrides>
         <actionName>Clone</actionName>
-        <content>SharinPixTokenGenerator</content>
-        <skipRecordTypeSelect>false</skipRecordTypeSelect>
-        <type>Visualforce</type>
+        <type>Default</type>
     </actionOverrides>
     <actionOverrides>
         <actionName>Delete</actionName>
@@ -20,7 +18,7 @@
     </actionOverrides>
     <actionOverrides>
         <actionName>Edit</actionName>
-        <content>SharinPixTokenGenerator</content>
+        <content>SharinPixPermission</content>
         <skipRecordTypeSelect>false</skipRecordTypeSelect>
         <type>Visualforce</type>
     </actionOverrides>
@@ -30,7 +28,7 @@
     </actionOverrides>
     <actionOverrides>
         <actionName>New</actionName>
-        <content>SharinPixTokenGenerator</content>
+        <content>SharinPixPermission</content>
         <skipRecordTypeSelect>false</skipRecordTypeSelect>
         <type>Visualforce</type>
     </actionOverrides>

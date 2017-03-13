@@ -9,10 +9,10 @@ public with sharing class SharinPixLightningController {
     params.put('user_id', UserInfo.getUserId());
     params.put('email', UserInfo.getUserEmail());
 
-    SharinPixPermission__c token;
+    SharinPixPermission__c permission;
     if (string.isNotBlank(permissionId)){
-      token = [select Id, Json__c from SharinPixPermission__c where Id = :permissionId Limit 1];
-      album_abilities = (map<string, object>) Json.deserializeUntyped(token.Json__c);
+      permission = [select Id, Json__c from SharinPixPermission__c where Id = :permissionId Limit 1];
+      album_abilities = (map<string, object>) Json.deserializeUntyped(permission.Json__c);
     }
     else {
       List<UserRecordAccess> userRecordAccessList = [SELECT RecordId, HasEditAccess, HasReadAccess
