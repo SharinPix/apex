@@ -7,6 +7,6 @@ public with sharing class Token {
         this.jwt.claims = claims;
     }
     public String issue(){
-        return jwt.issue();
-    }
+        return jwt.issue(); 
+    } 
 }

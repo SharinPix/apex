@@ -25,14 +25,14 @@ private class TagImageTEST {
 		tagImg.tag = tag;
 
 		Image img = new Image();
-		img.thumbnails = new map<string, string>{'mini'=>'mini_url', 'large'=>'large_url', 'full'=>'full_large'};
+		img.external_urls = new map<string, string>{'fill100'=>'mini_url', 'fit2000'=>'large_url'};
 		img.gps = new list<double>{-20.22, 50.1234};
 		img.populate();
 
 		tagImg.image = img;
 
-		object full_url = img.getX('full_url');
+		object large_url = img.getX('large_url');
 
-		system.assertEquals(string.valueof('full_url'), 'full_url');
+		system.assertEquals(string.valueof('large_url'), 'large_url');
 	}
 }
