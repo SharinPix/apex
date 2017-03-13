@@ -36,7 +36,7 @@ public class SObjectWrapper {
                                 'width' => getDimensions(action.custom_value)[0],
                                 'height' => getDimensions(action.custom_value)[1]
                             }
-                        }).get('url');
+                        }).get('resource_url');
                         assignValue(action.field_name, imgExtUrl);
                     }
                 } else if (action.value == 'custom') {
