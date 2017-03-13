@@ -3,7 +3,6 @@ public with sharing class TagImage {
     public Tag tag;
     public String id;
     public String user;
-    public Map<String, String> transformations;
 
     public TagImage() {
 
