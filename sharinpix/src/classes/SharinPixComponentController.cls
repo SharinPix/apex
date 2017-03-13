@@ -4,14 +4,14 @@ public with sharing class SharinPixComponentController {
     public string iframeIdInput{get; set;}
     public string secretUrlInput{get; set;}
     public sharinpix.client getClient(){
-        if(secretUrlInput != ''){
+        if(string.isnotblank(secretUrlInput)){
             return new sharinpix.client(secretUrlInput);
         }
         return sharinpix.client.getInstance();
     }
     public string getUrl(){
         // Should be return sharinpix.client.getInstance().url('pagelayout/plop', getClaims());
-        return this.getClient().endpoint_url+'/../../?token=' + this.getClient().token(getParameters());
+        return this.getClient().getHost()+'?token=' + this.getClient().token(getParameters());
     }
     public map<string, object> getParameters(){
         return (map<string, object>) JSON.deserializeUntyped(parametersInput.replace('\'', '"'));
