@@ -53,9 +53,22 @@
         <name>AuraDefinitionBundle</name>
     </types>
     <types>
+        <members>CustomLabels</members>
+        <name>CustomLabels</name>
+    </types>
+    <types>
         <members>Credential__c</members>
         <members>SharinPixPermission__c</members>
         <name>CustomObject</name>
+    </types>
+    <types>
+        <members>SharinPixPermission__c</members>
+        <members>SharinPix_setting</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>SharinPixPermission__c-SharinPix Permission Layout</members>
+        <name>Layout</name>
     </types>
     <types>
         <members>ApiSharinPix</members>
