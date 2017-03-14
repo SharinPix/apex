@@ -28,6 +28,7 @@ public with sharing class ImageSearchController {
         if (ApexPages.currentPage().getParameters().get('reportId') != null) {
             reportId = ApexPages.currentPage().getParameters().get('reportId');
             queryRendered = false;
+            jsonParams = '{"reportId":"' + reportId + '","tagFilter":"","selectedTags":[]}';
             search();
         }
         allReports = [SELECT Id, Name, FolderName FROM Report WHERE Format = 'Tabular' ORDER BY FolderName, Name];
@@ -95,7 +96,6 @@ public with sharing class ImageSearchController {
             dataCells = detailRow.getDataCells();
             albumIds.add((Id)detailRow.getDataCells()[idColumnIndex].getValue());
         }
-
         return albumIds;
     }
 
@@ -154,12 +154,11 @@ public with sharing class ImageSearchController {
         Map<String, Object> params = new Map<String, Object> { 'admin' => true };
         Integer page = 1;
         List<Object> tagsPage = new List<Object>();
-        /*List<Object> allTagObj = new List<Object>();
+        List<Object> allTagObj = new List<Object>();
         do {
-            tagsPage = (List<Object>)clientInstance.get('/tags' + '&page=' + page++, params);
+            tagsPage = (List<Object>)clientInstance.get('/tags' + '?page=' + page++, params);
             allTagObj.addAll(tagsPage);
-        } while (tagsPage.size() != 0);*/
-        List<Object> allTagObj = (List<Object>)clientInstance.get('/tags', params);
+        } while (tagsPage.size() != 0);
         List<String> tagNames = new List<String>();
         for (Object o : allTagObj) {
             tagNames.add((String)((Map<String, Object>)o).get('name'));
