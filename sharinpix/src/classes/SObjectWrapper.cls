@@ -22,15 +22,24 @@ public class SObjectWrapper {
         for(Action action: tagImg.tag.action.actions){
             if (fieldMap().containsKey(action.field_name)){
                 Schema.SobjectField field = fieldMap().get(action.field_name);
-                /*if (Pattern.matches('fill|fit|scale|pad', action.value)) {
+                if (Pattern.matches('fill|fit|scale|pad', action.value)) {
                     if (verifyPermission(new List<Schema.SObjectField> { field })) {
-                        for (String fieldName : tagImg.transformations.keySet()) {
-                            assignValue(fieldName, tagImg.transformations.get(fieldName));
-                        }
+                        String imgExtUrl = (String)(new Utils()).getImageExternalUrl(new Map<String, Object> {
+                            'image_id' => tagImg.image.public_id,
+                            'sharinpix' => new Map<String, Object> {
+                                'download' => false,
+                                'auto' => false,
+                                'full_size' => false
+                            },
+                            'transformations' => new Map<String, Object> {
+                                'crop' => action.value,
+                                'width' => getDimensions(action.custom_value)[0],
+                                'height' => getDimensions(action.custom_value)[1]
+                            }
+                        }).get('resource_url');
+                        assignValue(action.field_name, imgExtUrl);
                     }
-                } else
-                */
-                if (action.value == 'custom') {
+                } else if (action.value == 'custom') {
                     if (verifyPermission(new list<Schema.SobjectField>{ field })){
                         assignValue(action.field_name, action.custom_value);
                     }
@@ -103,5 +112,23 @@ public class SObjectWrapper {
 
     public Schema.DisplayType fieldType(Schema.SObjectField field){
         return field.getDescribe().getType();
+    }
+
+    private List<Integer> getDimensions(String dimension) {
+        try {
+            if (dimension.contains('x')) {
+                return new List<Integer> {
+                    Integer.valueOf(dimension.split('x')[0]),
+                    Integer.valueOf(dimension.split('x')[1])
+                };
+            } else {
+                return new List<Integer> {
+                    Integer.valueOf(dimension),
+                    Integer.valueOf(dimension)
+                };
+            }
+        } catch (Exception e) {
+            return new List<Integer> { 200, 200 };
+        }
     }
 }
