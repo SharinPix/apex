@@ -1,0 +1,27 @@
+<aura:component controller="SharinPixImageSearchController">
+	<aura:attribute name="albumIds" type="String"/>
+    <aura:attribute name="tagOptions" type="Object"/>
+    <aura:attribute name="pageSize" type="Integer"/>
+    
+    <aura:attribute name="currentPage" type="Integer" default="0"/>
+    <aura:attribute name="totalPages" type="Integer"/>
+    
+    <aura:attribute name="searchUrl" type="String"/>
+    
+    <aura:handler name="change" value="{! v.currentPage }" action="{! c.handlePageChange }"/>
+    
+    <aura:method name="init" action="{! c.doInit }"/>
+    
+    <div class="slds-form-element center">
+        <iframe src="{! v.searchUrl }" width="100%" height="450px" style="border: 0;"></iframe>
+        <p>
+            Page {! v.currentPage } of {! v.totalPages }
+        </p>
+        <div style="{! 'display: ' + (v.pageSize != 0 ? 'block' : 'none') }">
+            <lightning:button class="page-btn" disabled="{! v.currentPage == 0 || v.currentPage == 1 }" onclick="{! c.loadFirstPage }">First</lightning:button>
+            <lightning:button class="page-btn" disabled="{! v.currentPage == 0 || v.currentPage == 1 }" onclick="{! c.loadPreviousPage }">Previous</lightning:button>
+            <lightning:button class="page-btn" disabled="{! v.currentPage == 0 || v.currentPage == v.totalPages }" onclick="{! c.loadNextPage }">Next</lightning:button>
+            <lightning:button class="page-btn" disabled="{! v.currentPage == 0 || v.currentPage == v.totalPages }" onclick="{! c.loadLastPage }">Last</lightning:button>
+        </div>
+    </div>
+</aura:component>

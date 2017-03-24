@@ -1,0 +1,14 @@
+<apex:page sidebar="false">
+    <apex:includeLightning />
+    <div id="componentBox" />
+    <script>
+    $Lightning.use("azhar:ImageSearchApp", function() { // TODO : c -> sharinpix
+        $Lightning.createComponent(
+            "azhar:ImageSearch", // TODO : c -> sharinpix
+            { },
+            "componentBox",
+            function(cmp) {}
+        );
+    });
+    </script>
+</apex:page>
