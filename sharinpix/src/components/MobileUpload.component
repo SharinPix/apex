@@ -2,11 +2,12 @@
     <apex:attribute name="albumId" type="String" description="Id of the album to create the job for." assignTo="{! jobAlbumId }" access="global"/>
     <apex:attribute name="name" type="String" description="the job's name in the application." assignTo="{! jobName }" access="global"/>
     <apex:attribute name="options" type="String" description="Options to be passed to the SharinPix application." assignTo="{! jobOptions }" access="global"/>
-    
+    <apex:attribute name="delay" type="Integer" description="The job's lifetime in seconds." assignTo="{! jobDelay }" access="global" default="14400"/>
+
     <apex:form id="frmSharinPix">
         <apex:actionFunction action="{! generateAppUrl }" name="launch" reRender="frmSharinPix"/>
     </apex:form>
-    
+
     <script>
     launch();
     </script>
