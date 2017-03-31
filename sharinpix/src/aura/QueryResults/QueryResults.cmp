@@ -1,27 +1,31 @@
 <aura:component controller="SharinPixImageSearchController">
-	<aura:attribute name="albumIds" type="String"/>
-    <aura:attribute name="tagOptions" type="Object"/>
-    <aura:attribute name="pageSize" type="Integer"/>
-    
+    <aura:attribute name="searchUrls" type="String[]"/>
+
     <aura:attribute name="currentPage" type="Integer" default="0"/>
     <aura:attribute name="totalPages" type="Integer"/>
-    
+    <aura:attribute name="loading" type="Boolean" default="false"/>
+
     <aura:attribute name="searchUrl" type="String"/>
-    
+
     <aura:handler name="change" value="{! v.currentPage }" action="{! c.handlePageChange }"/>
-    
+
     <aura:method name="init" action="{! c.doInit }"/>
-    
+    <aura:method name="reset" action="{! c.reset }"/>
+
     <div class="slds-form-element center">
-        <iframe src="{! v.searchUrl }" width="100%" height="450px" style="border: 0;"></iframe>
-        <p>
-            Page {! v.currentPage } of {! v.totalPages }
-        </p>
-        <div style="{! 'display: ' + (v.pageSize != 0 ? 'block' : 'none') }">
-            <lightning:button class="page-btn" disabled="{! v.currentPage == 0 || v.currentPage == 1 }" onclick="{! c.loadFirstPage }">First</lightning:button>
-            <lightning:button class="page-btn" disabled="{! v.currentPage == 0 || v.currentPage == 1 }" onclick="{! c.loadPreviousPage }">Previous</lightning:button>
-            <lightning:button class="page-btn" disabled="{! v.currentPage == 0 || v.currentPage == v.totalPages }" onclick="{! c.loadNextPage }">Next</lightning:button>
-            <lightning:button class="page-btn" disabled="{! v.currentPage == 0 || v.currentPage == v.totalPages }" onclick="{! c.loadLastPage }">Last</lightning:button>
+        <div style="{! 'display: ' + (v.loading ? 'block' : 'none') }" class="placeholder">
+            <c:Loading /> <!-- CHANGE -->
+        </div>
+
+        <div style="{! 'display: ' + (!v.loading ? 'block' : 'none') }">
+            <iframe src="{! v.searchUrl }" width="100%" height="450px" style="border: 0;" onload="{! c.stopLoading }"></iframe>
+            <p> Page {! v.currentPage } of {! v.totalPages } </p>
+            <div style="{! 'display: ' + (v.pageSize != 0 ? 'block' : 'none') }">
+                <lightning:button class="page-btn" disabled="{! v.currentPage == 0 || v.currentPage == 1 }" onclick="{! c.loadFirstPage }">First</lightning:button>
+                <lightning:button class="page-btn" disabled="{! v.currentPage == 0 || v.currentPage == 1 }" onclick="{! c.loadPreviousPage }">Previous</lightning:button>
+                <lightning:button class="page-btn" disabled="{! v.currentPage == 0 || v.currentPage == v.totalPages }" onclick="{! c.loadNextPage }">Next</lightning:button>
+                <lightning:button class="page-btn" disabled="{! v.currentPage == 0 || v.currentPage == v.totalPages }" onclick="{! c.loadLastPage }">Last</lightning:button>
+            </div>
         </div>
     </div>
 </aura:component>

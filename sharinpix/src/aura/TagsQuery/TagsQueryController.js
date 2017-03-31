@@ -9,16 +9,21 @@
         } else {
             var tagNames = component.get('v.tagNames');
             if ($A.util.isEmpty(tagNames)) {
-                //helper.toggleUiSpinner(component, 'tagSpinner', true)
                 helper.fillTagNames(component, function(recvdTagNames) {
                     component.set('v.tagNames', recvdTagNames);
                     component.set('v.displayTags', true);
-                    //helper.toggleUiSpinner(component, 'tagSpinner', false)
                 });
             } else {
                 component.set('v.displayTags', true);
             }
             component.set('v.tagOperator', tagOperator == 'all-tags' ? 'AND' : 'OR');
         }
+    },
+    reset : function(component, event, helper) {
+        component.set('v.selectedTags', '');
+        component.find('selTagList') && component.find('selTagList').set('v.value', '');
+        component.find('no-tag') && component.find('no-tag').set('v.checked', true);
+        component.set('v.displayTags', false);
+        component.set('v.tagOperator', '');
     }
 })

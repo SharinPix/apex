@@ -1,10 +1,12 @@
 ({
     doInit : function(component, event, helper) {
         component.set('v.currentPage', 0);
-        var albumIds = component.get('v.albumIds');
-        var pageSize = component.get('v.pageSize') == 0 ? albumIds.length : component.get('v.pageSize');
-        component.set('v.totalPages', Math.ceil(albumIds.length / pageSize));
+        var searchUrls = component.get('v.searchUrls');
+        component.set('v.totalPages', searchUrls.length);
         component.set('v.currentPage', 1);
+    },
+    stopLoading : function(component, event, helper) {
+        component.set('v.loading', false);
     },
     loadFirstPage : function(component, event, helper) {
         component.set('v.currentPage', 1);
@@ -24,5 +26,8 @@
     handlePageChange : function(component, event, helper) {
         var currentPage = event.getParam("value");
         helper.loadPage(component, currentPage);
+    },
+    reset : function(component, event, helper) {
+        helper.reset(component);
     }
 })

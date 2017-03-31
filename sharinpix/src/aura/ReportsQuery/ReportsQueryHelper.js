@@ -1,6 +1,5 @@
 ({
     fillReports : function(component) {
-        console.log('fillReports');
         var action = component.get("c.getReports");
         action.setCallback(this, function(response) {
             var state = response.getState();

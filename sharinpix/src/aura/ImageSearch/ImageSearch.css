@@ -1,9 +1,3 @@
-.THIS {
-    /*width: 100%;*/
-    /*height: 100%;*/
-    /*overflow-y: scroll;*/
-}
-
 .THIS .page-btn {
     width: 7em;
 }
@@ -11,4 +5,8 @@
 .THIS .center {
     text-align: center;
     background: inherit !important;
+}
+
+.THIS .placeholder {
+    height: 500px;
 }

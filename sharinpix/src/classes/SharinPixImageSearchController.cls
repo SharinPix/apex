@@ -37,47 +37,68 @@ public with sharing class SharinPixImageSearchController { // to global if neede
 
     @AuraEnabled
     public static List<String> getAlbumIdsFromReport(Id reportId, List<Object> reportParameters) {
-        System.debug('reportParameters : ' + reportParameters);
-        System.debug('reportParameters.size() : ' + reportParameters.size());
-        Reports.ReportResults results;
-        if (reportParameters != null && reportParameters.size() != 0) {
-            Reports.ReportDescribeResult reportDescribe = Reports.ReportManager.describeReport(reportId);
-            Reports.ReportMetadata reportMetadata = reportDescribe.getReportMetadata();
-            Reports.ReportFilter filter;
-            String reportParameter;
-            for (Integer i = 0; i < reportParameters.size(); i++) {
-                filter = reportMetadata.getReportFilters()[i];
-                reportParameter = String.valueOf(reportParameters[i]);
-                reportParameter = reportParameter InstanceOf Id ? (Id)reportParameter : reportParameter;
-                filter.setValue(reportParameter);
+        try {
+            System.debug('reportParameters : ' + reportParameters);
+            System.debug('reportParameters.size() : ' + reportParameters.size());
+            Reports.ReportResults results;
+            if (reportParameters != null && reportParameters.size() != 0) {
+                Reports.ReportDescribeResult reportDescribe = Reports.ReportManager.describeReport(reportId);
+                Reports.ReportMetadata reportMetadata = reportDescribe.getReportMetadata();
+                Reports.ReportFilter filter;
+                String reportParameter;
+                for (Integer i = 0; i < reportParameters.size(); i++) {
+                    filter = reportMetadata.getReportFilters()[i];
+                    reportParameter = String.valueOf(reportParameters[i]);
+                    if (reportParameter.trim() InstanceOf Id) {
+                        reportParameter = (Id)reportParameter.trim();
+                    }
+                    filter.setValue(reportParameter);
+                }
+                results = Reports.ReportManager.runReport(reportId, reportMetadata, true);
+            } else {
+                results = Reports.ReportManager.runReport(reportId, true);
             }
-            results = Reports.ReportManager.runReport(reportId, reportMetadata, true);
-        } else {
-            results = Reports.ReportManager.runReport(reportId, true);
-        }
-        Reports.ReportFactWithDetails factDetails = (Reports.ReportFactWithDetails)results.getFactMap().get('T!T');
+            Reports.ReportFactWithDetails factDetails = (Reports.ReportFactWithDetails)results.getFactMap().get('T!T');
 
-        List<String> albumIds = new List<String>();
-        Integer columnIndex = 0;
-        List<Reports.ReportDataCell> dataCells;
+            List<String> albumIds = new List<String>();
+            Integer columnIndex = 0;
+            List<Reports.ReportDataCell> dataCells;
 
-        for (Reports.ReportDetailRow detailRow : factDetails.getRows()) {
-            dataCells = detailRow.getDataCells();
-            albumIds.add((String)dataCells[columnIndex].getValue());
+            for (Reports.ReportDetailRow detailRow : factDetails.getRows()) {
+                dataCells = detailRow.getDataCells();
+                albumIds.add((String)dataCells[columnIndex].getValue());
+            }
+            return albumIds;
+        } catch (Exception e) {
+            throw new SharinPixException('Error in generating report - ' + e.getCause() + '[' + e.getLineNumber() + ']: ' + e.getMessage());
         }
-        System.debug('albumIds' + JSON.serialize(albumIds));
-        return albumIds;
     }
 
     @AuraEnabled
-    public static String generateSearchUrl(List<String> albumIds, String tagOperator, List<String> selectedTags) {
-        System.debug('tagOperator: ' + tagOperator);
-        System.debug('selectedTags: ' + JSON.serialize(selectedTags));
-        String queryStr = generateQueryString(albumIds, selectedTags, tagOperator);
-        Map<String, String> query = new Map<String, String> { 'q' => queryStr };
+    public static List<String> generateSearchUrls(Id reportId, List<Object> reportParameters, String tagOperator, List<String> selectedTags, Integer pageSize) {
+        System.debug('reportId : ' + reportId);
+        System.debug('reportParameters : ' + reportParameters);
+        System.debug('tagOperator : ' + tagOperator);
+        System.debug('selectedTags : ' + selectedTags);
+        System.debug('pageSize : ' + pageSize);
+        pageSize = Integer.valueOf(pageSize); // WTF ??
 
-        return 'https://azhar.ngrok.io/search?search_bar=false&q=' + clientInstance.token(query);
-        //return 'https://app.sharinpix.com/search?search_bar=false&q=' + clientInstance.token(query);
+        List<String> urls = new List<String>();
+
+        List<String> albumIds = getAlbumIdsFromReport(reportId, reportParameters);
+        if (pageSize == 0) {
+            pageSize = albumIds.size();
+        }
+        Map<String, String> query;
+        String queryStr;
+        for (Integer i = 0; i < i + pageSize && i < albumIds.size(); i += pageSize) {
+            queryStr = generateQueryString(slice(albumIds, i, Math.min(i + pageSize, albumIds.size())), selectedTags, tagOperator);
+            query = new Map<String, String> { 'q' => queryStr };
+            urls.add('https://azhar.ngrok.io/search?search_bar=false&q=' + clientInstance.token(query));
+            //urls.add('https://app.sharinpix.com/search?search_bar=false&q=' + clientInstance.token(query));
+        }
+        System.debug('urls: ' + JSON.serialize(urls));
+        return urls;
     }
 
     private static String generateQueryString(List<String> albumIds, List<String> selectedTags, String tagOperator) {
@@ -95,45 +116,14 @@ public with sharing class SharinPixImageSearchController { // to global if neede
         return 'tags:(+(' + albumIdsString + ') +(' + selectedTagsString + '))';
     }
 
-    //private static List<String> getAlbumIds(Map<String, Object> params) {
-    //    Object albumIdsObj = params.get('albumIds');
-    //    if (albumIdsObj == null) {
-    //        return null;
-    //    }
-    //    List<String> albumIds = new List<String>();
-    //    String albumId;
-    //    for (Object o : (List<Object>)albumIdsObj) {
-    //        albumId = String.valueOf(o);
-    //        albumIds.add(albumId InstanceOf Id ? (Id)albumId : albumId);
-    //    }
-    //    //if (!checkValidIds(salesforceIds)) {
-    //    //    throw new SharinPixException('Access denied for Salesforce Record Ids');
-    //    //}
-    //    return albumIds;
-    //}
-
-    //private static Boolean checkValidIds(List<Id> salesforceIds) {
-    //    Map<Id, UserRecordAccess> accessibleIds = new Map<Id, UserRecordAccess>();
-    //    for (Integer i = 0; i < salesforceIds.size(); i+= 200) {
-    //        accessibleIds.putAll([
-    //            SELECT RecordId
-    //            FROM UserRecordAccess
-    //            WHERE UserId = :UserInfo.getUserId()
-    //              AND RecordId IN :slice(salesforceIds, i, i+200)
-    //              AND HasReadAccess = true
-    //        ]);
-    //    }
-    //    if (salesforceIds.size() != accessibleIds.keySet().size()) {
-    //        return false;
-    //    }
-    //    return true;
-    //}
-
-    //private static List<Id> slice(List<Id> original, Integer startIndex, Integer endIndex) {
-    //    List<Id> sliced = new List<Id>();
-    //    for (Integer i = startIndex; i < endIndex && i < original.size(); i++) {
-    //        sliced.add(original[i]);
-    //    }
-    //    return sliced;
-    //}
+    private static List<String> slice(List<String> original, Integer startIndex, Integer endIndex) {
+        if (startIndex == 0 && endIndex == original.size()) {
+            return original;
+        }
+        List<String> sliced = new List<String>();
+        for (Integer i = startIndex; i < endIndex && i < original.size(); i++) {
+            sliced.add(original[i]);
+        }
+        return sliced;
+    }
 }

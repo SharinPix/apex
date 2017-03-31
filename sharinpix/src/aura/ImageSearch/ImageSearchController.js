@@ -15,15 +15,10 @@
     doSearch : function(component, event, helper) {
         helper.startSearch(component);
     },
-    clearInput : function(component, event, helper) {
-        component.find('txtReportId') && component.find('txtReportId').set('v.value', '');
-        component.set('v.reportId', '');
-        component.set('v.reportParameters', null);
-        component.set('v.selectedTags', '');
-        component.find('selTagList') && component.find('selTagList').set('v.value', '');
-        component.find('no-tag') && component.find('no-tag').set('v.checked', true);
-        component.set('v.displayTags', false);
-        component.set('v.tagOperator', '');
-        component.set('v.showResultsPanel', false)
+    reset : function(component, event, helper) {
+        component.find('reportsQuery') && component.find('reportsQuery').reset();
+        component.find('tagsQuery') && component.find('tagsQuery').reset();
+        component.find('queryResults') && component.find('queryResults').reset();
+        component.set('v.showResultsPanel', false);
     }
 })

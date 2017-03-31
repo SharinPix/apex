@@ -1,6 +1,5 @@
 ({
     doInit : function(component, event, helper) {
-        console.log('doInit');
         helper.fillReports(component);
     },
     setReportId : function(component, event, helper) {
@@ -12,4 +11,9 @@
             component.set('v.reportId', reportId);
         }
     },
+    reset : function(component, event, helper) {
+        component.find('txtReportId') && component.find('txtReportId').set('v.value', '');
+        component.set('v.reportId', '');
+        component.find('reportParams') && component.find('reportParams').reset();
+    }
 })

@@ -3,7 +3,9 @@
     <aura:attribute name="selectedTags" type="String"/>
     <aura:attribute name="tagNames" type="String[]"/>
     <aura:attribute name="displayTags" type="boolean" default="false"/>
-    
+
+    <aura:method name="reset" action="{! c.reset }"/>
+
     <fieldset class="slds-form-element">
         <legend class="slds-form-element__legend slds-form-element__label">Filter by tags</legend>
         <div class="slds-form-element__control">

@@ -1,10 +1,12 @@
 <aura:component controller="SharinPixImageSearchController">
     <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
-    
+
     <aura:attribute name="reportId" type="String"/>
-    <aura:attribute name="reportParameters" type="String"/>
+    <aura:attribute name="reportParameters" type="String" default="[]"/>
     <aura:attribute name="reportsFolders" type="List"/>
-    
+
+    <aura:method name="reset" action="{! c.reset }"/>
+
     <div class="slds-grid slds-wrap slds-grid--pull-padded">
         <div class="slds-p-horizontal--small slds-size--1-of-2 slds-medium-size--1-of-2 slds-large-size--1-of-2">
             <div class="slds-form-element">
@@ -33,11 +35,5 @@
             </div>
         </div>
     </div>
-    
-    <div class="slds-form-element">
-        <div class="slds-form-element__control">
-            <label class="slds-form-element__label">Report Parameters</label>
-            <ui:inputTextArea aura:id="txtReportParameters" class="slds-input" value="{! v.reportParameters }" rows="3" placeholder="e.g. 00158000003NLMy"/>
-        </div>
-    </div>
+    <c:IncrementalText aura:id="reportParams" label="Report Parameters" placeholder="pv" appendToPlaceholder="0" value="{! v.reportParameters }"/>
 </aura:component>
