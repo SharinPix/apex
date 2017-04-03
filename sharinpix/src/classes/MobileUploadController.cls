@@ -1,9 +1,25 @@
 public class MobileUploadController {
+    /*
+    ----------------------------------------------------------------------
+    -- - Author        : SharinPix
+    -- - Description   : Controller for MobileUpload component
+    -- -
+    -- - Maintenance History:
+    --
+    -- Date         Name  Version  Remarks
+    -- -----------  ----  -------  ---------------------------------------
+    -- 03-APR-2016  ABE   1.0      Initial version
+    ----------------------------------------------------------------------
+    */
     public String jobAlbumId { get; set; }
     public String jobName { get; set; }
     public String jobOptions { get; set; }
     public Integer jobDelay { get; set; }
 
+    /**
+     * Generate SharinPix URL to launch mobile application
+     * @return Application URL
+     */
     public PageReference generateAppUrl() {
         if (String.isBlank(jobAlbumId)) jobAlbumId = ApexPages.currentPage().getParameters().get('albumId');
         if (String.isBlank(jobAlbumId)) return null;
@@ -37,6 +53,11 @@ public class MobileUploadController {
         return pageRef;
     }
 
+    /**
+     * Returns parsed JSON of SharinPix Mobile App options, passed to component.
+     * @param  options JSON representation of SharinPix mobile app options. Example: {'grayscale':true}
+     * @return         Map of String to Object representation of JSON
+     */
     private Map<String, Object> getOptions(String options) {
         return (Map<String, Object>)JSON.deserializeUntyped(options.replace('\'', '"'));
     }
