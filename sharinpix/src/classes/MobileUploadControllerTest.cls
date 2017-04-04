@@ -31,25 +31,4 @@ public class MobileUploadControllerTest {
         System.assert(decodedData.contains('TestName'));
         System.assert(decodedData.contains('{"grayscale":true}'));
     }
-
-    static testMethod void testComponentOnPage() {
-        PageReference mUploadPageRef = Page.MobileUpload;
-        mUploadPageRef.getParameters().put('albumId', 'TestId');
-        mUploadPageRef.getParameters().put('name', 'TestName');
-        Test.setCurrentPage(mUploadPageRef);
-
-        MobileUploadController mUploadCtrl = new MobileUploadController();
-
-        Test.startTest();
-        PageReference appUrlPageRef = mUploadCtrl.generateAppUrl();
-        Test.stopTest();
-
-        String appUrl = appUrlPageRef.getUrl();
-        System.assert(appUrl.contains('native_upload'));
-        String token = appUrl.substringAfter('token=');
-        String[] tokenParts = token.split('\\.');
-        String decodedData = EncodingUtil.base64Decode(tokenParts[1]).toString();
-        System.assert(decodedData.contains('TestId'));
-        System.assert(decodedData.contains('TestName'));
-    }
 }

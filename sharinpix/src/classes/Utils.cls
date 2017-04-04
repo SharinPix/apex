@@ -339,4 +339,44 @@ global with sharing class Utils {
         return clientInstance.post('/imports/', Blob.valueOf(JSON.serialize(importPayload)), claims);
     }
 
+    /**
+     * Generate SharinPix URL to launch mobile application
+     * @param  albumId        Album Id to save job's images into
+     * @param  name           Name of job in application
+     * @param  jobOptions     Additional options passed to job
+     * @param  linkExpiration Link expiration delay in seconds
+     * @return                App URL to open SharinPix mobile app
+     */
+    global String generateMobileAppUrl(String albumId, String name, Map<String, Object> options, Integer linkExpiration) {
+        if (String.isBlank(albumId)) return null;
+        if (albumId InstanceOf Id)   albumId = (Id)albumId;
+        if (String.isBlank(name))    name = albumId;
+        if (linkExpiration == null)  linkExpiration = 300;
+
+        Map<String, Object> params = new Map<String, Object> {
+            'album_id' => albumId,
+            'name' => name,
+            'exp' => (linkExpiration != 0) ? (DateTime.now().getTime()/1000) + linkExpiration : 0,
+            'native_app_options' => options,
+            'abilities' => new Map<String, Object> {
+                albumId => new Map<String, Object> {
+                    'Access' => new Map<String, Boolean> {
+                        'see' => true,
+                        'image_upload' => true
+                    }
+                }
+            }
+        };
+        String appUrl = clientInstance.getAppHost() + '/native_upload?token=' + clientInstance.token(params);
+        return appUrl;
+    }
+
+    /**
+     * Returns parsed single-quoted JSON, usually passed as component parameters.
+     * @param  options JSON representation of SharinPix mobile app options. Example: {'grayscale':true}
+     * @return         Map of String to Object representation of JSON
+     */
+    public static Map<String, Object> parseJsonParam(String options) {
+        return (Map<String, Object>)JSON.deserializeUntyped(options.replace('\'', '"'));
+    }
 }
