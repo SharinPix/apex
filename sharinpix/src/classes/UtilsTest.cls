@@ -250,7 +250,6 @@ private with sharing class UtilsTest {
     }
 
     static testMethod void testGenerateMobileAppUrl() {
-        MobileUploadController mUploadCtrl = new MobileUploadController();
         String albumId = 'TestId';
         String name = 'TestName';
         String optionsJson = '{\'grayscale\':true}';
