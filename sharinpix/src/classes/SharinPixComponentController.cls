@@ -5,10 +5,10 @@ public with sharing class SharinPixComponentController {
     public String secretUrlInput { get; set; }
 
     public sharinpix.client getClient() {
-        if(String.IsNotBlank(secretUrlInput)) {
-            return new sharinpix.client(secretUrlInput);
+        if(String.isNotBlank(secretUrlInput)) {
+            return new sharinpix.Client(secretUrlInput);
         }
-        return sharinpix.client.getInstance();
+        return sharinpix.Client.getInstance();
     }
 
     public String getUrl(){
