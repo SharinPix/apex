@@ -36,7 +36,34 @@ public with sharing class SharinPixImageSearchController { // to global if neede
     }
 
     @AuraEnabled
-    public static List<String> getAlbumIdsFromReport(Id reportId, List<Object> reportParameters) {
+    public static List<String> generateSearchUrls(Id reportId, List<Object> reportParameters, String tagOperator, List<String> selectedTags, Integer pageSize) {
+        System.debug('reportId : ' + reportId);
+        System.debug('reportParameters : ' + reportParameters);
+        System.debug('tagOperator : ' + tagOperator);
+        System.debug('selectedTags : ' + selectedTags);
+        System.debug('pageSize : ' + pageSize);
+        pageSize = Integer.valueOf(pageSize); // WTF ??
+
+        List<String> urls = new List<String>();
+
+        List<String> albumIds = getAlbumIdsFromReport(reportId, reportParameters);
+        if (pageSize == 0) {
+            pageSize = albumIds.size();
+        }
+        Map<String, String> query;
+        String queryStr;
+        for (Integer i = 0; i < i + pageSize && i < albumIds.size(); i += pageSize) {
+            queryStr = generateQueryString(slice(albumIds, i, Math.min(i + pageSize, albumIds.size())), selectedTags, tagOperator);
+            query = new Map<String, String> { 'q' => queryStr };
+            urls.add('https://azhar.ngrok.io/search?search_bar=false&q=' + clientInstance.token(query));
+            //urls.add('https://azhar.ngrok.io/search?search_bar=false&token=' + clientInstance.token(query));
+            //urls.add('https://app.sharinpix.com/search?search_bar=false&q=' + clientInstance.token(query));
+        }
+        System.debug('urls: ' + JSON.serialize(urls));
+        return urls;
+    }
+
+    private static List<String> getAlbumIdsFromReport(Id reportId, List<Object> reportParameters) {
         try {
             System.debug('reportParameters : ' + reportParameters);
             System.debug('reportParameters.size() : ' + reportParameters.size());
@@ -72,33 +99,6 @@ public with sharing class SharinPixImageSearchController { // to global if neede
         } catch (Exception e) {
             throw new SharinPixException('Error in generating report - ' + e.getCause() + '[' + e.getLineNumber() + ']: ' + e.getMessage());
         }
-    }
-
-    @AuraEnabled
-    public static List<String> generateSearchUrls(Id reportId, List<Object> reportParameters, String tagOperator, List<String> selectedTags, Integer pageSize) {
-        System.debug('reportId : ' + reportId);
-        System.debug('reportParameters : ' + reportParameters);
-        System.debug('tagOperator : ' + tagOperator);
-        System.debug('selectedTags : ' + selectedTags);
-        System.debug('pageSize : ' + pageSize);
-        pageSize = Integer.valueOf(pageSize); // WTF ??
-
-        List<String> urls = new List<String>();
-
-        List<String> albumIds = getAlbumIdsFromReport(reportId, reportParameters);
-        if (pageSize == 0) {
-            pageSize = albumIds.size();
-        }
-        Map<String, String> query;
-        String queryStr;
-        for (Integer i = 0; i < i + pageSize && i < albumIds.size(); i += pageSize) {
-            queryStr = generateQueryString(slice(albumIds, i, Math.min(i + pageSize, albumIds.size())), selectedTags, tagOperator);
-            query = new Map<String, String> { 'q' => queryStr };
-            urls.add('https://azhar.ngrok.io/search?search_bar=false&q=' + clientInstance.token(query));
-            //urls.add('https://app.sharinpix.com/search?search_bar=false&q=' + clientInstance.token(query));
-        }
-        System.debug('urls: ' + JSON.serialize(urls));
-        return urls;
     }
 
     private static String generateQueryString(List<String> albumIds, List<String> selectedTags, String tagOperator) {

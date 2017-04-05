@@ -41,9 +41,7 @@
         }
         var selectedTags = component.get('v.selectedTags');
         if (!$A.util.isEmpty(selectedTags)) {
-            selectedTags = selectedTags.split(';');
-        } else {
-            selectedTags = [];
+            selectedTags = JSON.parse(selectedTags);
         }
         var tagOperator = component.get('v.tagOperator');
         var pageSize = component.get('v.pageSize');

@@ -1,10 +1,10 @@
 ({
     doInit : function(component, event, helper) {
-        //console.log('v.reportId', component.get('v.reportId'));
-        // how to pass report id on init !!!
-        /*if (!$A.util.isEmpty(component.get('v.reportId'))) {
+        console.log('reportId', component.get('v.reportId'));
+        console.log('reportParameters', component.get('v.reportParameters'));
+        if (!$A.util.isEmpty(component.get('v.reportId'))) {
             helper.startSearch(component);
-        }*/
+        }
     },
     startLexSpinner : function(component, event, helper) {
         helper.toggleLexSpinner(component, 'lexSpinner', true);

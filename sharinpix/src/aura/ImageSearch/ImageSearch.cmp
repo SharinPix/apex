@@ -1,7 +1,7 @@
 <aura:component access="GLOBAL"
                 implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:appHostable"
                 controller="SharinPixImageSearchController">
-    <lightning:spinner variant="brand" size="large" aura:id="lexSpinner" alternativeText="Fetching tags and reports..."/>
+    <lightning:spinner variant="brand" size="large" aura:id="lexSpinner" alternativeText="Loading..."/>
 
     <aura:attribute name="showQueryPanel" type="boolean" default="true" access="global"/>
     <aura:attribute name="allowQueryByTag" type="boolean" default="true" access="global"/>
@@ -10,16 +10,15 @@
     <aura:attribute name="reportId" type="String" access="global"/>
     <aura:attribute name="reportParameters" type="String" access="global"/>
 
-    <aura:attribute name="tagOperator" type="String" default=""/>
+    <aura:attribute name="tagOperator" type="String" default="OR" access="global"/>
     <aura:attribute name="selectedTags" type="String" access="global"/>
 
     <aura:attribute name="searchUrls" type="String[]" access="private"/>
+    <aura:attribute name="pageSize" type="Integer" default="50" access="global"/>
 
     <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
     <aura:handler event="aura:waiting" action="{! c.startLexSpinner }"/>
     <aura:handler event="aura:doneWaiting" action="{! c.stopLexSpinner }"/>
-
-    <aura:attribute name="pageSize" type="Integer" default="2" access="global"/>
 
     <div class="slds-form--stacked slds-m-around--small">
         <div class="slds-grid slds-wrap slds-grid--pull-padded slds-grid--align-center">

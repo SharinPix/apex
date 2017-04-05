@@ -1,8 +1,9 @@
 <design:component >
-    <design:attribute name="reportId" label="Report ID" description="The report ID from which to fetch record IDs from"/>
-    <design:attribute name="reportParameters" label="Report Parameters" description="Parameters to pass to the report. Leave blank for none."/>
-    <design:attribute name="allowQueryByTag" label="Allow Query By Tags" description="Allow user to filter images by SharinPix tags." default="true"/>
-    <design:attribute name="selectedTags" label="Tag Names" description="Predefined tags to filter the images by."/>
     <design:attribute name="showQueryPanel" label="Show Query Panel" description="Show the query panel." default="true"/>
+    <design:attribute name="reportId" label="Report ID" description="The report ID from which to fetch record IDs from."/>
+    <design:attribute name="reportParameters" label="Report Parameters" description="Parameters to pass to the report. Value should be an array in JSON format. Leave blank for none."/>
+    <design:attribute name="allowQueryByTag" label="Allow Query By Tags" description="Allow user to filter images by SharinPix tags." default="true"/>
+    <design:attribute name="tagOperator" label="Tag Operator" description="Operator to use when multiple tags are input. Use AND for all of the tags and OR for any of the tags." datasource="OR,AND" default="OR"/>
+    <design:attribute name="selectedTags" label="Tag Names" description="Predefined tags to filter the images by. Value should be an array in JSON format. Leave blank for none."/>
     <design:attribute name="pageSize" label="Page Size" description="Set the number of records' images to display on 1 page." default="50"/>
 </design:component>

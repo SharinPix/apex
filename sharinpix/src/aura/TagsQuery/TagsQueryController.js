@@ -19,6 +19,10 @@
             component.set('v.tagOperator', tagOperator == 'all-tags' ? 'AND' : 'OR');
         }
     },
+    setSelectedTags : function(component, event, helper) {
+        var value = component.get('v.selection');
+        component.set($A.util.isEmpty(value) ? '[]' : JSON.stringify(value.split(';')));
+    },
     reset : function(component, event, helper) {
         component.set('v.selectedTags', '');
         component.find('selTagList') && component.find('selTagList').set('v.value', '');

@@ -1,18 +1,21 @@
 <aura:component controller="SharinPixImageSearchController">
-    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
-
     <aura:attribute name="reportId" type="String"/>
     <aura:attribute name="reportParameters" type="String" default="[]"/>
     <aura:attribute name="reportsFolders" type="List"/>
 
+    <aura:attribute name="id" type="String"/>
+
     <aura:method name="reset" action="{! c.reset }"/>
+
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+    <aura:handler name="change" value="{! v.id }" action="{! c.setReportId }"/>
 
     <div class="slds-grid slds-wrap slds-grid--pull-padded">
         <div class="slds-p-horizontal--small slds-size--1-of-2 slds-medium-size--1-of-2 slds-large-size--1-of-2">
             <div class="slds-form-element">
                 <div class="slds-form-element__control">
                     <label class="slds-form-element__label">Report ID</label>
-                    <ui:inputText aura:id="txtReportId" class="slds-input" maxlength="18" placeholder="e.g. 00O58000001HQtw" blur="{! c.setReportId }"/>
+                    <ui:inputText aura:id="txtReportId" class="slds-input" maxlength="18" placeholder="e.g. 00O58000001HQtw" change="{! c.setId }"/>
                 </div>
             </div>
         </div>
@@ -21,7 +24,7 @@
                 <div class="slds-form-element__control">
                     <label class="slds-form-element__label">Report List</label>
                     <div class="slds-select_container">
-                        <ui:inputSelect class="slds-select" aura:id="selReports" value="{! v.reportId }">
+                        <ui:inputSelect class="slds-select" aura:id="selReports" value="{! v.id }">
                             <ui:inputSelectOption text="" label=""/>
                             <aura:iteration items="{! v.reportsFolders }" var="reportsFolder">
                                 <ui:inputSelectOption text="{! reportsFolder.name }" label="{! reportsFolder.name }" disabled="true"/>
