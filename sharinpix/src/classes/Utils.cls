@@ -353,4 +353,12 @@ global with sharing class Utils {
         return clientInstance.post('/imports/', Blob.valueOf(JSON.serialize(importPayload)), claims);
     }
 
+    private List<Map<String, Object>> slice(List<Map<String, Object>> original, Integer startIndex, Integer endIndex) {
+        List<Map<String, Object>> sliced = new List<Map<String, Object>>();
+        for (Integer i = startIndex; i < endIndex && i < original.size(); i++) {
+            sliced.add(original[i]);
+        }
+        return sliced;
+    }
 }
+
