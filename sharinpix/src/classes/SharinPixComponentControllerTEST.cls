@@ -15,7 +15,7 @@ private class SharinPixComponentControllerTEST {
         Test.stopTest();
 
         Client clientInstance = new Client(controller.secretUrlInput);
-        string assertUrl = clientInstance.getHost() + '?token=' + clientInstance.token(controller.getParameters());
+        String assertUrl = clientInstance.getAppHost() + '?token=' + clientInstance.token(sharinpix.Utils.parseJsonParam(controller.parametersInput));
         system.assertEquals(url, assertUrl);
         system.assertEquals(iframeId, 'iframe');
         system.assertEquals(style, 'border: none; width: 100%; height: 200px;');
@@ -34,9 +34,9 @@ private class SharinPixComponentControllerTEST {
         Test.stopTest();
 
         Client clientInstance = new Client('sharinpix://test:test@api.sharinpix.com/api/v1');
-        string assertUrl = clientInstance.getHost() + '?token=' + clientInstance.token(controller.getParameters());
-        system.assertEquals(url, assertUrl);
-        system.assertEquals(iframeId, 'iframe');
-        system.assertEquals(style, 'border: none; width: 100%; height: 200px;');
+        String assertUrl = clientInstance.getAppHost() + '?token=' + clientInstance.token(sharinpix.Utils.parseJsonParam(controller.parametersInput));
+        System.assertEquals(url, assertUrl);
+        System.assertEquals(iframeId, 'iframe');
+        System.assertEquals(style, 'border: none; width: 100%; height: 200px;');
     }
 }

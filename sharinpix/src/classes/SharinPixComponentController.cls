@@ -4,8 +4,8 @@ public with sharing class SharinPixComponentController {
     public String iframeIdInput { get; set; }
     public String secretUrlInput { get; set; }
 
-    public sharinpix.client getClient() {
-        if(String.isNotBlank(secretUrlInput)) {
+    public sharinpix.Client getClient() {
+        if (String.isNotBlank(secretUrlInput)) {
             return new sharinpix.Client(secretUrlInput);
         }
         return sharinpix.Client.getInstance();
