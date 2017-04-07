@@ -166,10 +166,24 @@ global with sharing class Utils {
      * @return        List of Map objects containing 'image_id' and 'url' as keys
      */
     global List<Object> getImageExternalUrls(List<Map<String, Object>> imageTransformations) {
-        Map<String, Object> body = new Map<String, Object> {
-            'image_external_urls' => imageTransformations
-        };
-        return (List<Object>)postImageExternalUrl(body);
+        List<Object> imageExternalUrls = new List<Object>();
+        List<Map<String, Object>> sliced;
+        Map<String, Object> body;
+        Object response;
+        Integer maxTransformations = 50;
+        for (Integer i = 0; i < imageTransformations.size(); i += maxTransformations) {
+            sliced = slice(imageTransformations, i, i + maxTransformations);
+            body = new Map<String, Object> {
+                'image_external_urls' => sliced
+            };
+            response = postImageExternalUrl(body);
+            if (sliced.size() == 1) {
+                imageExternalUrls.add(response);
+            } else {
+                imageExternalUrls.addAll((List<Object>)response);
+            }
+        }
+        return imageExternalUrls;
     }
 
     /**
