@@ -293,4 +293,37 @@ private with sharing class UtilsTest {
         System.assertEquals(JSON.serialize(response), '{}');
     }
 
+    static testMethod void testUploadFromUrl() {
+        Case cs = new Case(Status='New', Origin='Email');
+        insert cs;
+        Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+            API_URL + '/imports/' => new SingleRequestMock(200, 'OK', '{}', null)
+        };
+        Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+        Test.startTest();
+        Object response = (new Utils()).uploadFromUrl('http://lorempixel.com/1000/1000', cs.Id, 'lorempixel.jpg');
+        Test.stopTest();
+
+        System.assertEquals(JSON.serialize(response), '{}');
+    }
+
+    //static testMethod void testGenerateMobileAppUrl() {
+    //    String albumId = 'TestId';
+    //    String name = 'TestName';
+    //    String optionsJson = '{\'grayscale\':true}';
+    //    Map<String, Object> options = Utils.parseJsonParam(optionsJson);
+
+    //    Test.startTest();
+    //    String appurl = (new Utils()).generateMobileAppUrl(albumId, name, options, 300);
+    //    Test.stopTest();
+
+    //    System.assert(appUrl.contains('native_upload'));
+    //    String token = appUrl.substringAfter('token=');
+    //    String[] tokenParts = token.split('\\.');
+    //    String decodedData = EncodingUtil.base64Decode(tokenParts[1]).toString();
+    //    System.assert(decodedData.contains('TestId'));
+    //    System.assert(decodedData.contains('TestName'));
+    //    System.assert(decodedData.contains('{"grayscale":true}'));
+    //}
 }
