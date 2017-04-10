@@ -17,7 +17,7 @@
               case 'tag-image-new':
                 if (component.get('v.enableAction')===true){
                   var albumId = component.get('v.AlbumId') || component.get('v.recordId');
-                  if (albumId == postMessageEvent.data.payload.tag_image.image.album_id) {
+                  if (albumId === postMessageEvent.data.payload.tag_image.image.album_id) {
                     helper.execCommand(albumId, JSON.stringify(postMessageEvent.data.payload.tag_image), component, event);
                   }
                 }
