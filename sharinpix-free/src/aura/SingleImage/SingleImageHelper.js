@@ -3,10 +3,10 @@
         var source = component.get('v.attachmentId');
         component.set('v.source', undefined);
         if (!$A.util.isEmpty(source) && (source.length === 15 || source.length === 18)) {
-            if (source.startsWith('00P')){
+            if (this.validateStartsWith(source, '00P')){
                 component.set('v.source', (component.get('v.siteUrl') === undefined ? '' : component.get('v.siteUrl')) + '/servlet/servlet.FileDownload?file=' + source);
             }
-            else if (source.startsWith('068')){
+            else if (this.validateStartsWith(source, '068')){
                 component.set('v.source', '/sfc/servlet.shepherd/version/download/'+source);
             }
         }
@@ -21,5 +21,8 @@
             this.reloadSource(component);
         });
         $A.enqueueAction(action);
+    },
+    validateStartsWith: function(source, searchString){
+        return source.indexOf(searchString, 0) === 0;
     }
 })
