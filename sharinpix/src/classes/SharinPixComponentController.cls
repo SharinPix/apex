@@ -1,25 +1,26 @@
 public with sharing class SharinPixComponentController {
-    public string parametersInput {get; set;}
-    public string heightInput{get; set;}
-    public string iframeIdInput{get; set;}
-    public string secretUrlInput{get; set;}
-    public sharinpix.client getClient(){
-        if(string.isnotblank(secretUrlInput)){
-            return new sharinpix.client(secretUrlInput);
+    public String parametersInput { get; set; }
+    public String heightInput { get; set; }
+    public String iframeIdInput { get; set; }
+    public String secretUrlInput { get; set; }
+
+    public sharinpix.Client getClient() {
+        if (String.isNotBlank(secretUrlInput)) {
+            return new sharinpix.Client(secretUrlInput);
         }
-        return sharinpix.client.getInstance();
+        return sharinpix.Client.getInstance();
     }
-    public string getUrl(){
+
+    public String getUrl(){
         // Should be return sharinpix.client.getInstance().url('pagelayout/plop', getClaims());
-        return this.getClient().getHost()+'?token=' + this.getClient().token(getParameters());
+        return this.getClient().getAppHost() + '?token=' + this.getClient().token(sharinpix.Utils.parseJsonParam(parametersInput));
     }
-    public map<string, object> getParameters(){
-        return (map<string, object>) JSON.deserializeUntyped(parametersInput.replace('\'', '"'));
-    }
-    public string getIframeId(){
+
+    public String getIframeId(){
         return iframeIdInput;
     }
-    public string getStyle(){
-        return 'border: none; width: 100%; height: '+ heightInput + ';';
+
+    public String getStyle(){
+        return 'border: none; width: 100%; height: ' + heightInput + ';';
     }
 }

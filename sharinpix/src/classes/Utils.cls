@@ -390,29 +390,29 @@ global with sharing class Utils {
      * @param  linkExpiration Link expiration delay in seconds
      * @return                App URL to open SharinPix mobile app
      */
-    //global String generateMobileAppUrl(String albumId, String name, Map<String, Object> options, Integer linkExpiration) {
-    //    if (String.isBlank(albumId)) return null;
-    //    if (albumId InstanceOf Id)   albumId = (Id)albumId;
-    //    if (String.isBlank(name))    name = albumId;
-    //    if (linkExpiration == null)  linkExpiration = 300;
+    global String generateMobileAppUrl(String albumId, String name, Map<String, Object> options, Integer linkExpiration) {
+        if (String.isBlank(albumId)) return null;
+        if (albumId InstanceOf Id)   albumId = (Id)albumId;
+        if (String.isBlank(name))    name = albumId;
+        if (linkExpiration == null)  linkExpiration = 300;
 
-    //    Map<String, Object> params = new Map<String, Object> {
-    //        'album_id' => albumId,
-    //        'name' => name,
-    //        'exp' => (linkExpiration != 0) ? (DateTime.now().getTime()/1000) + linkExpiration : 0,
-    //        'native_app_options' => options,
-    //        'abilities' => new Map<String, Object> {
-    //            albumId => new Map<String, Object> {
-    //                'Access' => new Map<String, Boolean> {
-    //                    'see' => true,
-    //                    'image_upload' => true
-    //                }
-    //            }
-    //        }
-    //    };
-    //    String appUrl = clientInstance.getAppHost() + '/native_upload?token=' + clientInstance.token(params);
-    //    return appUrl;
-    //}
+        Map<String, Object> params = new Map<String, Object> {
+            'album_id' => albumId,
+            'name' => name,
+            'exp' => (linkExpiration != 0) ? (DateTime.now().getTime()/1000) + linkExpiration : 0,
+            'native_app_options' => options,
+            'abilities' => new Map<String, Object> {
+                albumId => new Map<String, Object> {
+                    'Access' => new Map<String, Boolean> {
+                        'see' => true,
+                        'image_upload' => true
+                    }
+                }
+            }
+        };
+        String appUrl = clientInstance.getAppHost() + '/native_upload?token=' + clientInstance.token(params);
+        return appUrl;
+    }
 
     /**
      * Returns parsed single-quoted JSON, usually passed as component parameters.
