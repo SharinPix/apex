@@ -166,10 +166,24 @@ global with sharing class Utils {
      * @return        List of Map objects containing 'image_id' and 'url' as keys
      */
     global List<Object> getImageExternalUrls(List<Map<String, Object>> imageTransformations) {
-        Map<String, Object> body = new Map<String, Object> {
-            'image_external_urls' => imageTransformations
-        };
-        return (List<Object>)postImageExternalUrl(body);
+        List<Object> imageExternalUrls = new List<Object>();
+        List<Map<String, Object>> sliced;
+        Map<String, Object> body;
+        Object response;
+        Integer maxTransformations = 50;
+        for (Integer i = 0; i < imageTransformations.size(); i += maxTransformations) {
+            sliced = slice(imageTransformations, i, i + maxTransformations);
+            body = new Map<String, Object> {
+                'image_external_urls' => sliced
+            };
+            response = postImageExternalUrl(body);
+            if (sliced.size() == 1) {
+                imageExternalUrls.add(response);
+            } else {
+                imageExternalUrls.addAll((List<Object>)response);
+            }
+        }
+        return imageExternalUrls;
     }
 
     /**
@@ -340,6 +354,35 @@ global with sharing class Utils {
     }
 
     /**
+     * Method to upload image from url to SharinPix
+     * @param  imageUrl The url of the image to be imported
+     * @param  albumId  The sobject Id of the record on which the image will be displayed
+     * @param  filename The image name
+     * @return          Returns SharinPix response in the form of an object
+     */
+    global Object uploadFromUrl(String imageUrl, String albumId, String filename){
+        albumId = (albumId InstanceOf Id) ? String.valueOf((Id)albumId) : albumId;
+        Map<String, Object> claims = new Map<String, Object> {
+            'abilities' => new Map<String, Object> {
+                albumId => new Map<String, Object> {
+                    'Access' => new Map<String, Object> {
+                        'see' => true,
+                        'image_upload' => true
+                    }
+                }
+            }
+        };
+        Map<String, Object> importPayload = new Map<String, Object> {
+            'filename' => filename,
+            'metadatas' => new map<string, string>(),
+            'album_id' => albumId,
+            'url' => imageUrl,
+            'import_type' => 'url'
+        };
+        return clientInstance.post('/imports/', Blob.valueOf(JSON.serialize(importPayload)), claims);
+    }
+
+    /**
      * Generate SharinPix URL to launch mobile application
      * @param  albumId        Album Id to save job's images into
      * @param  name           Name of job in application
@@ -378,5 +421,13 @@ global with sharing class Utils {
      */
     public static Map<String, Object> parseJsonParam(String options) {
         return (Map<String, Object>)JSON.deserializeUntyped(options.replace('\'', '"'));
+    }
+
+    private List<Map<String, Object>> slice(List<Map<String, Object>> original, Integer startIndex, Integer endIndex) {
+        List<Map<String, Object>> sliced = new List<Map<String, Object>>();
+        for (Integer i = startIndex; i < endIndex && i < original.size(); i++) {
+            sliced.add(original[i]);
+        }
+        return sliced;
     }
 }
