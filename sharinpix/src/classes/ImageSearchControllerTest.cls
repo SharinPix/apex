@@ -16,7 +16,7 @@ private class ImageSearchControllerTest {
         Test.startTest();
         ImageSearchController ctrl = new ImageSearchController();
         Test.stopTest();
-        System.assert(true);
+        System.assertEquals(reportId, ctrl.reportId);
     }
 
     @isTest static void testSearch() {
@@ -36,6 +36,8 @@ private class ImageSearchControllerTest {
         Test.startTest();
         ctrl.search();
         Test.stopTest();
-        System.assert(true);
+        System.assertEquals(reportId, ctrl.reportId);
+        System.assert(ctrl.resultsRendered);
+
     }
 }

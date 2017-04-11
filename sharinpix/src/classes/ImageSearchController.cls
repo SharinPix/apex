@@ -25,7 +25,7 @@ public with sharing class ImageSearchController {
     public ImageSearchController() {
         queryRendered = true;
         resultsRendered = false;
-        if (ApexPages.currentPage().getParameters().get('reportId') != null) {
+        if (String.isNotBlank(ApexPages.currentPage().getParameters().get('reportId'))) {
             reportId = ApexPages.currentPage().getParameters().get('reportId');
             queryRendered = false;
             jsonParams = '{"reportId":"' + reportId + '","tagFilter":"","selectedTags":[]}';
