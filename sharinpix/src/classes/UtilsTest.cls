@@ -22,6 +22,19 @@ private with sharing class UtilsTest {
         System.assert(renamed);
     }
 
+    static testMethod void testDuplicateAlbum() {
+        Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+          API_URL + '/albums/oldAlbumId/duplicate' => new SingleRequestMock(200, 'OK', '{"public_id":"newAlbumId"}', null)
+        };
+        Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+        Test.startTest();
+        String destinationAlbum = (new Utils(Client.getInstance())).duplicateAlbum('oldAlbumId', 'newAlbumId');
+        Test.stopTest();
+
+        System.assertEquals('newAlbumId', destinationAlbum);
+    }
+
     static testMethod void testGetAlbumImages() {
         Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
             API_URL + '/albums/' + case1.Id + '/images?page=1' => new SingleRequestMock(200, 'OK', '[{"public_id":"imageId"}]', null),
