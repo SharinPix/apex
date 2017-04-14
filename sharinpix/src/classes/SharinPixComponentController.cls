@@ -14,8 +14,12 @@ public with sharing class SharinPixComponentController {
     public String getUrl() {
         // Should be return sharinpix.client.getInstance().url('pagelayout/plop', getClaims());
         Map<String, Object> parameters = sharinpix.Utils.parseJsonParam(parametersInput);
-        String albumId = String.valueOf(parameters.get('Id'));
-        return this.getClient().getAppHost() + '/pagelayout/' + albumId + '?token=' + this.getClient().token(parameters);
+        if (parameters.get('path') == null) {
+            String albumId = String.valueOf(parameters.get('Id'));
+            return this.getClient().getAppHost() + '/pagelayout/' + albumId + '?token=' + this.getClient().token(parameters);
+        } else {
+            return this.getClient().getAppHost() + '?token=' + this.getClient().token(parameters);
+        }
     }
 
     public String getIframeId() {
