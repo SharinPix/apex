@@ -24,12 +24,11 @@
             filename: image.filename,
             tagName: tagName
         };
-        console.log('params', params);
-        SharinPixDemoCaseChatterCtrl.newEvent(
+        console.log('Parameters:', params);
+        Visualforce.remoting.Manager.invokeAction(
+            '{! $RemoteAction.SharinPixDemoCaseChatterCtrl.newEvent }',
             JSON.stringify(params),
-            function(res) {
-                console.log('Returned');
-            }
+            function(res) { console.log('Returned from server.'); }
         );
     }, false);
     </script>

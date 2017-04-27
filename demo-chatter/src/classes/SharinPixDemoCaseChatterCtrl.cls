@@ -1,6 +1,6 @@
 global with sharing class SharinPixDemoCaseChatterCtrl {
     public String parameters { get; set; }
-    
+
     public SharinPixDemoCaseChatterCtrl(ApexPages.StandardController stdCtrl) {
         Id albumId = stdCtrl.getId();
         Map<String, Object> params = new Map<String, Object> {
@@ -45,14 +45,14 @@ global with sharing class SharinPixDemoCaseChatterCtrl {
         String albumId = (String)params.get('albumId');
         String imageThumbUrl = (String)params.get('imageThumbUrl');
         String filename = (String)params.get('filename') + '.jpg';
-        
+
         HttpRequest req = new HttpRequest();
         req.setEndpoint(imageThumbUrl);
         req.setMethod('GET');
         Http binding = new Http();
         HttpResponse res = binding.send(req);
         Blob imageBlob = res.getBodyAsBlob();
-        
+
         String postText;
         if (eventName == 'image-new') {
             postText = 'A new image has been uploaded.';
@@ -60,18 +60,18 @@ global with sharing class SharinPixDemoCaseChatterCtrl {
             String tagName = (String)params.get('tagName');
             postText = 'An image has been tagged with ' + tagName + '.';
         }
-        
+
         ContentVersion version = new ContentVersion();
         version.Title = filename;
         version.PathOnClient = 'sharinpix://' + filename;
         version.VersionData = imageBlob;
         insert version;
-        
+
         FeedItem post = new FeedITem();
         post.Body = postText;
         post.ParentID = albumId;
         insert post;
-        
+
         FeedAttachment feedAtt = new FeedAttachment();
         feedAtt.FeedEntityId = post.id;
         feedAtt.Type = 'Content';
