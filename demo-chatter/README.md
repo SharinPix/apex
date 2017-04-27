@@ -1,6 +1,6 @@
 # Post in Salesforce Chatter on SharinPix image upload and tag
 
-Automatically generate a Chatter post in a record's feed when an image is uploaded to or tagged in it's album.
+Automatically generate a Chatter post in a record's feed when an image is uploaded to or tagged in its album.
 
 ## Implementation Steps
 
