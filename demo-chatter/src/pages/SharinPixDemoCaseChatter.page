@@ -25,7 +25,7 @@
             tagName: tagName
         };
         console.log('params', params);
-        azhar.SharinPixDemoCaseChatterCtrl.newEvent(
+        SharinPixDemoCaseChatterCtrl.newEvent(
             JSON.stringify(params),
             function(res) {
                 console.log('Returned');
