@@ -4,19 +4,4 @@
     <availableInTouch>false</availableInTouch>
     <confirmationTokenRequired>false</confirmationTokenRequired>
     <label>SharinPixDemoCaseChatter</label>
-    <packageVersions>
-        <majorNumber>1</majorNumber>
-        <minorNumber>13</minorNumber>
-        <namespace>sf_chttr_apps</namespace>
-    </packageVersions>
-    <packageVersions>
-        <majorNumber>1</majorNumber>
-        <minorNumber>7</minorNumber>
-        <namespace>sf_com_apps</namespace>
-    </packageVersions>
-    <packageVersions>
-        <majorNumber>1</majorNumber>
-        <minorNumber>28</minorNumber>
-        <namespace>sharinpix</namespace>
-    </packageVersions>
 </ApexPage>
