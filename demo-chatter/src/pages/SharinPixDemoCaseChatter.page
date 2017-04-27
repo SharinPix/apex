@@ -6,7 +6,6 @@
     eventer(messageEvent, function(e) {
         if (e.origin != "https://app.sharinpix.com") return;
         var eventName = e.data.name;
-        console.log(eventName);
         if (eventName != 'image-new' && eventName != 'tag-image-new') return;
         var imageThumbUrl;
         var image, tagName;
@@ -24,7 +23,6 @@
             filename: image.filename,
             tagName: tagName
         };
-        console.log('Parameters:', params);
         Visualforce.remoting.Manager.invokeAction(
             '{! $RemoteAction.SharinPixDemoCaseChatterCtrl.newEvent }',
             JSON.stringify(params),
