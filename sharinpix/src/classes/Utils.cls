@@ -26,6 +26,9 @@ global with sharing class Utils {
      * @return           true if album is successfully renamed
      */
     global Boolean renameAlbum(String oldAlbumId, String newAlbumId) {
+        oldAlbumId = sanitizeId(oldAlbumId);
+        newAlbumId = sanitizeId(newAlbumId);
+
         Map<String, Object> album = (Map<String, Object>)clientInstance.put(
             '/albums/' + oldAlbumId,
             Blob.valueOf(
@@ -49,6 +52,28 @@ global with sharing class Utils {
             }
         );
         return newAlbumId == (String)album.get('public_id');
+    }
+
+    /**
+     * Copies all images from a source album to a destination album
+     * @param  sourceAlbumId      Source album ID
+     * @param  destinationAlbumId Destination album ID
+     * @return                    Public ID of destination album
+     */
+    global String duplicateAlbum(String sourceAlbumId, String destinationAlbumId) {
+        sourceAlbumId = sanitizeId(sourceAlbumId);
+        destinationAlbumId = sanitizeId(destinationAlbumId);
+
+        Map<String, Object> body = new Map<String, Object> {
+            'destination_id' => destinationAlbumId
+        };
+        Map<String, Object> response = (Map<String, Object>)clientInstance.post(
+            '/albums/' + sourceAlbumId + '/duplicate',
+            Blob.valueOf(JSON.serialize(body)),
+            new Map<String, Object> { 'admin' => true }
+        );
+
+        return (String)response.get('public_id');
     }
 
     /**
@@ -429,5 +454,12 @@ global with sharing class Utils {
             sliced.add(original[i]);
         }
         return sliced;
+    }
+
+    private String sanitizeId(String albumId) {
+        if (albumId InstanceOf Id) {
+            albumId = (Id)albumId;
+        }
+        return albumId;
     }
 }
