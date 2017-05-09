@@ -82,9 +82,7 @@ global with sharing class Utils {
      * @return        List of image objects
      */
     global List<Object> getAlbumImages(String albumId) {
-        if (albumId InstanceOf Id) {
-            albumId = (Id)albumId;
-        }
+        albumId = sanitizeId(albumId);
         Map<String, Object> albumParams = new Map<String, Object> {
             'Id' => albumId,
             'abilities' => new Map<String, Object> {
@@ -212,13 +210,34 @@ global with sharing class Utils {
     }
 
     /**
+     * Retrieve all TagImages from an album
+     * @param  albumId albumId to get tag images from
+     * @return         List of tags on image
+     */
+    global List<Object> getAlbumTagImages(String albumId) {
+        albumId = sanitizeId(albumId);
+        Map<String, Object> params = new Map<String, Object> { 'admin' => true };
+        Integer page = 1;
+        List<Object> tagImagesPage = new List<Object>();
+        List<Object> allTagImages = new List<Object>();
+        do {
+            tagImagesPage = (List<Object>)clientInstance.get(
+                '/tag_images?album_id=' + albumId +
+                '&page=' + page++
+            , params);
+            allTagImages.addAll(tagImagesPage);
+        } while (tagImagesPage.size() != 0);
+        return allTagImages;
+    }
+
+    /**
      * Retrieve all TagImages from an album with a specified tagName
      * @param  albumId albumId to get tag images from
      * @param  tagName name of tag to get images with
      * @return         List of tags on image
      */
     global List<Object> getAlbumTagImages(String albumId, String tagName) {
-        albumId = (albumId InstanceOf Id) ? String.valueOf((Id)albumId) : albumId;
+        albumId = sanitizeId(albumId);
         Map<String, Object> params = new Map<String, Object> { 'admin' => true };
         Integer page = 1;
         List<Object> tagImagesPage = new List<Object>();
@@ -386,7 +405,7 @@ global with sharing class Utils {
      * @return          Returns SharinPix response in the form of an object
      */
     global Object uploadFromUrl(String imageUrl, String albumId, String filename){
-        albumId = (albumId InstanceOf Id) ? String.valueOf((Id)albumId) : albumId;
+        albumId = sanitizeId(albumId);
         Map<String, Object> claims = new Map<String, Object> {
             'abilities' => new Map<String, Object> {
                 albumId => new Map<String, Object> {
@@ -417,7 +436,7 @@ global with sharing class Utils {
      */
     global String generateMobileAppUrl(String albumId, String name, Map<String, Object> options, Integer linkExpiration) {
         if (String.isBlank(albumId)) return null;
-        if (albumId InstanceOf Id)   albumId = (Id)albumId;
+        albumId = sanitizeId(albumId);
         if (String.isBlank(name))    name = albumId;
         if (linkExpiration == null)  linkExpiration = 300;
 
@@ -448,6 +467,13 @@ global with sharing class Utils {
         return (Map<String, Object>)JSON.deserializeUntyped(options.replace('\'', '"'));
     }
 
+    public String sanitizeId(String albumId) {
+        if (albumId InstanceOf Id) {
+            albumId = (Id)albumId;
+        }
+        return albumId;
+    }
+
     private List<Map<String, Object>> slice(List<Map<String, Object>> original, Integer startIndex, Integer endIndex) {
         List<Map<String, Object>> sliced = new List<Map<String, Object>>();
         for (Integer i = startIndex; i < endIndex && i < original.size(); i++) {
@@ -456,10 +482,4 @@ global with sharing class Utils {
         return sliced;
     }
 
-    private String sanitizeId(String albumId) {
-        if (albumId InstanceOf Id) {
-            albumId = (Id)albumId;
-        }
-        return albumId;
-    }
 }
