@@ -210,7 +210,7 @@ global with sharing class Utils {
     }
 
     /**
-     * Retrieve all TagImages from an album
+     * Retrieve list of images which have tags (TagImages) from an album
      * @param  albumId albumId to get tag images from
      * @return         List of tags on image
      */
@@ -231,7 +231,7 @@ global with sharing class Utils {
     }
 
     /**
-     * Retrieve all TagImages from an album with a specified tagName
+     * Retrieve all TagImages with a specified tagName from an album
      * @param  albumId albumId to get tag images from
      * @param  tagName name of tag to get images with
      * @return         List of tags on image
