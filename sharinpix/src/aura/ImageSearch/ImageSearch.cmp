@@ -3,18 +3,13 @@
                 controller="SharinPixImageSearchController">
     <lightning:spinner variant="brand" size="large" aura:id="lexSpinner" alternativeText="Loading..."/>
 
-    <aura:attribute name="showQueryPanel" type="boolean" default="true" access="global"/>
     <aura:attribute name="allowQueryByTag" type="boolean" default="true" access="global"/>
-    <aura:attribute name="showResultsPanel" type="boolean" default="false"/>
-
     <aura:attribute name="reportId" type="String" access="global"/>
     <aura:attribute name="reportParameters" type="String" access="global"/>
-
     <aura:attribute name="tagOperator" type="String" default="OR" access="global"/>
-    <aura:attribute name="selectedTags" type="String" access="global"/>
-
-    <aura:attribute name="searchUrls" type="String[]" access="private"/>
-    <aura:attribute name="pageSize" type="Integer" default="50" access="global"/>
+    <aura:attribute name="tagNames" type="String" access="global"/>
+    <aura:attribute name="pageSize" type="Integer" default="25" access="global"/> <!-- Page size ! -->
+    <aura:attribute name="showResultsPanel" type="boolean" default="false"/>
 
     <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
     <aura:handler event="aura:waiting" action="{! c.startLexSpinner }"/>
@@ -23,29 +18,32 @@
     <div class="slds-form--stacked slds-m-around--small">
         <div class="slds-grid slds-wrap slds-grid--pull-padded slds-grid--align-center">
             <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-6 slds-large-size--6-of-12">
-                <aura:if isTrue="{! v.showQueryPanel }">
-                    <c:ReportsQuery aura:id="reportsQuery" reportId="{! v.reportId }" reportParameters="{! v.reportParameters }"/>
+                <c:ReportsQuery aura:id="reportsQuery" reportId="{! v.reportId }" reportParameters="{! v.reportParameters }"/>
 
-                    <aura:if isTrue="{! v.allowQueryByTag }">
-                        <c:TagsQuery aura:id="tagsQuery" tagOperator="{! v.tagOperator }" selectedTags="{! v.selectedTags }"/>
-                    </aura:if>
-
-                    <div class="slds-form-element center">
-                        <lightning:button class="page-btn" onclick="{! c.doSearch }">
-                            <lightning:icon iconName="utility:search" size="xx-small" alternativeText=""/>
-                            &nbsp;Go
-                        </lightning:button>
-                        <lightning:button class="page-btn" onclick="{! c.reset }">
-                            <lightning:icon iconName="utility:clear" size="xx-small" alternativeText=""/>
-                            &nbsp;Clear
-                        </lightning:button>
-                    </div>
+                <aura:if isTrue="{! v.allowQueryByTag }">
+                    <c:TagsQuery aura:id="tagsQuery" tagOperator="{! v.tagOperator }" tagNames="{! v.tagNames }"/>
                 </aura:if>
+
+                <div class="slds-form-element center">
+                    <lightning:button class="page-btn" onclick="{! c.go }">
+                        <lightning:icon iconName="utility:search" size="xx-small" alternativeText=""/>
+                        &nbsp;Go
+                    </lightning:button>
+                    <lightning:button class="page-btn" onclick="{! c.reset }">
+                        <lightning:icon iconName="utility:clear" size="xx-small" alternativeText=""/>
+                        &nbsp;Clear
+                    </lightning:button>
+                </div>
             </div>
         </div>
 
         <div style="{! 'display: ' + (v.showResultsPanel ? 'block' : 'none') }">
-            <c:QueryResults aura:id="queryResults" searchUrls="{! v.searchUrls }"/>
+            <c:SharinPixSearchResults aura:id="queryResults"
+                                      reportId="{! v.reportId }"
+                                      reportParameters="{! v.reportParameters }"
+                                      tagOperator="{! v.tagOperator }"
+                                      tagNames="{! v.tagNames }"
+                                      pageSize="{! v.pageSize }"/>
         </div>
     </div>
 </aura:component>

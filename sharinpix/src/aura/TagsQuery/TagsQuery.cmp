@@ -1,14 +1,14 @@
 <aura:component controller="SharinPixImageSearchController">
     <aura:attribute name="tagOperator" type="String"/>
-    <aura:attribute name="selectedTags" type="String"/>
-    <aura:attribute name="tagNames" type="String[]"/>
+    <aura:attribute name="tagNames" type="String"/>
+    <aura:attribute name="allTags" type="String[]"/>
     <aura:attribute name="displayTags" type="boolean" default="false"/>
 
     <aura:attribute name="selection" type="String"/>
 
     <aura:method name="reset" action="{! c.reset }"/>
 
-    <aura:handler name="change" value="{! v.selection }" action="{! c.setSelectedTags }"/>
+    <aura:handler name="change" value="{! v.selection }" action="{! c.setTagNames }"/>
 
     <fieldset class="slds-form-element">
         <legend class="slds-form-element__legend slds-form-element__label">Filter by tags</legend>
@@ -41,7 +41,7 @@
             <label class="slds-form-element__label" for="selTagList">Tags</label>
             <div class="slds-form-element__control">
                 <ui:inputSelect class="slds-select select-tags" multiple="true" aura:id="selTagList" value="{! v.selection }">
-                    <aura:iteration items="{! v.tagNames }" var="tag">
+                    <aura:iteration items="{! v.allTags }" var="tag">
                         <ui:inputSelectOption text="{! tag }" label="{! tag }"/>
                     </aura:iteration>
                 </ui:inputSelect>

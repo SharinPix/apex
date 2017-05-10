@@ -38,5 +38,5 @@
             </div>
         </div>
     </div>
-    <c:IncrementalText aura:id="reportParams" label="Report Parameters" placeholder="pv" appendToPlaceholder="0" value="{! v.reportParameters }"/>
+    <!-- <c:IncrementalText aura:id="reportParams" label="Report Parameters" placeholder="pv" appendToPlaceholder="0" value="{! v.reportParameters }"/> -->
 </aura:component>

@@ -1,6 +1,6 @@
 ({
-    fillTagNames : function(component, callback) {
-        var action = component.get("c.getTagNames");
+    getAllTags : function(component, callback) {
+        var action = component.get("c.getAllTags");
         action.setCallback(this, function(response) {
             var state = response.getState();
             if (component.isValid() && state === "SUCCESS") {

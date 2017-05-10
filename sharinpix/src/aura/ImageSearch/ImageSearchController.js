@@ -1,10 +1,6 @@
 ({
     doInit : function(component, event, helper) {
-        console.log('reportId', component.get('v.reportId'));
-        console.log('reportParameters', component.get('v.reportParameters'));
-        if (!$A.util.isEmpty(component.get('v.reportId'))) {
-            helper.startSearch(component);
-        }
+
     },
     startLexSpinner : function(component, event, helper) {
         helper.toggleLexSpinner(component, 'lexSpinner', true);
@@ -12,8 +8,9 @@
     stopLexSpinner : function(component, event, helper) {
         helper.toggleLexSpinner(component, 'lexSpinner', false);
     },
-    doSearch : function(component, event, helper) {
-        helper.startSearch(component);
+    go : function(component, event, helper) {
+        component.find('queryResults') && component.find('queryResults').startSearch();
+        component.set('v.showResultsPanel', true);
     },
     reset : function(component, event, helper) {
         component.find('reportsQuery') && component.find('reportsQuery').reset();
