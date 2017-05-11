@@ -1,6 +1,7 @@
 public with sharing class SharinPixImageSearchController { // to global if needed
-    static Client clientInstance = new Client('sharinpix://34edb5d0-4dbf-47e5-a11d-9ddc34a285da:qpk0XHmupySkCsIfPXw1QXsSyNm8i7tu-baS7JzmZSdufQQ@azhar.ngrok.io/api/v1'); // Remove !
+    //static Client clientInstance = new Client('sharinpix://34edb5d0-4dbf-47e5-a11d-9ddc34a285da:qpk0XHmupySkCsIfPXw1QXsSyNm8i7tu-baS7JzmZSdufQQ@azhar.ngrok.io/api/v1'); // Remove !
     //static Client clientInstance = new Client('sharinpix://c655c99a-ea8d-4ffe-a772-78707668f89d:hNKW9Mx3gKdsSCcn-fmCp_hEOY5-BCOVoZ3w7rXfpwmZ3kw@scpix-pr-1224.herokuapp.com/api/v1'); // Remove !
+    static sharinpix.Client clientInstance = sharinpix.Client.getInstance();
 
     @AuraEnabled
     public static Map<String, List<Report>> getReports() {
@@ -37,36 +38,6 @@ public with sharing class SharinPixImageSearchController { // to global if neede
     }
 
     @AuraEnabled
-    public static List<String> generateSearchUrls(Id reportId, List<Object> reportParameters, String tagOperator, List<String> tagNames, Integer pageSize) {
-        System.debug('reportId : ' + reportId);
-        System.debug('reportParameters : ' + reportParameters);
-        System.debug('tagOperator : ' + tagOperator);
-        System.debug('tagNames : ' + tagNames);
-        System.debug('pageSize : ' + pageSize);
-        pageSize = Integer.valueOf(pageSize); // WTF ??
-
-        List<String> urls = new List<String>();
-
-        List<String> albumIds = getAlbumIdsFromReport(reportId, reportParameters);
-        if (pageSize == 0) {
-            pageSize = albumIds.size();
-        }
-        Map<String, String> query;
-        String queryStr;
-        for (Integer i = 0; i < i + pageSize && i < albumIds.size(); i += pageSize) {
-            queryStr = generateQueryString(slice(albumIds, i, Math.min(i + pageSize, albumIds.size())), tagNames, tagOperator);
-            query = new Map<String, String> { 'q' => queryStr };
-            //urls.add('https://azhar.ngrok.io/search?search_bar=false&q=' + clientInstance.token(query));
-            //urls.add('https://azhar.ngrok.io/search?search_bar=false&token=' + clientInstance.token(query));
-            //urls.add('https://scpix-pr-1224.herokuapp.com/search?search_bar=false&q=' + clientInstance.token(query));
-            //urls.add('https://scpix-pr-1224.herokuapp.com/search?search_bar=false&token=' + clientInstance.token(query));
-            urls.add('https://app.sharinpix.com/search?search_bar=false&token=' + clientInstance.token(query));
-        }
-        System.debug('urls: ' + JSON.serialize(urls));
-        return urls;
-    }
-
-    @AuraEnabled
     public static Map<String, Object> generateUrlAndTokens(Id reportId, List<Object> reportParameters, String tagOperator, List<String> tagNames, Integer pageSize) {
         System.debug('reportId : ' + reportId);
         System.debug('reportParameters : ' + reportParameters);
@@ -77,11 +48,7 @@ public with sharing class SharinPixImageSearchController { // to global if neede
 
         List<String> tokens = new List<String>();
         Map<String, Object> response = new Map<String, Object> {
-            'baseUrl' => 'https://azhar.ngrok.io/search?search_bar=false&token=',
-            //'baseUrl' => 'https://azhar.ngrok.io/search?search_bar=false&q=',
-            //'baseUrl' => 'https://scpix-pr-1224.herokuapp.com/search?search_bar=false&q=',
-            //'baseUrl' => 'https://scpix-pr-1224.herokuapp.com/search?search_bar=false&token=',
-            //'baseUrl' => 'https://app.sharinpix.com/search?search_bar=false&token=',
+            'baseUrl' => 'https://app.sharinpix.com/search?search_bar=false&token=',
             'tokens' => tokens
         };
 
