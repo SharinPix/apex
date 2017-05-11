@@ -1,0 +1,26 @@
+<!--
+    ----------------------------------------------------------------------
+    -- - Author        : SharinPix
+    -- - Description   : MobileUpload component to generate SharinPix mobile app URL
+    -- -
+    -- - Maintenance History:
+    --
+    -- Date         Name  Version  Remarks
+    -- -----------  ----  -------  ---------------------------------------
+    -- 03-APR-2016  ABE   1.0      Initial version
+    ----------------------------------------------------------------------
+ -->
+<apex:component access="global" controller="MobileUploadController">
+    <apex:attribute name="albumId" type="String" description="Id of the album to create the job for." assignTo="{! jobAlbumId }" access="global"/>
+    <apex:attribute name="name" type="String" description="The job's name in the application." assignTo="{! jobName }" access="global"/>
+    <apex:attribute name="options" type="String" description="Options to be passed to the SharinPix application." assignTo="{! jobOptions }" access="global"/>
+    <apex:attribute name="expiresAfter" type="Integer" description="The link's lifetime to open the app (in seconds)." assignTo="{! linkExpiration }" access="global" default="300"/>
+
+    <apex:form id="frmSharinPix">
+        <apex:actionFunction action="{! generateAppUrl }" name="launch" reRender="frmSharinPix"/>
+    </apex:form>
+
+    <script>
+    launch();
+    </script>
+</apex:component>

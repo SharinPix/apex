@@ -1,17 +1,34 @@
-<apex:page standardController="Case" extensions="SharinPixDemoCaseChatter">
-  <script>
+<apex:page standardController="Case" extensions="SharinPixDemoCaseChatterCtrl">
+    <script>
     var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
     var eventer = window[eventMethod];
     var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-    eventer(messageEvent,function(e) {
-        //post to chatter
-        if (e.data.name === 'image-new'){
-            SharinPixDemoCaseChatter.new_image_uploaded(JSON.stringify(e.data.payload.image), "{!$CurrentPage.parameters.Id}", function(res){
-                console.log(res);
-            });
-        } 
-    },false);
-
-  </script>
-  <apex:canvasApp developerName="Albums" height="500px" parameters="{!parameters}" width="100%"/>
+    eventer(messageEvent, function(e) {
+        if (e.origin != "https://app.sharinpix.com") return;
+        var eventName = e.data.name;
+        if (eventName != 'image-new' && eventName != 'tag-image-new') return;
+        var imageThumbUrl;
+        var image, tagName;
+        if (eventName == 'image-new') {
+            image = e.data.payload.image;
+        }
+        if (eventName == 'tag-image-new') {
+            image = e.data.payload.tag_image.image;
+            tagName = e.data.payload.tag_image.tag.name;
+        }
+        var params = {
+            eventName: eventName,
+            albumId: image.album_id,
+            imageThumbUrl: image.thumbnails.large,
+            filename: image.filename,
+            tagName: tagName
+        };
+        Visualforce.remoting.Manager.invokeAction(
+            '{! $RemoteAction.SharinPixDemoCaseChatterCtrl.newEvent }',
+            JSON.stringify(params),
+            function(res) { console.log('Returned from server.'); }
+        );
+    }, false);
+    </script>
+    <apex:canvasApp developerName="Albums" height="500px" parameters="{! parameters }" width="100%"/>
 </apex:page>
