@@ -1,11 +1,11 @@
 ({
-    getAllTags : function(component, callback) {
-        var action = component.get("c.getAllTags");
+    getAllTags : function(cmp, callback) {
+        var action = cmp.get("c.getAllTags");
         action.setCallback(this, function(response) {
             var state = response.getState();
-            if (component.isValid() && state === "SUCCESS") {
+            if (cmp.isValid() && state === "SUCCESS") {
                 callback(response.getReturnValue());
-            } else if (component.isValid() && state === "ERROR") {
+            } else if (cmp.isValid() && state === "ERROR") {
                 var errors = response.getError();
                 this.showToast('Error', 'See console for details');
                 if (errors) {

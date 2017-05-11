@@ -1,4 +1,4 @@
-<aura:component access="GLOBAL"
+<aura:component access="global"
                 implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:appHostable"
                 controller="SharinPixImageSearchController">
     <lightning:spinner variant="brand" size="large" aura:id="lexSpinner" alternativeText="Loading..."/>
@@ -8,7 +8,7 @@
     <aura:attribute name="reportParameters" type="String" access="global"/>
     <aura:attribute name="tagOperator" type="String" default="OR" access="global"/>
     <aura:attribute name="tagNames" type="String" access="global"/>
-    <aura:attribute name="pageSize" type="Integer" default="25" access="global"/> <!-- Page size ! -->
+    <aura:attribute name="pageSize" type="Integer" default="2" access="global"/> <!-- Page size ! -->
     <aura:attribute name="showResultsPanel" type="boolean" default="false"/>
 
     <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
@@ -18,10 +18,10 @@
     <div class="slds-form--stacked slds-m-around--small">
         <div class="slds-grid slds-wrap slds-grid--pull-padded slds-grid--align-center">
             <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-6 slds-large-size--6-of-12">
-                <c:ReportsQuery aura:id="reportsQuery" reportId="{! v.reportId }" reportParameters="{! v.reportParameters }"/>
+                <c:SharinPixReportSelector aura:id="reportSelector" reportId="{! v.reportId }" reportParameters="{! v.reportParameters }"/>
 
                 <aura:if isTrue="{! v.allowQueryByTag }">
-                    <c:TagsQuery aura:id="tagsQuery" tagOperator="{! v.tagOperator }" tagNames="{! v.tagNames }"/>
+                    <c:SharinPixTagSelector aura:id="tagSelector" tagOperator="{! v.tagOperator }" tagNames="{! v.tagNames }"/>
                 </aura:if>
 
                 <div class="slds-form-element center">
@@ -38,7 +38,7 @@
         </div>
 
         <div style="{! 'display: ' + (v.showResultsPanel ? 'block' : 'none') }">
-            <c:SharinPixSearchResults aura:id="queryResults"
+            <c:SharinPixSearchResults aura:id="searchResults"
                                       reportId="{! v.reportId }"
                                       reportParameters="{! v.reportParameters }"
                                       tagOperator="{! v.tagOperator }"

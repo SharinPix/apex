@@ -3,6 +3,22 @@
         this.reset(cmp);
         var reportId = cmp.get('v.reportId');
         if ($A.util.isEmpty(reportId) || (reportId.length != 15 && reportId.length != 18)) return;
+
+        var params = this.extractParams(cmp);
+
+        var that = this;
+        this.getSearchTokens(cmp, params, $A.getCallback(function(urlTokens) {
+            console.log('urlTokens :', urlTokens);
+            if (urlTokens.tokens.length > 0) {
+                cmp.set('v.baseUrl', urlTokens.baseUrl);
+                cmp.set('v.searchTokens', urlTokens.tokens);
+            } else {
+                that.showToast('No Results', 'No records found with provided search query.');
+            }
+        }));
+    },
+    extractParams : function(cmp) {
+        var reportId = cmp.get('v.reportId');
         var reportParameters = cmp.get('v.reportParameters');
         if (!$A.util.isEmpty(reportParameters)) {
             reportParameters = JSON.parse(reportParameters);
@@ -22,22 +38,10 @@
             pageSize: pageSize
         }
         console.log('Params :', params);
-        var that = this;
-        this.getSearchUrls(cmp, params, $A.getCallback(function(searchUrls) {
-            console.log('Search URLs :', searchUrls);
-            cmp.set('v.searchUrls', searchUrls);
-            if (searchUrls.length > 0) {
-                cmp.set('v.currentPage', 1);
-                cmp.set('v.totalPages', searchUrls.length);
-            } else {
-                that.showToast('No Results', 'No records found with provided search query.');
-                cmp.set('v.currentPage', 0);
-                cmp.set('v.totalPages', 0);
-            }
-        }));
+        return params;
     },
-    getSearchUrls : function(cmp, params, callback) {
-        var action = cmp.get("c.generateSearchUrls");
+    getSearchTokens : function(cmp, params, callback) {
+        var action = cmp.get("c.generateUrlAndTokens");
         action.setParams(params);
         action.setCallback(this, function(response) {
             var state = response.getState();
@@ -57,14 +61,6 @@
         });
         $A.enqueueAction(action);
     },
-    loadPage : function(cmp, page) {
-        if (page == null || page == 0) return;
-        cmp.set('v.loading', true);
-        var currentPage = cmp.get('v.currentPage');
-        var searchUrls = cmp.get('v.searchUrls');
-        var searchUrl = searchUrls[currentPage - 1];
-        cmp.set('v.searchUrl', searchUrl);
-    },
     showToast : function(title, message) {
         var toastEvent = $A.get("e.force:showToast");
         if (toastEvent) {
@@ -79,9 +75,6 @@
         }
     },
     reset : function(cmp) {
-        cmp.set('v.loading', false);
-        cmp.set('v.currentPage', 0);
-        cmp.set('v.totalPages', 0);
-        cmp.set('v.searchUrl', '');
+        cmp.find('paginator') && cmp.find('paginator').reset();
     }
 })

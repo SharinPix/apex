@@ -1,9 +1,9 @@
 ({
-    fillReports : function(component) {
-        var action = component.get("c.getReports");
+    fillReports : function(cmp) {
+        var action = cmp.get("c.getReports");
         action.setCallback(this, function(response) {
             var state = response.getState();
-            if (component.isValid() && state === "SUCCESS") {
+            if (cmp.isValid() && state === "SUCCESS") {
                 var recvdReports = response.getReturnValue();
                 var reportsFolders = [];
                 for (var recvdReport in recvdReports) {
@@ -14,8 +14,8 @@
                         });
                     }
                 }
-                component.set('v.reportsFolders', reportsFolders);
-            } else if (component.isValid() && state === "ERROR") {
+                cmp.set('v.reportsFolders', reportsFolders);
+            } else if (cmp.isValid() && state === "ERROR") {
                 var errors = response.getError();
                 this.showToast('Error', 'See console for details');
                 if (errors) {
