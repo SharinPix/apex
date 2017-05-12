@@ -26,6 +26,9 @@ global with sharing class Utils {
      * @return           true if album is successfully renamed
      */
     global Boolean renameAlbum(String oldAlbumId, String newAlbumId) {
+        oldAlbumId = sanitizeId(oldAlbumId);
+        newAlbumId = sanitizeId(newAlbumId);
+
         Map<String, Object> album = (Map<String, Object>)clientInstance.put(
             '/albums/' + oldAlbumId,
             Blob.valueOf(
@@ -49,6 +52,28 @@ global with sharing class Utils {
             }
         );
         return newAlbumId == (String)album.get('public_id');
+    }
+
+    /**
+     * Copies all images from a source album to a destination album
+     * @param  sourceAlbumId      Source album ID
+     * @param  destinationAlbumId Destination album ID
+     * @return                    Public ID of destination album
+     */
+    global String duplicateAlbum(String sourceAlbumId, String destinationAlbumId) {
+        sourceAlbumId = sanitizeId(sourceAlbumId);
+        destinationAlbumId = sanitizeId(destinationAlbumId);
+
+        Map<String, Object> body = new Map<String, Object> {
+            'destination_id' => destinationAlbumId
+        };
+        Map<String, Object> response = (Map<String, Object>)clientInstance.post(
+            '/albums/' + sourceAlbumId + '/duplicate',
+            Blob.valueOf(JSON.serialize(body)),
+            new Map<String, Object> { 'admin' => true }
+        );
+
+        return (String)response.get('public_id');
     }
 
     /**
@@ -166,10 +191,24 @@ global with sharing class Utils {
      * @return        List of Map objects containing 'image_id' and 'url' as keys
      */
     global List<Object> getImageExternalUrls(List<Map<String, Object>> imageTransformations) {
-        Map<String, Object> body = new Map<String, Object> {
-            'image_external_urls' => imageTransformations
-        };
-        return (List<Object>)postImageExternalUrl(body);
+        List<Object> imageExternalUrls = new List<Object>();
+        List<Map<String, Object>> sliced;
+        Map<String, Object> body;
+        Object response;
+        Integer maxTransformations = 50;
+        for (Integer i = 0; i < imageTransformations.size(); i += maxTransformations) {
+            sliced = slice(imageTransformations, i, i + maxTransformations);
+            body = new Map<String, Object> {
+                'image_external_urls' => sliced
+            };
+            response = postImageExternalUrl(body);
+            if (sliced.size() == 1) {
+                imageExternalUrls.add(response);
+            } else {
+                imageExternalUrls.addAll((List<Object>)response);
+            }
+        }
+        return imageExternalUrls;
     }
 
     /**
@@ -339,4 +378,88 @@ global with sharing class Utils {
         return clientInstance.post('/imports/', Blob.valueOf(JSON.serialize(importPayload)), claims);
     }
 
+    /**
+     * Method to upload image from url to SharinPix
+     * @param  imageUrl The url of the image to be imported
+     * @param  albumId  The sobject Id of the record on which the image will be displayed
+     * @param  filename The image name
+     * @return          Returns SharinPix response in the form of an object
+     */
+    global Object uploadFromUrl(String imageUrl, String albumId, String filename){
+        albumId = (albumId InstanceOf Id) ? String.valueOf((Id)albumId) : albumId;
+        Map<String, Object> claims = new Map<String, Object> {
+            'abilities' => new Map<String, Object> {
+                albumId => new Map<String, Object> {
+                    'Access' => new Map<String, Object> {
+                        'see' => true,
+                        'image_upload' => true
+                    }
+                }
+            }
+        };
+        Map<String, Object> importPayload = new Map<String, Object> {
+            'filename' => filename,
+            'metadatas' => new map<string, string>(),
+            'album_id' => albumId,
+            'url' => imageUrl,
+            'import_type' => 'url'
+        };
+        return clientInstance.post('/imports/', Blob.valueOf(JSON.serialize(importPayload)), claims);
+    }
+
+    /**
+     * Generate SharinPix URL to launch mobile application
+     * @param  albumId        Album Id to save job's images into
+     * @param  name           Name of job in application
+     * @param  jobOptions     Additional options passed to job
+     * @param  linkExpiration Link expiration delay in seconds
+     * @return                App URL to open SharinPix mobile app
+     */
+    global String generateMobileAppUrl(String albumId, String name, Map<String, Object> options, Integer linkExpiration) {
+        if (String.isBlank(albumId)) return null;
+        if (albumId InstanceOf Id)   albumId = (Id)albumId;
+        if (String.isBlank(name))    name = albumId;
+        if (linkExpiration == null)  linkExpiration = 300;
+
+        Map<String, Object> params = new Map<String, Object> {
+            'album_id' => albumId,
+            'name' => name,
+            'exp' => (linkExpiration != 0) ? (DateTime.now().getTime()/1000) + linkExpiration : 0,
+            'native_app_options' => options,
+            'abilities' => new Map<String, Object> {
+                albumId => new Map<String, Object> {
+                    'Access' => new Map<String, Boolean> {
+                        'see' => true,
+                        'image_upload' => true
+                    }
+                }
+            }
+        };
+        String appUrl = clientInstance.getAppHost() + '/native_upload?token=' + clientInstance.token(params);
+        return appUrl;
+    }
+
+    /**
+     * Returns parsed single-quoted JSON, usually passed as component parameters.
+     * @param  options JSON representation of SharinPix mobile app options. Example: {'grayscale':true}
+     * @return         Map of String to Object representation of JSON
+     */
+    public static Map<String, Object> parseJsonParam(String options) {
+        return (Map<String, Object>)JSON.deserializeUntyped(options.replace('\'', '"'));
+    }
+
+    private List<Map<String, Object>> slice(List<Map<String, Object>> original, Integer startIndex, Integer endIndex) {
+        List<Map<String, Object>> sliced = new List<Map<String, Object>>();
+        for (Integer i = startIndex; i < endIndex && i < original.size(); i++) {
+            sliced.add(original[i]);
+        }
+        return sliced;
+    }
+
+    private String sanitizeId(String albumId) {
+        if (albumId InstanceOf Id) {
+            albumId = (Id)albumId;
+        }
+        return albumId;
+    }
 }

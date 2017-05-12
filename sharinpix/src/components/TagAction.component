@@ -5,12 +5,12 @@
         var eventer = window[eventMethod];
         var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
         eventer(messageEvent,function(e) {
-            if (event.origin !== "https://app.sharinpix.com") return;
+            if (e.origin !== "https://app.sharinpix.com") return;
             if (e.data.name === 'tag-image-new') {
                 if (Object.getOwnPropertyNames(e.data.payload.tag_image.tag.action).length !== 0) {
                     sharinpix.TagActionController.executeCommand("{!recordId}", JSON.stringify(e.data.payload.tag_image), function(result, event) {});
                 }
             }
-        },false);
+        }, false);
     </script>
 </apex:component>

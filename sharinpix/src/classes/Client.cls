@@ -67,6 +67,19 @@ global with sharing class Client {
   }
 
   /**
+   * Returns the current SharinPix app domain URL
+   * @return SharinPix app domain URL for client
+   */
+  global String getAppHost() {
+    Url u = new Url(this.endpoint_url);
+    String host = u.getHost();
+    if (host.equals('api.sharinpix.com')) {
+      host = 'app.sharinpix.com';
+    }
+    return u.getProtocol() + '://' + host;
+  }
+
+  /**
    * Returns the current SharinPix API URL
    * @return SharinPix API endpoint URL for client
    */
