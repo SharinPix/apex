@@ -1,7 +1,5 @@
-public with sharing class SharinPixImageSearchController { // to global if needed
-    //static Client clientInstance = new Client('sharinpix://34edb5d0-4dbf-47e5-a11d-9ddc34a285da:qpk0XHmupySkCsIfPXw1QXsSyNm8i7tu-baS7JzmZSdufQQ@azhar.ngrok.io/api/v1'); // Remove !
-    //static Client clientInstance = new Client('sharinpix://c655c99a-ea8d-4ffe-a772-78707668f89d:hNKW9Mx3gKdsSCcn-fmCp_hEOY5-BCOVoZ3w7rXfpwmZ3kw@scpix-pr-1224.herokuapp.com/api/v1'); // Remove !
-    static sharinpix.Client clientInstance = sharinpix.Client.getInstance();
+public with sharing class SharinPixSearchController {
+    private static sharinpix.Client clientInstance = sharinpix.Client.getInstance();
 
     @AuraEnabled
     public static Map<String, List<Report>> getReports() {
@@ -39,11 +37,6 @@ public with sharing class SharinPixImageSearchController { // to global if neede
 
     @AuraEnabled
     public static Map<String, Object> generateUrlAndTokens(Id reportId, List<Object> reportParameters, String tagOperator, List<String> tagNames, Integer pageSize) {
-        System.debug('reportId : ' + reportId);
-        System.debug('reportParameters : ' + reportParameters);
-        System.debug('tagOperator : ' + tagOperator);
-        System.debug('tagNames : ' + tagNames);
-        System.debug('pageSize : ' + pageSize);
         pageSize = Integer.valueOf(pageSize); // WTF ??
 
         List<String> tokens = new List<String>();
@@ -56,6 +49,7 @@ public with sharing class SharinPixImageSearchController { // to global if neede
         if (pageSize == 0) {
             pageSize = albumIds.size();
         }
+        
         Map<String, String> query;
         String queryStr;
         for (Integer i = 0; i < i + pageSize && i < albumIds.size(); i += pageSize) {
@@ -63,14 +57,12 @@ public with sharing class SharinPixImageSearchController { // to global if neede
             query = new Map<String, String> { 'q' => queryStr };
             tokens.add(clientInstance.token(query));
         }
-        System.debug('response: ' + JSON.serialize(response));
+
         return response;
     }
 
     private static List<String> getAlbumIdsFromReport(Id reportId, List<Object> reportParameters) {
         try {
-            System.debug('reportParameters : ' + reportParameters);
-            System.debug('reportParameters.size() : ' + reportParameters.size());
             Reports.ReportResults results;
             if (reportParameters != null && reportParameters.size() != 0) {
                 Reports.ReportDescribeResult reportDescribe = Reports.ReportManager.describeReport(reportId);
@@ -94,11 +86,11 @@ public with sharing class SharinPixImageSearchController { // to global if neede
             List<String> albumIds = new List<String>();
             Integer columnIndex = 0;
             List<Reports.ReportDataCell> dataCells;
-
             for (Reports.ReportDetailRow detailRow : factDetails.getRows()) {
                 dataCells = detailRow.getDataCells();
                 albumIds.add((String)dataCells[columnIndex].getValue());
             }
+
             return albumIds;
         } catch (Exception e) {
             throw new SharinPixException('Error in generating report - ' + e.getCause() + '[' + e.getLineNumber() + ']: ' + e.getMessage());
@@ -115,7 +107,6 @@ public with sharing class SharinPixImageSearchController { // to global if neede
         String albumIdsString = '';
         albumIdsString = '"' + String.join(albumIds, '" "') + '"';
         if (tagNames.size() == 0) return albumIdsString;
-
         String tagNamesString = '"' + String.join(tagNames, '" ' + tagOperator + ' "') + '"';
         return 'tags:(+(' + albumIdsString + ') +(' + tagNamesString + '))';
     }
