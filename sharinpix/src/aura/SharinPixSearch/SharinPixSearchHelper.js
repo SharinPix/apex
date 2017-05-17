@@ -2,20 +2,51 @@
     startSearch : function(cmp) {
         this.reset(cmp);
         var reportId = cmp.get('v.reportId');
-        if ($A.util.isEmpty(reportId) || (reportId.length != 15 && reportId.length != 18)) return;
-
+        if (!this.isValidSFID(reportId)) return;
+        cmp.set('v.page', 0);
+    },
+    doSearch : function(cmp) {
         var params = this.extractParams(cmp);
-
-        var that = this;
-        this.getSearchTokens(cmp, params, $A.getCallback(function(urlTokens) {
-            console.log('urlTokens :', urlTokens);
-            if (urlTokens.tokens.length > 0) {
-                cmp.set('v.baseUrl', urlTokens.baseUrl);
-                cmp.set('v.searchTokens', urlTokens.tokens);
-            } else {
-                that.showToast('No Results', 'No records found with provided search query.');
+        var page = cmp.get('v.page');
+        if (page == -1) return;
+        var baseUrl = cmp.get('v.baseUrl');
+        var self = this;
+        this.fetchTokens(cmp, params, $A.getCallback(function(urlAndTokens) {
+            if (page == 0 && $A.util.isEmpty(urlAndTokens.tokens)) {
+                self.showToast('No Results', 'No records found with provided search query.');
+                return;
             }
+            if ($A.util.isEmpty(urlAndTokens.tokens)) {
+                return;
+            }
+            if (page == 0) {
+                var searchUrl = urlAndTokens.baseUrl + urlAndTokens.tokens[0];
+                cmp.set('v.searchUrl', searchUrl);
+                urlAndTokens.tokens.shift();
+            }
+            cmp.set('v.tokens', urlAndTokens.tokens);
         }));
+    },
+    handleNewTokens : function(cmp) {
+        var isLoading = cmp.get('v.loading');
+        if (isLoading) return;
+        var iframeEl = cmp.find('SharinPix').getElement();
+        var tokens = cmp.get('v.tokens');
+        if ($A.util.isEmpty(tokens)) return;
+        var int = 10000;
+        tokens.forEach(function(token) {
+            iframeEl.contentWindow.postMessage({
+                name: 'search-aggregate',
+                payload: token
+            }, '*');
+        });
+        var page = cmp.get('v.page');
+        cmp.set('v.page', page + 1);
+    },
+    isValidSFID : function(id) {
+        if ($A.util.isEmpty(id)) return false;
+        if (id.length == 15 || id.length == 18) return true;
+        return false;
     },
     extractParams : function(cmp) {
         var reportId = cmp.get('v.reportId');
@@ -28,19 +59,19 @@
         if (!$A.util.isEmpty(tagNames)) {
             tagNames = JSON.parse(tagNames);
         }
-        var pageSize = cmp.get('v.pageSize');
+        var page = cmp.get('v.page');
 
         var params = {
             reportId: reportId,
             reportParameters: reportParameters,
             tagOperator: tagOperator,
             tagNames: tagNames,
-            pageSize: pageSize
+            page: page
         }
-        console.log('Params :', params);
+
         return params;
     },
-    getSearchTokens : function(cmp, params, callback) {
+    fetchTokens : function(cmp, params, callback) {
         var action = cmp.get("c.generateUrlAndTokens");
         action.setParams(params);
         action.setCallback(this, function(response) {
@@ -75,6 +106,7 @@
         }
     },
     reset : function(cmp) {
-        cmp.find('paginator') && cmp.find('paginator').reset();
+        cmp.set('v.currentPage', 0);
+        cmp.set('v.searchUrl', '');
     }
 })

@@ -1,5 +1,9 @@
 public with sharing class SharinPixSearchController {
-    private static sharinpix.Client clientInstance = sharinpix.Client.getInstance();
+    private static sharinpix.Client clientInstance = new sharinpix.Client('sharinpix://34edb5d0-4dbf-47e5-a11d-9ddc34a285da:qpk0XHmupySkCsIfPXw1QXsSyNm8i7tu-baS7JzmZSdufQQ@azhar.ngrok.io/api/v1'); // secret !
+    //String baseUrlTEMP = 'https://app.sharinpix.com/search?search_bar=false&token=';
+    static String baseUrlTEMP = 'https://azhar.ngrok.io/search?search_bar=false&token=';
+    private static final Integer TOKEN_SIZE = 2; // num ids in 1 token
+    private static final Integer BLOCK_SIZE = 4; // num rows from reports
 
     @AuraEnabled
     public static Map<String, List<Report>> getReports() {
@@ -36,24 +40,23 @@ public with sharing class SharinPixSearchController {
     }
 
     @AuraEnabled
-    public static Map<String, Object> generateUrlAndTokens(Id reportId, List<Object> reportParameters, String tagOperator, List<String> tagNames, Integer pageSize) {
-        pageSize = Integer.valueOf(pageSize); // WTF ??
+    public static Map<String, Object> generateUrlAndTokens(Id reportId, List<Object> reportParameters, String tagOperator, List<String> tagNames, Integer page) {
+        page = Integer.valueOf(page); // WTF ??
 
         List<String> tokens = new List<String>();
         Map<String, Object> response = new Map<String, Object> {
-            'baseUrl' => 'https://app.sharinpix.com/search?search_bar=false&token=',
+            //'baseUrl' => baseUrlTEMP,
+            'baseUrl' => baseUrlTEMP,
             'tokens' => tokens
         };
 
-        List<String> albumIds = getAlbumIdsFromReport(reportId, reportParameters);
-        if (pageSize == 0) {
-            pageSize = albumIds.size();
-        }
-        
+        List<String> albumIds = getAlbumIdsFromReport(reportId, reportParameters, page);
+
         Map<String, String> query;
         String queryStr;
-        for (Integer i = 0; i < i + pageSize && i < albumIds.size(); i += pageSize) {
-            queryStr = generateQueryString(slice(albumIds, i, Math.min(i + pageSize, albumIds.size())), tagNames, tagOperator);
+
+        for (Integer i = 0; i < albumIds.size(); i += TOKEN_SIZE) {
+            queryStr = generateQueryString(slice(albumIds, i, i + TOKEN_SIZE), tagNames, tagOperator);
             query = new Map<String, String> { 'q' => queryStr };
             tokens.add(clientInstance.token(query));
         }
@@ -61,7 +64,7 @@ public with sharing class SharinPixSearchController {
         return response;
     }
 
-    private static List<String> getAlbumIdsFromReport(Id reportId, List<Object> reportParameters) {
+    private static List<String> getAlbumIdsFromReport(Id reportId, List<Object> reportParameters, Integer page) {
         try {
             Reports.ReportResults results;
             if (reportParameters != null && reportParameters.size() != 0) {
@@ -83,12 +86,20 @@ public with sharing class SharinPixSearchController {
             }
             Reports.ReportFactWithDetails factDetails = (Reports.ReportFactWithDetails)results.getFactMap().get('T!T');
 
+            Integer startIndex = page * BLOCK_SIZE;
+            Integer endIndex = (page + 1) * BLOCK_SIZE;
             List<String> albumIds = new List<String>();
             Integer columnIndex = 0;
             List<Reports.ReportDataCell> dataCells;
-            for (Reports.ReportDetailRow detailRow : factDetails.getRows()) {
-                dataCells = detailRow.getDataCells();
-                albumIds.add((String)dataCells[columnIndex].getValue());
+            List<Reports.ReportDetailRow> detailRows = factDetails.getRows();
+            Reports.ReportDetailRow detailRow;
+
+            for (Integer i = 0; i < detailRows.size(); i++) {
+                detailRow = detailRows[i];
+                if (i >= startIndex && i < endIndex) {
+                    dataCells = detailRow.getDataCells();
+                    albumIds.add((String)dataCells[columnIndex].getValue());
+                }
             }
 
             return albumIds;
