@@ -23,7 +23,6 @@
             if (page == 0) {
                 var searchUrl = urlAndTokens.baseUrl + urlAndTokens.tokens[0];
                 cmp.set('v.searchUrl', searchUrl);
-                console.log('searchUrl', searchUrl);
                 urlAndTokens.tokens.shift();
             }
             cmp.set('v.tokens', urlAndTokens.tokens);
