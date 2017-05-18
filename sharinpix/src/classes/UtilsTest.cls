@@ -223,20 +223,6 @@ private with sharing class UtilsTest {
         System.assertEquals('tagName', tagName);
     }
 
-    static testMethod void testGetOrgTagNames() {
-        Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
-            API_URL + '/tags?page=1' => new SingleRequestMock(200, 'OK','[{"name":"tagName"}]', null),
-            API_URL + '/tags?page=2' => new SingleRequestMock(200, 'OK','[]', null)
-        };
-        Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
-
-        Test.startTest();
-        List<String> tagNames = (new Utils()).getOrgTagNames();
-        Test.stopTest();
-
-        System.assertEquals('tagName', tagNames[0]);
-    }
-
     static testMethod void testGetAlbumTagImagesAll() {
         Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
             API_URL + '/tag_images?album_id=albumId&page=1' => new SingleRequestMock(200, 'OK','[{"tag":{"name":"tagName"}}]', null),

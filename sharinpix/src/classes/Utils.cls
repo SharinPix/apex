@@ -226,19 +226,6 @@ global with sharing class Utils {
     }
 
     /**
-     * Retrieves all the tags' names in your organization
-     * @return List of tag names
-     */
-    global List<String> getOrgTagNames() {
-        List<Object> allTags = getOrgTags();
-        List<String> tagNames = new List<String>();
-        for (Object o : allTags) {
-            tagNames.add((String)((Map<String, Object>)o).get('name'));
-        }
-        return tagNames;
-    }
-
-    /**
      * Retrieve list of images which have tags (TagImages) from an album
      * @param  albumId albumId to get tag images from
      * @return         List of tags on image
