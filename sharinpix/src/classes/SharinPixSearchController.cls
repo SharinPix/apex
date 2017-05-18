@@ -1,8 +1,8 @@
 public with sharing class SharinPixSearchController {
-    //private static Client clientInstance = Client.getInstance();
-    //private static String baseUrl = 'https://app.sharinpix.com/search?search_bar=false&token=';
-    private static Client clientInstance = new Client('sharinpix://34edb5d0-4dbf-47e5-a11d-9ddc34a285da:qpk0XHmupySkCsIfPXw1QXsSyNm8i7tu-baS7JzmZSdufQQ@azhar.ngrok.io/api/v1'); // secret !
-    private static String baseUrl = 'https://azhar.ngrok.io/search?search_bar=false&token=';
+    private static Client clientInstance = Client.getInstance();
+    private static String baseUrl = 'https://app.sharinpix.com/search?search_bar=false&token=';
+    //private static Client clientInstance = new Client('sharinpix://34edb5d0-4dbf-47e5-a11d-9ddc34a285da:qpk0XHmupySkCsIfPXw1QXsSyNm8i7tu-baS7JzmZSdufQQ@azhar.ngrok.io/api/v1'); // secret !
+    //private static String baseUrl = 'https://azhar.ngrok.io/search?search_bar=false&token=';
     private static final Integer TOKEN_SIZE = 25;
 
     @AuraEnabled
