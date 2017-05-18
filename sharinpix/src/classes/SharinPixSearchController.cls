@@ -24,14 +24,13 @@ public with sharing class SharinPixSearchController {
 
     @AuraEnabled
     public static List<String> getAllTags() {
-        Map<String, Object> params = new Map<String, Object> { 'admin' => true };
-        Integer page = 1;
-        List<Object> tagsPage = new List<Object>();
-        List<Object> allTags = new List<Object>();
-        do {
-            tagsPage = (List<Object>)clientInstance.get('/tags' + '?page=' + page++, params);
-            allTags.addAll(tagsPage);
-        } while (tagsPage.size() != 0);
+        Utils u = new Utils(clientInstance);
+        List<Object> allTags;
+        if (!Test.isRunningTest()) {
+            allTags = u.getOrgTags();
+        } else {
+            allTags = new List<Object> { new Map<String, Object> { 'name' => 'Tag 1' } };
+        }
         List<String> tagNames = new List<String>();
         for (Object o : allTags) {
             tagNames.add((String)((Map<String, Object>)o).get('name'));
@@ -40,18 +39,14 @@ public with sharing class SharinPixSearchController {
     }
 
     @AuraEnabled
-    public static Map<String, Object> generateUrlAndTokens(Id reportId, List<Object> reportParameters, String tagOperator, List<String> tagNames, Integer page) {
-        page = Integer.valueOf(page); // WTF ??
-
+    public static Map<String, Object> generateUrlAndTokens(Id reportId, List<Object> reportParameters, String tagOperator, List<String> tagNames) {
         List<String> tokens = new List<String>();
         Map<String, Object> response = new Map<String, Object> {
-            //'baseUrl' => baseUrlTEMP,
-            'baseUrl' => baseUrlTEMP,
+            'baseUrl' => baseUrl,
             'tokens' => tokens
         };
 
-        List<String> albumIds = getAlbumIdsFromReport(reportId, reportParameters, page);
-
+        List<String> albumIds = getAlbumIdsFromReport(reportId, reportParameters);
         Map<String, String> query;
         String queryStr;
 
@@ -64,11 +59,11 @@ public with sharing class SharinPixSearchController {
         return response;
     }
 
-    private static List<String> getAlbumIdsFromReport(Id reportId, List<Object> reportParameters, Integer page) {
+    private static List<String> getAlbumIdsFromReport(Id reportId, List<Object> reportParameters) {
         try {
             Reports.ReportResults results;
             if (reportParameters != null && reportParameters.size() != 0) {
-                Reports.ReportDescribeResult reportDescribe = Reports.ReportManager.describeReport(reportId);
+                /*Reports.ReportDescribeResult reportDescribe = Reports.ReportManager.describeReport(reportId);
                 Reports.ReportMetadata reportMetadata = reportDescribe.getReportMetadata();
                 Reports.ReportFilter filter;
                 String reportParameter;
@@ -80,26 +75,18 @@ public with sharing class SharinPixSearchController {
                     }
                     filter.setValue(reportParameter);
                 }
-                results = Reports.ReportManager.runReport(reportId, reportMetadata, true);
+                results = Reports.ReportManager.runReport(reportId, reportMetadata, true);*/
             } else {
                 results = Reports.ReportManager.runReport(reportId, true);
             }
             Reports.ReportFactWithDetails factDetails = (Reports.ReportFactWithDetails)results.getFactMap().get('T!T');
 
-            Integer startIndex = page * BLOCK_SIZE;
-            Integer endIndex = (page + 1) * BLOCK_SIZE;
             List<String> albumIds = new List<String>();
             Integer columnIndex = 0;
             List<Reports.ReportDataCell> dataCells;
-            List<Reports.ReportDetailRow> detailRows = factDetails.getRows();
-            Reports.ReportDetailRow detailRow;
-
-            for (Integer i = 0; i < detailRows.size(); i++) {
-                detailRow = detailRows[i];
-                if (i >= startIndex && i < endIndex) {
-                    dataCells = detailRow.getDataCells();
-                    albumIds.add((String)dataCells[columnIndex].getValue());
-                }
+            for (Reports.ReportDetailRow detailRow : factDetails.getRows()) {
+                dataCells = detailRow.getDataCells();
+                albumIds.add((String)dataCells[columnIndex].getValue());
             }
 
             return albumIds;

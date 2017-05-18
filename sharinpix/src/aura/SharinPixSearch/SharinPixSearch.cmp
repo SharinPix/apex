@@ -1,4 +1,4 @@
-<aura:component controller="SharinPixSearchController">
+<aura:component controller="SharinPixSearchController" implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:appHostable">
     <aura:attribute name="reportId" type="String" access="global"/>
     <aura:attribute name="reportParameters" type="String" access="global"/>
     <aura:attribute name="tagOperator" type="String" default="OR" access="global"/>

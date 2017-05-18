@@ -11,6 +11,7 @@
         if (page == -1) return;
         var baseUrl = cmp.get('v.baseUrl');
         var self = this;
+
         this.fetchTokens(cmp, params, $A.getCallback(function(urlAndTokens) {
             if (page == 0 && $A.util.isEmpty(urlAndTokens.tokens)) {
                 self.showToast('No Results', 'No records found with provided search query.');
@@ -22,26 +23,11 @@
             if (page == 0) {
                 var searchUrl = urlAndTokens.baseUrl + urlAndTokens.tokens[0];
                 cmp.set('v.searchUrl', searchUrl);
+                console.log('searchUrl', searchUrl);
                 urlAndTokens.tokens.shift();
             }
             cmp.set('v.tokens', urlAndTokens.tokens);
         }));
-    },
-    handleNewTokens : function(cmp) {
-        var isLoading = cmp.get('v.loading');
-        if (isLoading) return;
-        var iframeEl = cmp.find('SharinPix').getElement();
-        var tokens = cmp.get('v.tokens');
-        if ($A.util.isEmpty(tokens)) return;
-        var int = 10000;
-        tokens.forEach(function(token) {
-            iframeEl.contentWindow.postMessage({
-                name: 'search-aggregate',
-                payload: token
-            }, '*');
-        });
-        var page = cmp.get('v.page');
-        cmp.set('v.page', page + 1);
     },
     isValidSFID : function(id) {
         if ($A.util.isEmpty(id)) return false;
@@ -60,7 +46,6 @@
             tagNames = JSON.parse(tagNames);
         }
         var page = cmp.get('v.page');
-
         var params = {
             reportId: reportId,
             reportParameters: reportParameters,
@@ -92,6 +77,22 @@
         });
         $A.enqueueAction(action);
     },
+    handleNewTokens : function(cmp) {
+        var isLoading = cmp.get('v.loading');
+        if (isLoading) return;
+        var iframeEl = cmp.find('SharinPix').getElement();
+        var tokens = cmp.get('v.tokens');
+        if ($A.util.isEmpty(tokens)) return;
+
+        tokens.forEach(function(token) {
+            iframeEl.contentWindow.postMessage({
+                name: 'search-aggregate',
+                payload: token
+            }, '*');
+        });
+        var page = cmp.get('v.page');
+        cmp.set('v.page', page + 1);
+    },
     showToast : function(title, message) {
         var toastEvent = $A.get("e.force:showToast");
         if (toastEvent) {
@@ -106,7 +107,7 @@
         }
     },
     reset : function(cmp) {
-        cmp.set('v.currentPage', 0);
+        cmp.set('v.currentPage', -1);
         cmp.set('v.searchUrl', '');
     }
 })
