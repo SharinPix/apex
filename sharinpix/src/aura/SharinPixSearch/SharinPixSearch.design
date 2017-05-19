@@ -1,6 +1,6 @@
 <design:component >
     <design:attribute name="reportId" label="Report ID" description="The report ID from which to fetch record IDs from."/>
-    <design:attribute name="reportParameters" label="Report Parameters" description="Parameters to pass to the report. Value should be an array in JSON format. Leave blank for none."/>
+    <!--design:attribute name="reportParameters" label="Report Parameters" description="Parameters to pass to the report. Value should be an array in JSON format. Leave blank for none."/-->
     <design:attribute name="tagOperator" label="Tag Operator" description="Operator to use when multiple tags are input. Use AND for all of the tags and OR for any of the tags." datasource="OR,AND" default="OR"/>
     <design:attribute name="tagNames" label="Tag Names" description="Predefined tags to filter the images by. Value should be an array in JSON format. Leave blank for none."/>
     <design:attribute name="height" label="Height" description="Height for the search area in pixels (px)." default="500"/>
