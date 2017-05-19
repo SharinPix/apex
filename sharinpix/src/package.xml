@@ -31,6 +31,14 @@
         <members>Token</members>
         <members>Utils</members>
         <members>UtilsTest</members>
+        <members>EinsteinDatasetController</members>
+        <members>EinsteinDatasetControllerTest</members>
+        <members>EinsteinModelStatusController</members>
+        <members>EinsteinModelStatusControllerTest</members>
+        <members>EinsteinTriggerUtils</members>
+        <members>EinsteinTriggerUtilsTest</members>
+        <members>EinsteinVisionProjectAlbumCtrl</members>
+        <members>EinsteinVisionProjectAlbumCtrlTest</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -44,6 +52,9 @@
         <members>SharinPixSampleCase</members>
         <members>SharinPixSampleContact</members>
         <members>SharinPixSetting</members>
+        <members>EinsteinDataset</members>
+        <members>EinsteinModelStatus</members>
+        <members>EinsteinVisionProjectAlbum</members>
         <name>ApexPage</name>
     </types>
     <types>
@@ -59,6 +70,10 @@
     <types>
         <members>Credential__c</members>
         <members>SharinPixPermission__c</members>
+        <members>EinsteinDataset__c</members>
+        <members>EinsteinLabel__c</members>
+        <members>EinsteinModel__c</members>
+        <members>EinsteinVisionProject__c</members>
         <name>CustomObject</name>
     </types>
     <types>
@@ -83,5 +98,9 @@
         <members>SharinPixIcon16x16</members>
         <name>StaticResource</name>
     </types>
-    <version>38.0</version>
+    <types>
+        <members>*</members>
+        <name>ApexTrigger</name>
+    </types>
+    <version>39.0</version>
 </Package>
