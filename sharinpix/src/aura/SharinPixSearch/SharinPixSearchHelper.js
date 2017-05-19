@@ -1,38 +1,47 @@
 ({
     startSearch : function(cmp) {
-        this.reset(cmp);
         var reportId = cmp.get('v.reportId');
         if (!this.isValidSFID(reportId)) return;
-        cmp.set('v.page', 0);
-    },
-    doSearch : function(cmp) {
-        var params = this.extractParams(cmp);
-        var page = cmp.get('v.page');
-        if (page == -1) return;
-        var baseUrl = cmp.get('v.baseUrl');
-        var self = this;
-
-        this.fetchTokens(cmp, params, $A.getCallback(function(urlAndTokens) {
-            if (page == 0 && $A.util.isEmpty(urlAndTokens.tokens)) {
-                self.showToast('No Results', 'No records found with provided search query.');
-                return;
-            }
-            if ($A.util.isEmpty(urlAndTokens.tokens)) {
-                return;
-            }
-            if (page == 0) {
-                var searchUrl = urlAndTokens.baseUrl + urlAndTokens.tokens[0];
-                cmp.set('v.searchUrl', searchUrl);
-                console.log('searchUrl', searchUrl);
-                urlAndTokens.tokens.shift();
-            }
-            cmp.set('v.tokens', urlAndTokens.tokens);
-        }));
+        var that = this;
+        var _doSearch = this.debounce($A.getCallback(function() {
+            that.doSearch(cmp);
+        }), 2000);
+        _doSearch();
     },
     isValidSFID : function(id) {
         if ($A.util.isEmpty(id)) return false;
         if (id.length == 15 || id.length == 18) return true;
         return false;
+    },
+    debounce : function(func, wait, immediate) {
+        // https://davidwalsh.name/javascript-debounce-function
+        var timeout;
+        return function() {
+            var context = this, args = arguments;
+            var later = function() {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            var callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    },
+    doSearch : function(cmp) {
+        var params = this.extractParams(cmp);
+        var self = this;
+
+        this.fetchTokens(cmp, params, $A.getCallback(function(urlAndTokens) {
+            if ($A.util.isEmpty(urlAndTokens.tokens)) {
+                self.showToast('No Results', 'No records found with provided search query.');
+                return;
+            }
+            var searchUrl = urlAndTokens.baseUrl + urlAndTokens.tokens[0];
+            cmp.set('v.searchUrl', searchUrl);
+            urlAndTokens.tokens.shift();
+            cmp.set('v.tokens', urlAndTokens.tokens);
+        }));
     },
     extractParams : function(cmp) {
         var reportId = cmp.get('v.reportId');
@@ -45,13 +54,11 @@
         if (!$A.util.isEmpty(tagNames)) {
             tagNames = JSON.parse(tagNames);
         }
-        var page = cmp.get('v.page');
         var params = {
             reportId: reportId,
             reportParameters: reportParameters,
             tagOperator: tagOperator,
-            tagNames: tagNames,
-            page: page
+            tagNames: tagNames
         }
 
         return params;
@@ -90,8 +97,6 @@
                 payload: token
             }, '*');
         });
-        var page = cmp.get('v.page');
-        cmp.set('v.page', page + 1);
     },
     showToast : function(title, message) {
         var toastEvent = $A.get("e.force:showToast");
@@ -105,9 +110,5 @@
             // fallback if within VF mode
             alert(title + ': ' + message);
         }
-    },
-    reset : function(cmp) {
-        cmp.set('v.currentPage', -1);
-        cmp.set('v.searchUrl', '');
     }
 })

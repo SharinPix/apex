@@ -18,8 +18,5 @@
       cmp.set('v.loading', false);
       if ($A.util.isEmpty(cmp.get('v.searchUrl'))) return;
       helper.handleNewTokens(cmp);
-    },
-    reset : function(cmp, event, helper) {
-        helper.reset(cmp);
     }
 })
