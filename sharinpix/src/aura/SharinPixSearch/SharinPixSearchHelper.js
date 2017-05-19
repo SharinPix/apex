@@ -2,9 +2,9 @@
     startSearch : function(cmp) {
         var reportId = cmp.get('v.reportId');
         if (!this.isValidSFID(reportId)) return;
-        var that = this;
+        var self = this;
         var _doSearch = this.debounce($A.getCallback(function() {
-            that.doSearch(cmp);
+            self.doSearch(cmp);
         }), 2000);
         _doSearch();
     },

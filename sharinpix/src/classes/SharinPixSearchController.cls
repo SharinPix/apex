@@ -1,15 +1,13 @@
 public with sharing class SharinPixSearchController {
     //private static Client clientInstance = Client.getInstance();
-    //private static String baseUrl = 'https://app.sharinpix.com/search?search_bar=false&token=';
     private static Client clientInstance = new Client('sharinpix://58b6d4cd-4bf9-47df-a31a-61b22348bf99:Lv0omG-xyArw4QyTP-fI8WbKegXvTcPwzyfgQGZ_3bnwmmI@scpix-pr-1324.herokuapp.com/api/v1'); // secret !
-    private static String baseUrl = 'https://scpix-pr-1324.herokuapp.com/search?search_bar=false&token=';
     private static final Integer TOKEN_SIZE = 25;
 
     @AuraEnabled
     public static Map<String, Object> generateUrlAndTokens(Id reportId, List<Object> reportParameters, String tagOperator, List<String> tagNames) {
         List<String> tokens = new List<String>();
         Map<String, Object> response = new Map<String, Object> {
-            'baseUrl' => baseUrl,
+            'baseUrl' => clientInstance.getAppHost() + '/search?search_bar=false&token=',
             'tokens' => tokens
         };
 
