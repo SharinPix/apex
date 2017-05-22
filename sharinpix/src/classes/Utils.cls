@@ -210,6 +210,22 @@ global with sharing class Utils {
     }
 
     /**
+     * Retrieves all the tags in your organization
+     * @return List of tag objects
+     */
+    global List<Object> getOrgTags() {
+        Map<String, Object> params = new Map<String, Object> { 'admin' => true };
+        Integer page = 1;
+        List<Object> tagsPage = new List<Object>();
+        List<Object> allTags = new List<Object>();
+        do {
+            tagsPage = (List<Object>)clientInstance.get('/tags' + '?page=' + page++, params);
+            allTags.addAll(tagsPage);
+        } while (tagsPage.size() != 0);
+        return allTags;
+    }
+
+    /**
      * Retrieve list of images which have tags (TagImages) from an album
      * @param  albumId albumId to get tag images from
      * @return         List of tags on image

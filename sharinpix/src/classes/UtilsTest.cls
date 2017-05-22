@@ -206,6 +206,23 @@ private with sharing class UtilsTest {
         System.assertEquals('https://cloudinary.url', (String)imageObj.get('url'));
     }
 
+    static testMethod void testGetOrgTags() {
+        Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+            API_URL + '/tags?page=1' => new SingleRequestMock(200, 'OK','[{"name":"tagName"}]', null),
+            API_URL + '/tags?page=2' => new SingleRequestMock(200, 'OK','[]', null)
+        };
+        Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+        Test.startTest();
+        List<Object> tags = (new Utils()).getOrgTags();
+        Test.stopTest();
+
+        Map<String, Object> tag = (Map<String, Object>)tags[0];
+        String tagName = (String)tag.get('name');
+
+        System.assertEquals('tagName', tagName);
+    }
+
     static testMethod void testGetAlbumTagImagesAll() {
         Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
             API_URL + '/tag_images?album_id=albumId&page=1' => new SingleRequestMock(200, 'OK','[{"tag":{"name":"tagName"}}]', null),
