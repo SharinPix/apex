@@ -3,7 +3,7 @@
  * @author Kevan
  * @since April 2017
  */
-public class EinsteinVisionProjectAlbumCtrl {
+public with sharing class EinsteinVisionProjectAlbumCtrl {
     public string albumUrl {get;set;}
 
     /**

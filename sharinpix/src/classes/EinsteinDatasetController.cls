@@ -3,7 +3,7 @@
  * @author  Kevan
  * @since April 2017
  */
-public class EinsteinDatasetController {
+public with sharing class EinsteinDatasetController {
 
     public string albumUrl {get;set;}
     /**

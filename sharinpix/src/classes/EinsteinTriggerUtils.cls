@@ -3,7 +3,7 @@
  * @author Kevan
  * @since April 2017
  */
-public class EinsteinTriggerUtils {
+public with sharing class EinsteinTriggerUtils {
     /**
      * Call SharinPix api to create dataset
      * @param datasetId Salesforce id of the dataset
