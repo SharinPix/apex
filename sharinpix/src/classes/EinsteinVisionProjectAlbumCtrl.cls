@@ -45,7 +45,7 @@ public with sharing class EinsteinVisionProjectAlbumCtrl {
         };
         Client clientInstance = Client.getInstance();
 
-        albumUrl = clientInstance.getHost() +'/pagelayout/' +albumId +'?token='+clientInstance.token(params);
+        albumUrl = clientInstance.getAppHost() +'/pagelayout/' +albumId +'?token='+clientInstance.token(params);
     }
 
 }

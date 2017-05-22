@@ -51,7 +51,7 @@ global with sharing class EinsteinModelStatusController {
         };
         Client clientInstance = Client.getInstance();
 
-        albumUrl = clientInstance.getHost() +'/pagelayout/' +albumId +'?token='+clientInstance.token(params);
-        modelStatusUrl = clientInstance.getHost() + '?token='+clientInstance.token(new map<string, object>{'einstein'=>true, 'path'=>'/einstein_model/'+recordId});
+        albumUrl = clientInstance.getAppHost() +'/pagelayout/' +albumId +'?token='+clientInstance.token(params);
+        modelStatusUrl = clientInstance.getAppHost() + '?token='+clientInstance.token(new map<string, object>{'einstein'=>true, 'path'=>'/einstein_model/'+recordId});
 	}
 }
