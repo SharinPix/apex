@@ -27,7 +27,7 @@ private class EinsteinVisionProjectAlbumCtrlTest {
         EinsteinVisionProjectAlbumCtrl controller = new EinsteinVisionProjectAlbumCtrl(stdController);
         Test.stopTest();
 
-        string url = Client.getInstance().getHost() +'/pagelayout/' +project.Id +'?token=';
+        string url = Client.getInstance().getAppHost() +'/pagelayout/' +project.Id +'?token=';
 
         system.assert(controller.albumUrl.startsWith(url));
     }

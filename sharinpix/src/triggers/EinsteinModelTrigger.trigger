@@ -5,7 +5,11 @@
  */
 trigger EinsteinModelTrigger on EinsteinModel__c (after insert) {
 
+    list<id> ids = new list<id>();
     for (EinsteinModel__c model: Trigger.new){
-        EinsteinTriggerUtils.createSharinPixModel(model.id);
+        ids.add(model.id);
+    }
+    if(ids.size() == 1){
+        EinsteinTriggerUtils.createSharinPixModel(ids[0]);
     }
 }

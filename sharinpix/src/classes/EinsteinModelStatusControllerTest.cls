@@ -42,7 +42,7 @@ private class EinsteinModelStatusControllerTest {
         EinsteinModelStatusController controller = new EinsteinModelStatusController(stdController);
         Test.stopTest();
 
-        string albumurl = Client.getInstance().getHost() +'/pagelayout/' +dataset.Id +'_test?token=';
+        string albumurl = Client.getInstance().getAppHost() +'/pagelayout/' +dataset.Id +'_test?token=';
 
         system.assert(controller.albumUrl.startsWith(albumurl));
     }

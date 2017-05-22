@@ -38,7 +38,7 @@ private class EinsteinDatasetControllerTest {
         EinsteinDatasetController controller = new EinsteinDatasetController(stdController);
         Test.stopTest();
 
-        string url = Client.getInstance().getHost() +'/pagelayout/' +dataset.Id +'?token=';
+        string url = Client.getInstance().getAppHost() +'/pagelayout/' +dataset.Id +'?token=';
 
         system.assert(controller.albumUrl.startsWith(url));
 	}
