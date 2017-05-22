@@ -454,6 +454,7 @@ global with sharing class Utils {
         if (String.isBlank(albumId)) return null;
         albumId = sanitizeId(albumId);
         if (String.isBlank(name))    name = albumId;
+        if (options == null)         options = new Map<String, Object>();
         if (linkExpiration == null)  linkExpiration = 300;
 
         Map<String, Object> params = new Map<String, Object> {
