@@ -374,9 +374,9 @@ private with sharing class UtilsTest {
         String token = appUrl.substringAfter('token=');
         String[] tokenParts = token.split('\\.');
         String decodedData = EncodingUtil.base64Decode(tokenParts[1]).toString();
-        System.assert(decodedData.contains('TestId'));
-        System.assert(decodedData.contains('TestName'));
-        System.assert(decodedData.contains('{"grayscale":true}'));
+        System.assert(decodedData.contains('"album_id":"TestId"'));
+        System.assert(decodedData.contains('"name":"TestName"'));
+        System.assert(decodedData.contains('"native_app_options":{"grayscale":true}'));
     }
 
     static testMethod void testGenerateMobileAppUrl_NoOptions() {
@@ -390,9 +390,9 @@ private with sharing class UtilsTest {
         String token = appUrl.substringAfter('token=');
         String[] tokenParts = token.split('\\.');
         String decodedData = EncodingUtil.base64Decode(tokenParts[1]).toString();
-        System.assert(decodedData.contains('TestId'));
-        System.assert(decodedData.contains('TestId'));
-        System.assert(decodedData.contains('{}'));
+        System.assert(decodedData.contains('"album_id":"TestId"'));
+        System.assert(decodedData.contains('"name":"TestId"'));
+        System.assert(decodedData.contains('"native_app_options":{}'));
     }
 
     /* deprecated */
