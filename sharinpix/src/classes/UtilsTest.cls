@@ -355,14 +355,55 @@ private with sharing class UtilsTest {
         System.assertEquals(JSON.serialize(response), '{}');
     }
 
-    static testMethod void testGenerateMobileAppUrl() {
+    static testMethod void testGenerateMobileAppUrl_AllOptions() {
+        String albumId = 'TestId';
+        String name = 'TestName';
+        String appOptionsJson = '{\'grayscale\':true}';
+        Map<String, Object> appOptions = Utils.parseJsonParam(appOptionsJson);
+        Map<String, Object> options = new Map<String, Object> {
+            'name' => name,
+            'appOptions' => appOptions,
+            'linkExpiration' => 500
+        };
+
+        Test.startTest();
+        String appurl = (new Utils()).generateMobileAppUrl(albumId, options);
+        Test.stopTest();
+
+        System.assert(appUrl.contains('native_upload'));
+        String token = appUrl.substringAfter('token=');
+        String[] tokenParts = token.split('\\.');
+        String decodedData = EncodingUtil.base64Decode(tokenParts[1]).toString();
+        System.assert(decodedData.contains('TestId'));
+        System.assert(decodedData.contains('TestName'));
+        System.assert(decodedData.contains('{"grayscale":true}'));
+    }
+
+    static testMethod void testGenerateMobileAppUrl_NoOptions() {
+        String albumId = 'TestId';
+
+        Test.startTest();
+        String appUrl = (new Utils()).generateMobileAppUrl(albumId, null);
+        Test.stopTest();
+
+        System.assert(appUrl.contains('native_upload'));
+        String token = appUrl.substringAfter('token=');
+        String[] tokenParts = token.split('\\.');
+        String decodedData = EncodingUtil.base64Decode(tokenParts[1]).toString();
+        System.assert(decodedData.contains('TestId'));
+        System.assert(decodedData.contains('TestId'));
+        System.assert(decodedData.contains('{}'));
+    }
+
+    /* deprecated */
+    static testMethod void depr_testGenerateMobileAppUrl() {
         String albumId = 'TestId';
         String name = 'TestName';
         String optionsJson = '{\'grayscale\':true}';
         Map<String, Object> options = Utils.parseJsonParam(optionsJson);
 
         Test.startTest();
-        String appurl = (new Utils()).generateMobileAppUrl(albumId, name, options, 300);
+        String appUrl = (new Utils()).generateMobileAppUrl(albumId, name, options, 300);
         Test.stopTest();
 
         System.assert(appUrl.contains('native_upload'));
