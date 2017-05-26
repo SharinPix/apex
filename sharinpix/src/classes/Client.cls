@@ -14,6 +14,9 @@ global with sharing class Client {
       return instance = new Client('sharinpix://test:test@api.sharinpix.com/api/v1');
     }
     Credential__c cr = Credential__c.getOrgDefaults();
+    if (cr.Id == null){
+        throw new SharinPixException(system.label.SecretNotConfigure);
+    }
     if (instance == null) {
       if (String.isNotBlank(cr.SharinPix_URL__c)) {
         instance = new Client(cr.SharinPix_URL__c);
