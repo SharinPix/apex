@@ -36,10 +36,10 @@
         <value>Save</value>
     </labels>
     <labels>
-        <fullName>SecretNotConfigure</fullName>
+        <fullName>SecretNotConfigured</fullName>
         <language>en_US</language>
         <protected>true</protected>
-        <shortDescription>SecretNotConfigure</shortDescription>
+        <shortDescription>SecretNotConfigured</shortDescription>
         <value>SharinPix Secret has not been configured. Please contact your system administrator.</value>
     </labels>
     <labels>

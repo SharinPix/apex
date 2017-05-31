@@ -15,7 +15,7 @@ global with sharing class Client {
     }
     Credential__c cr = Credential__c.getOrgDefaults();
     if (cr.Id == null){
-        throw new SharinPixException(system.label.SecretNotConfigure);
+        throw new SharinPixException(system.label.SecretNotConfigured);
     }
     if (instance == null) {
       if (String.isNotBlank(cr.SharinPix_URL__c)) {
