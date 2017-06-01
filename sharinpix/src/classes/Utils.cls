@@ -515,28 +515,14 @@ global with sharing class Utils {
      */
     @deprecated
     global String generateMobileAppUrl(String albumId, String name, Map<String, Object> options, Integer linkExpiration) {
-        if (String.isBlank(albumId)) return null;
-        albumId = sanitizeId(albumId);
-        if (String.isBlank(name))    name = albumId;
-        if (options == null)         options = new Map<String, Object>();
-        if (linkExpiration == null)  linkExpiration = 300;
-
-        Map<String, Object> params = new Map<String, Object> {
-            'album_id' => albumId,
-            'name' => name,
-            'exp' => (linkExpiration != 0) ? (DateTime.now().getTime()/1000) + linkExpiration : 0,
-            'native_app_options' => options,
-            'abilities' => new Map<String, Object> {
-                albumId => new Map<String, Object> {
-                    'Access' => new Map<String, Boolean> {
-                        'see' => true,
-                        'image_upload' => true
-                    }
-                }
+        return generateMobileAppUrl(
+            albumId,
+            new Map<String, Object> {
+                'name' => name,
+                'appOptions' => options,
+                'linkExpiration' => linkExpiration
             }
-        };
-        String appUrl = clientInstance.getAppHost() + '/native_upload?token=' + clientInstance.token(params);
-        return appUrl;
+        );
     }
 
 }
