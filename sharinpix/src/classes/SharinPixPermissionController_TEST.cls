@@ -22,9 +22,9 @@ private class SharinPixPermissionController_TEST {
 
         Test.setCurrentPage(pageRefPermission);
         SharinPixPermissionController controller = new SharinPixPermissionController(stdController);
-        controller.permission.Name = 'Lightning';
-        controller.permission.Description__c = 'Description';
-        controller.permission.Json__c = '{"Access": {"see": true, "image_list": true}}';
+        controller.Name = 'Lightning';
+        controller.Description = 'Description';
+        controller.Jsonfile = '{"Access": {"see": true, "image_list": true}}';
 
         Test.startTest();
         PageReference pageref = controller.updatePermission();
@@ -35,7 +35,7 @@ private class SharinPixPermissionController_TEST {
                                         Where Id = :controller.permission.Id
                                         Limit 1];
         system.assertEquals(controller.vfMode, 'New');
-        system.assertEquals(pageref.getUrl(), '/'+controller.permission.Id);
+        system.assertEquals(pageref.getUrl(), Url.getSalesforceBaseUrl().toExternalForm()+'/'+controller.permission.Id);
         system.assertEquals(perm.Name, controller.permission.Name);
         system.assertEquals(perm.Description__c, controller.permission.Description__c);
         system.assertEquals(perm.Json__c, controller.permission.Json__c);
@@ -62,7 +62,7 @@ private class SharinPixPermissionController_TEST {
                                         Where Id = :controller.permission.Id
                                         Limit 1];
         system.assertEquals(controller.vfMode, 'Edit');
-        system.assertEquals(pageref.getUrl(), '/'+controller.permission.Id);
+        system.assertEquals(pageref.getUrl(), Url.getSalesforceBaseUrl().toExternalForm()+'/'+controller.permission.Id);
         system.assertEquals(perm.Name, controller.permission.Name);
         system.assertEquals(perm.Description__c, controller.permission.Description__c);
         system.assertEquals(perm.Json__c, controller.permission.Json__c);
@@ -80,7 +80,7 @@ private class SharinPixPermissionController_TEST {
         PageReference pageref = controller.cancelEdit();
         Test.stopTest();
 
-        system.assertEquals(pageref.getUrl(), '/001');
+        system.assertEquals(pageref.getUrl(), Url.getSalesforceBaseUrl().toExternalForm()+'/001');
     }
 
     @isTest static void testViewPermission() {

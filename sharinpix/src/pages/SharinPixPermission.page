@@ -3,9 +3,9 @@
         <apex:actionFunction action="{!cancelEdit}" name="cancel" />
 
         <apex:actionFunction action="{!updatePermission}" name="update" rerender="showstate">
-            <apex:param name="name" assignTo="{!permission.Name}" value="" />
-            <apex:param name="description" assignTo="{!permission.Description__c}" value="" />
-            <apex:param name="json" assignTo="{!permission.Json__c}" value="" />
+            <apex:param name="name" assignTo="{!name}" value="" />
+            <apex:param name="description" assignTo="{!description}" value="" />
+            <apex:param name="json" assignTo="{!jsonfile}" value="" />
         </apex:actionFunction>
 
     </apex:form>

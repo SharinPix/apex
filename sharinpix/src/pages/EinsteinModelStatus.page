@@ -25,7 +25,7 @@
 </head>
 
 <body>
-  <iframe id="statusIframe" src="{!modelStatusUrl}" height="300px" width="100%" style="border: 0" sandbox="" />
+  <iframe id="statusIframe" src="{!modelStatusUrl}" height="320px" width="100%" style="border: 0" sandbox="" />
   <div id="album">
     <iframe id="albumIframe" src="{!albumUrl}" height="520px" width="100%" style="border: 0" sandbox="" />
   </div>

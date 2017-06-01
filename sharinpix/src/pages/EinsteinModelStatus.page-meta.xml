@@ -6,7 +6,7 @@
     <label>EinsteinModelStatus</label>
     <packageVersions>
         <majorNumber>1</majorNumber>
-        <minorNumber>12</minorNumber>
+        <minorNumber>13</minorNumber>
         <namespace>sf_chttr_apps</namespace>
     </packageVersions>
     <packageVersions>

@@ -2,6 +2,7 @@
 private class TagActionController_TEST {
 	//SharinPix 20161213
 
+
 	static map<string, string> responseMap;
 	static Account account;
 	static Opportunity opportunity;

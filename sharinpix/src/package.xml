@@ -6,9 +6,20 @@
         <members>ClientTest</members>
         <members>Command</members>
         <members>Crud</members>
+        <members>EinsteinDatasetController</members>
+        <members>EinsteinDatasetControllerTest</members>
+        <members>EinsteinModelStatusController</members>
+        <members>EinsteinModelStatusControllerTest</members>
+        <members>EinsteinTriggerUtils</members>
+        <members>EinsteinTriggerUtilsTest</members>
+        <members>EinsteinVisionProjectAlbumCtrl</members>
+        <members>EinsteinVisionProjectAlbumCtrlTest</members>
         <members>Image</members>
         <members>ImageSearchController</members>
+        <members>ImageSearchControllerTest</members>
         <members>JWT</members>
+        <members>MobileUploadController</members>
+        <members>MobileUploadControllerTest</members>
         <members>MultiRequestMock</members>
         <members>SObjectWrapper</members>
         <members>SharinPixComponentController</members>
@@ -31,31 +42,29 @@
         <members>Token</members>
         <members>Utils</members>
         <members>UtilsTest</members>
-        <members>EinsteinDatasetController</members>
-        <members>EinsteinDatasetControllerTest</members>
-        <members>EinsteinModelStatusController</members>
-        <members>EinsteinModelStatusControllerTest</members>
-        <members>EinsteinTriggerUtils</members>
-        <members>EinsteinTriggerUtilsTest</members>
-        <members>EinsteinVisionProjectAlbumCtrl</members>
-        <members>EinsteinVisionProjectAlbumCtrlTest</members>
         <name>ApexClass</name>
     </types>
     <types>
+        <members>MobileUpload</members>
         <members>SharinPix</members>
         <members>TagAction</members>
         <name>ApexComponent</name>
     </types>
     <types>
+        <members>EinsteinDataset</members>
+        <members>EinsteinModelStatus</members>
+        <members>EinsteinVisionProjectAlbum</members>
+        <members>ImageSearch</members>
         <members>SharinPixInstallationInstructions</members>
         <members>SharinPixPermission</members>
         <members>SharinPixSampleCase</members>
         <members>SharinPixSampleContact</members>
         <members>SharinPixSetting</members>
-        <members>EinsteinDataset</members>
-        <members>EinsteinModelStatus</members>
-        <members>EinsteinVisionProjectAlbum</members>
         <name>ApexPage</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexTrigger</name>
     </types>
     <types>
         <members>Event</members>
@@ -69,11 +78,11 @@
     </types>
     <types>
         <members>Credential__c</members>
-        <members>SharinPixPermission__c</members>
         <members>EinsteinDataset__c</members>
         <members>EinsteinLabel__c</members>
         <members>EinsteinModel__c</members>
         <members>EinsteinVisionProject__c</members>
+        <members>SharinPixPermission__c</members>
         <name>CustomObject</name>
     </types>
     <types>
@@ -89,6 +98,8 @@
         <members>ApiSharinPix</members>
         <members>ApiSharinPixImageRessources</members>
         <members>ApiSharinPixImagesTLS</members>
+        <members>SharinPixProxy</members>
+        <members>SharinPixProxy_V2</members>
         <name>RemoteSiteSetting</name>
     </types>
     <types>
@@ -98,9 +109,5 @@
         <members>SharinPixIcon16x16</members>
         <name>StaticResource</name>
     </types>
-    <types>
-        <members>*</members>
-        <name>ApexTrigger</name>
-    </types>
-    <version>39.0</version>
+    <version>38.0</version>
 </Package>
