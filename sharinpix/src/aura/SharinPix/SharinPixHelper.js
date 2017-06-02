@@ -27,5 +27,14 @@
         }
     });
     $A.enqueueAction(action);
+  },
+  validateData: function(object){
+    if (object.hasOwnProperty('data')){
+      var data = object.data;
+      if (data.hasOwnProperty('name') && data.hasOwnProperty('payload')){
+        return {name: data.name, payload: data.payload};
+      }
+    }
+    return {};
   }
 })
