@@ -43,9 +43,9 @@
 
         function loaded(e){
             var isNew = false;
-            var recordName = '{!permission.Name}';
-            var description = '{!permission.Description__c}';
-            var token = '{!permission.Json__c}' == '' ? '{}' : '{!permission.Json__c}';
+            var recordName = '{!JSENCODE(name)}';
+            var description = '{!JSENCODE(description)}';
+            var token = '{!JSENCODE(jsonfile)}' == '' ? '{}' : '{!JSENCODE(jsonfile)}';
             var readOnly = false;
             var edit = false
             if ('{!vfMode}' == 'New'){

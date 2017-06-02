@@ -8,6 +8,7 @@ global with sharing class EinsteinModelStatusController {
     global Id recordId {get;set;}
     global string albumUrl{get;set;}
     global string modelStatusUrl{get;set;}
+    global string domain {get;private set;}
 
     /**
      * Contructor which generate iframe url for displaying status and test album
@@ -51,6 +52,7 @@ global with sharing class EinsteinModelStatusController {
         };
         Client clientInstance = Client.getInstance();
 
+        domain = clientInstance.getAppHost();
         albumUrl = clientInstance.getAppHost() +'/pagelayout/' +albumId +'?token='+clientInstance.token(params);
         modelStatusUrl = clientInstance.getAppHost() + '?token='+clientInstance.token(new map<string, object>{'einstein'=>true, 'path'=>'/einstein_model/'+recordId});
 	}

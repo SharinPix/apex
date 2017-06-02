@@ -42,21 +42,18 @@ public with sharing class SharinPixPermissionController {
     }
 
     public PageReference updatePermission(){
-        list<Schema.SobjectField> fields = new list<Schema.SobjectField>{Schema.sobjecttype.SharinPixPermission__c.fields.Name.getSObjectField(),
-                                                                         Schema.sobjecttype.SharinPixPermission__c.fields.Description__c.getSObjectField(),
-                                                                         Schema.sobjecttype.SharinPixPermission__c.fields.Json__c.getSObjectField()};
-
-        if (CRUD.isCreateable(permission.getSObjectType(), fields) || CRUD.isUpdateable(permission.getSObjectType(), fields)){
+        if (Schema.sObjectType.SharinPixPermission__c.fields.Name.isCreateable() || Schema.sObjectType.SharinPixPermission__c.fields.Name.isUpdateable()){
             permission.Name = name;
-            permission.Description__c = description;
-            permission.Json__c = jsonfile;
-            upsert permission;
         }
+        if (Schema.sObjectType.SharinPixPermission__c.fields.Description__c.isCreateable() || Schema.sObjectType.SharinPixPermission__c.fields.Description__c.isUpdateable()){
+            permission.Description__c = description;
+        }
+        if (Schema.sObjectType.SharinPixPermission__c.fields.Json__c.isCreateable() || Schema.sObjectType.SharinPixPermission__c.fields.Json__c.isUpdateable()){
+            permission.Json__c = jsonfile;
+        }
+        upsert permission;
         PageReference pageref = new PageReference(Url.getSalesforceBaseUrl().toExternalForm()+'/'+permission.Id);
         pageref.setRedirect(true);
         return pageref;
     }
 }
-
-
-
