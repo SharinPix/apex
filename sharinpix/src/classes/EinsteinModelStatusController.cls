@@ -43,10 +43,10 @@ global with sharing class EinsteinModelStatusController {
                         'paste' => true,
                         'share' => false
                     },
-                    'Tags' => tags
-                },
-                'Display' => new map<string, object>{
-                    'tags'=> true
+                    'Tags' => tags,
+                    'Display' => new map<string, object>{
+                        'tags'=> true
+                    }
                 }
             }
         };

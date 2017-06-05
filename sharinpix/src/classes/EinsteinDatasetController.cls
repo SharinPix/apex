@@ -37,10 +37,10 @@ public with sharing class EinsteinDatasetController {
                         'paste' => false,
                         'share' => false
                     },
-                    'Tags' => tags
-                },
-                'Display' => new map<string, object>{
-                    'tags'=> true
+                    'Tags' => tags,
+                    'Display' => new map<string, object>{
+                        'tags'=> true
+                    }
                 }
             }
         };

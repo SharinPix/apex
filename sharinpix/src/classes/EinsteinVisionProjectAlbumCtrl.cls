@@ -36,10 +36,10 @@ public with sharing class EinsteinVisionProjectAlbumCtrl {
                         'paste' => false,
                         'share' => false
                     },
-                    'Tags' => tags
-                },
-                'Display' => new map<string, object>{
-                    'tags'=> true
+                    'Tags' => tags,
+                    'Display' => new map<string, object>{
+                        'tags'=> true
+                    }
                 }
             }
         };
