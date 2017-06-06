@@ -43,7 +43,7 @@ public with sharing class SharinPixLightningController {
       return JSON.serialize(params);
     } else {
       Client clientInstance = client.getInstance();
-      return clientInstance.getAppHost() + '/' + id + '?token=' + clientInstance.token(params);
+      return clientInstance.getAppHost() + '/pagelayout/' + id + '?token=' + clientInstance.token(params);
     }
   }
 
