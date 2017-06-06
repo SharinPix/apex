@@ -7,18 +7,23 @@ public with sharing class SharinPixSettingController {
 
   @RemoteAction
   public static boolean hasValidSecret() {
-    sharinpix.Client clientInstance = sharinpix.Client.getInstance();
+    Credential__c credential = Credential__c.getOrgDefaults();
+    if (credential.Id == null || credential.OrganizationId__c != UserInfo.getOrganizationId()){
+      return false;
+    }
+    Client clientInstance = Client.getInstance();
     return clientInstance.test_api();
   }
 
   @RemoteAction
-  public static boolean saveSecret(String sharinpixUrl) {
+  public static boolean saveSecret(String sharinpixUrl, string orgId) {
     try {
       Credential__c credential = Credential__c.getOrgDefaults();
       credential.SharinPix_URL__c = sharinpixUrl;
       credential.Client_Id__c = sharinpixUrl.substring(sharinpixUrl.indexOf('/') + 2, sharinpixUrl.indexOf(':', 10));
       credential.Client_Secret__c = sharinpixUrl.substring(sharinpixUrl.indexOf(':', 10) + 1, sharinpixUrl.indexOf('@'));
       credential.Endpoint_Url__c = 'https://' + sharinpixUrl.substring(sharinpixUrl.indexOf('@') + 1);
+      credential.OrganizationId__c = orgId;
       upsert credential;
       return true;
     } catch (Exception e) {
