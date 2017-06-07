@@ -9,6 +9,9 @@
     <aura:attribute name="tokens" type="Object"/>
     <aura:attribute name="loading" type="Boolean" default="false"/>
 
+    <aura:attribute name="eventListener" type="Object" access="private"/>
+    <aura:attribute name="searchReady" type="Boolean" default="false"/>
+
     <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
     <aura:handler name="change" value="{! v.reportId }" action="{! c.startSearch }"/>
     <aura:handler name="change" value="{! v.reportParameters }" action="{! c.startSearch }"/>
@@ -16,6 +19,7 @@
     <aura:handler name="change" value="{! v.tagNames }" action="{! c.startSearch }"/>
     <aura:handler name="change" value="{! v.searchUrl }" action="{! c.startLoading }"/>
     <aura:handler name="change" value="{! v.tokens }" action="{! c.handleNewTokens }"/>
+    <aura:handler name="change" value="{! v.searchReady }" action="{! c.handleNewTokens }"/>
 
     <aura:method name="startSearch" action="{! c.startSearch }"/>
 

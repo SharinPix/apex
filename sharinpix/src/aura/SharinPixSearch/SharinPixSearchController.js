@@ -9,14 +9,16 @@
         helper.doSearch(cmp);
     },
     handleNewTokens : function(cmp, event, helper) {
-        helper.handleNewTokens(cmp);
+        var searchReady = cmp.get('v.searchReady');
+        if (searchReady) {
+            helper.handleNewTokens(cmp);
+        }
     },
     startLoading : function(cmp) {
         cmp.set('v.loading', true);
+        cmp.set('v.searchReady', false);
     },
     stopLoading : function(cmp, event, helper) {
         cmp.set('v.loading', false);
-        if ($A.util.isEmpty(cmp.get('v.searchUrl'))) return;
-        helper.handleNewTokens(cmp);
     }
 })
