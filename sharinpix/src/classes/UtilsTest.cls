@@ -206,6 +206,40 @@ private with sharing class UtilsTest {
         System.assertEquals('https://cloudinary.url', (String)imageObj.get('url'));
     }
 
+    static testMethod void testGetOrgTags() {
+        Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+            API_URL + '/tags?page=1' => new SingleRequestMock(200, 'OK','[{"name":"tagName"}]', null),
+            API_URL + '/tags?page=2' => new SingleRequestMock(200, 'OK','[]', null)
+        };
+        Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+        Test.startTest();
+        List<Object> tags = (new Utils()).getOrgTags();
+        Test.stopTest();
+
+        Map<String, Object> tag = (Map<String, Object>)tags[0];
+        String tagName = (String)tag.get('name');
+
+        System.assertEquals('tagName', tagName);
+    }
+
+    static testMethod void testGetAlbumTagImagesAll() {
+        Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
+            API_URL + '/tag_images?album_id=albumId&page=1' => new SingleRequestMock(200, 'OK','[{"tag":{"name":"tagName"}}]', null),
+            API_URL + '/tag_images?album_id=albumId&page=2' => new SingleRequestMock(200, 'OK','[]', null)
+        };
+        Test.setMock(HttpCalloutMock.class, new MultiRequestMock(requestResponses));
+
+        Test.startTest();
+        List<Object> tagImages = (new Utils()).getAlbumTagImages('albumId');
+        Test.stopTest();
+
+        Map<String, Object> tagImage = (Map<String, Object>)tagImages[0];
+        String tagName = (String)((Map<String, Object>)tagImage.get('tag')).get('name');
+
+        System.assertEquals('tagName', tagName);
+    }
+
     static testMethod void testGetAlbumTagImages() {
         Map<String, HttpCalloutMock> requestResponses = new Map<String, HttpCalloutMock> {
             API_URL + '/tag_images?album_id=albumId&tag_name=tagName&page=1' => new SingleRequestMock(200, 'OK','[{"tag":{"name":"tagName"}}]', null),
@@ -321,14 +355,55 @@ private with sharing class UtilsTest {
         System.assertEquals(JSON.serialize(response), '{}');
     }
 
-    static testMethod void testGenerateMobileAppUrl() {
+    static testMethod void testGenerateMobileAppUrl_AllOptions() {
+        String albumId = 'TestId';
+        String name = 'TestName';
+        String appOptionsJson = '{\'grayscale\':true}';
+        Map<String, Object> appOptions = Utils.parseJsonParam(appOptionsJson);
+        Map<String, Object> options = new Map<String, Object> {
+            'name' => name,
+            'appOptions' => appOptions,
+            'linkExpiration' => 500
+        };
+
+        Test.startTest();
+        String appurl = (new Utils()).generateMobileAppUrl(albumId, options);
+        Test.stopTest();
+
+        System.assert(appUrl.contains('native_upload'));
+        String token = appUrl.substringAfter('token=');
+        String[] tokenParts = token.split('\\.');
+        String decodedData = EncodingUtil.base64Decode(tokenParts[1]).toString();
+        System.assert(decodedData.contains('"album_id":"TestId"'));
+        System.assert(decodedData.contains('"name":"TestName"'));
+        System.assert(decodedData.contains('"native_app_options":{"grayscale":true}'));
+    }
+
+    static testMethod void testGenerateMobileAppUrl_NoOptions() {
+        String albumId = 'TestId';
+
+        Test.startTest();
+        String appUrl = (new Utils()).generateMobileAppUrl(albumId, null);
+        Test.stopTest();
+
+        System.assert(appUrl.contains('native_upload'));
+        String token = appUrl.substringAfter('token=');
+        String[] tokenParts = token.split('\\.');
+        String decodedData = EncodingUtil.base64Decode(tokenParts[1]).toString();
+        System.assert(decodedData.contains('"album_id":"TestId"'));
+        System.assert(decodedData.contains('"name":"TestId"'));
+        System.assert(decodedData.contains('"native_app_options":{}'));
+    }
+
+    /* deprecated */
+    static testMethod void depr_testGenerateMobileAppUrl() {
         String albumId = 'TestId';
         String name = 'TestName';
         String optionsJson = '{\'grayscale\':true}';
         Map<String, Object> options = Utils.parseJsonParam(optionsJson);
 
         Test.startTest();
-        String appurl = (new Utils()).generateMobileAppUrl(albumId, name, options, 300);
+        String appUrl = (new Utils()).generateMobileAppUrl(albumId, name, options, 300);
         Test.stopTest();
 
         System.assert(appUrl.contains('native_upload'));

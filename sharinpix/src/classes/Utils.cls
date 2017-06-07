@@ -82,9 +82,7 @@ global with sharing class Utils {
      * @return        List of image objects
      */
     global List<Object> getAlbumImages(String albumId) {
-        if (albumId InstanceOf Id) {
-            albumId = (Id)albumId;
-        }
+        albumId = sanitizeId(albumId);
         Map<String, Object> albumParams = new Map<String, Object> {
             'Id' => albumId,
             'abilities' => new Map<String, Object> {
@@ -212,13 +210,50 @@ global with sharing class Utils {
     }
 
     /**
-     * Retrieve all TagImages from an album with a specified tagName
+     * Retrieves all the tags in your organization
+     * @return List of tag objects
+     */
+    global List<Object> getOrgTags() {
+        Map<String, Object> params = new Map<String, Object> { 'admin' => true };
+        Integer page = 1;
+        List<Object> tagsPage = new List<Object>();
+        List<Object> allTags = new List<Object>();
+        do {
+            tagsPage = (List<Object>)clientInstance.get('/tags' + '?page=' + page++, params);
+            allTags.addAll(tagsPage);
+        } while (tagsPage.size() != 0);
+        return allTags;
+    }
+
+    /**
+     * Retrieve list of images which have tags (TagImages) from an album
+     * @param  albumId albumId to get tag images from
+     * @return         List of tags on image
+     */
+    global List<Object> getAlbumTagImages(String albumId) {
+        albumId = sanitizeId(albumId);
+        Map<String, Object> params = new Map<String, Object> { 'admin' => true };
+        Integer page = 1;
+        List<Object> tagImagesPage = new List<Object>();
+        List<Object> allTagImages = new List<Object>();
+        do {
+            tagImagesPage = (List<Object>)clientInstance.get(
+                '/tag_images?album_id=' + albumId +
+                '&page=' + page++
+            , params);
+            allTagImages.addAll(tagImagesPage);
+        } while (tagImagesPage.size() != 0);
+        return allTagImages;
+    }
+
+    /**
+     * Retrieve all TagImages with a specified tagName from an album
      * @param  albumId albumId to get tag images from
      * @param  tagName name of tag to get images with
      * @return         List of tags on image
      */
     global List<Object> getAlbumTagImages(String albumId, String tagName) {
-        albumId = (albumId InstanceOf Id) ? String.valueOf((Id)albumId) : albumId;
+        albumId = sanitizeId(albumId);
         Map<String, Object> params = new Map<String, Object> { 'admin' => true };
         Integer page = 1;
         List<Object> tagImagesPage = new List<Object>();
@@ -386,7 +421,7 @@ global with sharing class Utils {
      * @return          Returns SharinPix response in the form of an object
      */
     global Object uploadFromUrl(String imageUrl, String albumId, String filename){
-        albumId = (albumId InstanceOf Id) ? String.valueOf((Id)albumId) : albumId;
+        albumId = sanitizeId(albumId);
         Map<String, Object> claims = new Map<String, Object> {
             'abilities' => new Map<String, Object> {
                 albumId => new Map<String, Object> {
@@ -410,22 +445,29 @@ global with sharing class Utils {
     /**
      * Generate SharinPix URL to launch mobile application
      * @param  albumId        Album Id to save job's images into
-     * @param  name           Name of job in application
-     * @param  jobOptions     Additional options passed to job
-     * @param  linkExpiration Link expiration delay in seconds
+     * @param  options        Additional options passed to job (String name, Map<String, Object> appOptions, Integer linkExpiration)
      * @return                App URL to open SharinPix mobile app
      */
-    global String generateMobileAppUrl(String albumId, String name, Map<String, Object> options, Integer linkExpiration) {
+    global String generateMobileAppUrl(String albumId, Map<String, Object> options) {
         if (String.isBlank(albumId)) return null;
-        if (albumId InstanceOf Id)   albumId = (Id)albumId;
-        if (String.isBlank(name))    name = albumId;
-        if (linkExpiration == null)  linkExpiration = 300;
+        albumId = sanitizeId(albumId);
+
+        if (options == null) options = new Map<String, Object>();
+
+        String name = (String)options.get('name');
+        if (String.isBlank(name)) name = albumId;
+
+        Map<String, Object> appOptions = (Map<String, Object>)options.get('appOptions');
+        if (appOptions == null) appOptions = new Map<String, Object>();
+
+        Integer linkExpiration = (Integer)options.get('linkExpiration');
+        if (linkExpiration == null) linkExpiration = 300;
 
         Map<String, Object> params = new Map<String, Object> {
             'album_id' => albumId,
             'name' => name,
             'exp' => (linkExpiration != 0) ? (DateTime.now().getTime()/1000) + linkExpiration : 0,
-            'native_app_options' => options,
+            'native_app_options' => appOptions,
             'abilities' => new Map<String, Object> {
                 albumId => new Map<String, Object> {
                     'Access' => new Map<String, Boolean> {
@@ -448,6 +490,13 @@ global with sharing class Utils {
         return (Map<String, Object>)JSON.deserializeUntyped(options.replace('\'', '"'));
     }
 
+    public String sanitizeId(String albumId) {
+        if (albumId InstanceOf Id) {
+            albumId = (Id)albumId;
+        }
+        return albumId;
+    }
+
     private List<Map<String, Object>> slice(List<Map<String, Object>> original, Integer startIndex, Integer endIndex) {
         List<Map<String, Object>> sliced = new List<Map<String, Object>>();
         for (Integer i = startIndex; i < endIndex && i < original.size(); i++) {
@@ -456,10 +505,24 @@ global with sharing class Utils {
         return sliced;
     }
 
-    private String sanitizeId(String albumId) {
-        if (albumId InstanceOf Id) {
-            albumId = (Id)albumId;
-        }
-        return albumId;
+    /**
+     * Generate SharinPix URL to launch mobile application
+     * @param  albumId        Album Id to save job's images into
+     * @param  name           Name of job in application
+     * @param  jobOptions     Additional options passed to job
+     * @param  linkExpiration Link expiration delay in seconds
+     * @return                App URL to open SharinPix mobile app
+     */
+    @deprecated
+    global String generateMobileAppUrl(String albumId, String name, Map<String, Object> options, Integer linkExpiration) {
+        return generateMobileAppUrl(
+            albumId,
+            new Map<String, Object> {
+                'name' => name,
+                'appOptions' => options,
+                'linkExpiration' => linkExpiration
+            }
+        );
     }
+
 }

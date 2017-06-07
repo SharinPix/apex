@@ -24,9 +24,16 @@ public with sharing class MobileUploadController {
      */
     public PageReference generateAppUrl() {
         if (String.isBlank(jobOptions)) jobOptions = '{}';
-        Map<String, Object> options = Utils.parseJsonParam(jobOptions);
+        Map<String, Object> appOptions = Utils.parseJsonParam(jobOptions);
 
-        String appUrl = (new Utils()).generateMobileAppUrl(jobAlbumId, jobName, options, linkExpiration);
+        String appUrl = (new Utils()).generateMobileAppUrl(
+            jobAlbumId,
+            new Map<String, Object> {
+                'name' => jobName,
+                'appOptions' => appOptions,
+                'linkExpiration' => linkExpiration
+            }
+        );
         PageReference pageRef = new PageReference(appUrl);
         pageRef.setRedirect(true);
         return pageRef;
