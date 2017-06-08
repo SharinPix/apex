@@ -29,12 +29,13 @@
         };
     },
     doSearch : function(cmp) {
+        cmp.set('v.errorMsg', null);
         var params = this.extractParams(cmp);
         var self = this;
 
         this.fetchTokens(cmp, params, $A.getCallback(function(urlAndTokens) {
             if ($A.util.isEmpty(urlAndTokens.tokens)) {
-                self.showToast('No Results', 'No records found with provided search query.');
+                cmp.set('v.errorMsg', 'No Results: No records found with provided search query.');
                 return;
             }
             cmp.set('v.searchUrl', urlAndTokens.baseUrl);
@@ -69,13 +70,13 @@
             if (cmp.isValid() && state === "SUCCESS") {
                 var returnValue = response.getReturnValue();
                 if (returnValue.hasOwnProperty('error')) {
-                    this.showToast('Error', returnValue.error);
+                    cmp.set('v.errorMsg', 'Error: ' + returnValue.error);
                 } else {
                     callback(returnValue);
                 }
             } else if (cmp.isValid() && state === "ERROR") {
                 var errors = response.getError();
-                this.showToast('Error', 'See console for details');
+                cmp.set('v.errorMsg', 'Error: See console for details');
                 if (errors) {
                     if (errors[0] && errors[0].message) {
                         console.log("Error message: " + errors[0].message);
@@ -100,19 +101,5 @@
         };
         postToken('search', tokens.shift());
         tokens.forEach(function(token) { postToken('search-aggregate', token); });
-    },
-    showToast : function(title, message) {
-        var toastEvent = $A.get("e.force:showToast");
-        if (toastEvent) {
-            toastEvent.setParams({
-                "title": 'SharinPix Search - ' + title,
-                "message": message,
-                "mode": "sticky"
-            });
-            toastEvent.fire();
-        } else {
-            // fallback if within VF mode
-            alert(title + ': ' + message);
-        }
     }
 })

@@ -11,6 +11,7 @@
 
     <aura:attribute name="eventListener" type="Object"/>
     <aura:attribute name="searchReady" type="Boolean" default="false"/>
+    <aura:attribute name="errorMsg" type="String"/>
 
     <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
     <aura:handler name="change" value="{! v.reportId }" action="{! c.startSearch }"/>
@@ -22,6 +23,10 @@
     <aura:handler name="change" value="{! v.searchReady }" action="{! c.handleNewTokens }"/>
 
     <aura:method name="startSearch" action="{! c.startSearch }"/>
-
+    <aura:if isTrue="{! v.errorMsg }">
+        <ui:message title="Error" severity="Error">
+            {! v.errorMsg }
+        </ui:message>
+    </aura:if>
     <iframe aura:id="SharinPix" src="{! v.searchUrl }" width="100%" height="{! v.height + 'px' }" style="border: 0;" onload="{! c.stopLoading }" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
 </aura:component>
