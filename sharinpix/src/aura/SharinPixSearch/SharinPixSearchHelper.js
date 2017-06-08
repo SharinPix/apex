@@ -37,9 +37,7 @@
                 self.showToast('No Results', 'No records found with provided search query.');
                 return;
             }
-            var searchUrl = urlAndTokens.baseUrl + urlAndTokens.tokens[0];
-            cmp.set('v.searchUrl', searchUrl);
-            urlAndTokens.tokens.shift();
+            cmp.set('v.searchUrl', urlAndTokens.baseUrl);
             cmp.set('v.tokens', urlAndTokens.tokens);
         }));
     },
@@ -91,12 +89,13 @@
         var tokens = cmp.get('v.tokens');
         if ($A.util.isEmpty(tokens)) return;
 
-        tokens.forEach(function(token) {
-            iframeEl.contentWindow.postMessage({
-                name: 'search-aggregate',
-                payload: token
-            }, '*');
-        });
+        var postToken = function(name, token) {
+            var message = { name: name, payload: token };
+            console.log('Pushing', message);
+            iframeEl.contentWindow.postMessage(message, 'https://app.sharinpix.com');
+        };
+        postToken('search', tokens.shift());
+        tokens.forEach(function(token) { postToken('search-aggregate', token); });
     },
     showToast : function(title, message) {
         var toastEvent = $A.get("e.force:showToast");
