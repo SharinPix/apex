@@ -11,7 +11,7 @@ public class SharinPixSearchControllerTest {
 
         String baseUrl = (String)urlAndTokens.get('baseUrl');
         List<String> tokens = (List<String>)urlAndTokens.get('tokens');
-        System.assert(baseUrl != null && baseUrl != '');
+        System.assert(String.isNotBlank(baseUrl));
         System.assert(tokens != null);
     }
 

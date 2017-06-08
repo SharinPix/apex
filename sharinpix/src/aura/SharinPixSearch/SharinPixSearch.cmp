@@ -23,5 +23,5 @@
 
     <aura:method name="startSearch" action="{! c.startSearch }"/>
 
-    <iframe aura:id="SharinPix" src="{! v.searchUrl }" width="100%" height="{! v.height + 'px' }" style="border: 0;" onload="{! c.stopLoading }"></iframe>
+    <iframe aura:id="SharinPix" src="{! v.searchUrl }" width="100%" height="{! v.height + 'px' }" style="border: 0;" onload="{! c.stopLoading }" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
 </aura:component>

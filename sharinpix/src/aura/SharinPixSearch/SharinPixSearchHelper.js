@@ -67,7 +67,12 @@
         action.setCallback(this, function(response) {
             var state = response.getState();
             if (cmp.isValid() && state === "SUCCESS") {
-                callback(response.getReturnValue());
+                var returnValue = response.getReturnValue();
+                if (returnValue.hasOwnProperty('error')) {
+                    this.showToast('Error', returnValue.error);
+                } else {
+                    callback(returnValue);
+                }
             } else if (cmp.isValid() && state === "ERROR") {
                 var errors = response.getError();
                 this.showToast('Error', 'See console for details');
@@ -91,7 +96,6 @@
 
         var postToken = function(name, token) {
             var message = { name: name, payload: token };
-            console.log('Pushing', message);
             iframeEl.contentWindow.postMessage(message, 'https://app.sharinpix.com');
         };
         postToken('search', tokens.shift());
@@ -101,8 +105,9 @@
         var toastEvent = $A.get("e.force:showToast");
         if (toastEvent) {
             toastEvent.setParams({
-                "title": title,
-                "message": message
+                "title": 'SharinPix Search - ' + title,
+                "message": message,
+                "mode": "sticky"
             });
             toastEvent.fire();
         } else {

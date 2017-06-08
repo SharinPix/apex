@@ -1,6 +1,6 @@
 public with sharing class SharinPixSearchController {
     private static Client clientInstance = Client.getInstance();
-    private static final Integer TOKEN_SIZE = 2; // TODO
+    private static final Integer TOKEN_SIZE = Integer.valueOf(Label.Token_Size);
 
     @AuraEnabled
     public static Map<String, Object> generateUrlAndTokens(Id reportId, List<Object> reportParameters, String tagOperator, List<String> tagNames) {
@@ -10,7 +10,12 @@ public with sharing class SharinPixSearchController {
             'tokens' => tokens
         };
 
-        List<String> albumIds = getAlbumIdsFromReport(reportId, reportParameters);
+        List<String> albumIds;
+        try {
+            albumIds = getAlbumIdsFromReport(reportId, reportParameters);
+        } catch (Exception e) {
+            return new Map<String, String> { 'error' => e.getMessage() };
+        }
         Map<String, String> query;
         String queryStr;
 
@@ -48,14 +53,33 @@ public with sharing class SharinPixSearchController {
             Reports.ReportFactWithDetails factDetails = (Reports.ReportFactWithDetails)results.getFactMap().get('T!T');
 
             List<String> albumIds = new List<String>();
-            Integer columnIndex = 0;
+            Integer columnIndex = -1;
+            List<Reports.ReportDetailRow> detailRows = factDetails.getRows();
             List<Reports.ReportDataCell> dataCells;
-            for (Reports.ReportDetailRow detailRow : factDetails.getRows()) {
+
+            if (detailRows.isEmpty()) {
+                return albumIds;
+            }
+
+            Reports.ReportDetailRow firstRow = detailRows[0];
+            dataCells = firstRow.getDataCells();
+            for (Integer i = 0; i < dataCells.size() && columnIndex == -1; i++) {
+                if (dataCells[i].getLabel() InstanceOf ID) {
+                    columnIndex = i;
+                }
+            }
+            if (columnIndex == -1) {
+                throw new SharinPixException('Report contains no ID column.');
+            }
+
+            for (Reports.ReportDetailRow detailRow : detailRows) {
                 dataCells = detailRow.getDataCells();
                 albumIds.add((String)dataCells[columnIndex].getValue());
             }
 
             return albumIds;
+        } catch (SharinPixException spe) {
+            throw spe;
         } catch (Exception e) {
             throw new SharinPixException('Error in generating report - ' + e.getCause() + '[' + e.getLineNumber() + ']: ' + e.getMessage());
         }
