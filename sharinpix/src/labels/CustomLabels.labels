@@ -29,6 +29,48 @@
         <value>Credentials has been successfully updated.</value>
     </labels>
     <labels>
+        <fullName>ErrorSeeConsole</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ErrorSeeConsole</shortDescription>
+        <value>Error - See console for details.</value>
+    </labels>
+    <labels>
+        <fullName>InvalidParameters</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>InvalidParameters</shortDescription>
+        <value>Invalid parameters.</value>
+    </labels>
+    <labels>
+        <fullName>InvalidReportId</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>InvalidReportId</shortDescription>
+        <value>Invalid report ID provided.</value>
+    </labels>
+    <labels>
+        <fullName>ReportGenerateError</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ReportGenerateError</shortDescription>
+        <value>Error in generating report - {0}[{1}]: {2}</value>
+    </labels>
+    <labels>
+        <fullName>ReportNoID</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ReportNoID</shortDescription>
+        <value>Report contains no ID column.</value>
+    </labels>
+    <labels>
+        <fullName>ReportNoRows</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ReportNoRows</shortDescription>
+        <value>Report returned no rows.</value>
+    </labels>
+    <labels>
         <fullName>Save</fullName>
         <language>en_US</language>
         <protected>true</protected>
@@ -48,5 +90,12 @@
         <protected>true</protected>
         <shortDescription>TestApi</shortDescription>
         <value>Test api</value>
+    </labels>
+    <labels>
+        <fullName>Token_Size</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Token Size</shortDescription>
+        <value>25</value>
     </labels>
 </CustomLabels>
