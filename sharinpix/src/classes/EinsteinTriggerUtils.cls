@@ -10,8 +10,8 @@ public with sharing class EinsteinTriggerUtils {
      */
     @future(callout=true)
     public static void createSharinPixDataset(Id datasetId){
-        EinsteinDataset__c dataset = [select id, name, EinsteinVisionProject__c from EinsteinDataset__c where id = :datasetId];
-        list<EinsteinLabel__c> einsteinLabels = [select id, name from EinsteinLabel__c where EinsteinVisionProject__c = :dataset.EinsteinVisionProject__c];
+        EinsteinDataset__c dataset = [select id, name, EinsteinVisionProject__c from EinsteinDataset__c where id = :String.escapeSingleQuotes(datasetId)];
+        list<EinsteinLabel__c> einsteinLabels = [select id, name from EinsteinLabel__c where EinsteinVisionProject__c = :String.escapeSingleQuotes(dataset.EinsteinVisionProject__c)];
         list<string> labels = new list<string>();
         for(EinsteinLabel__c label: einsteinLabels){
             labels.add(label.name);

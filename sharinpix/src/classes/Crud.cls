@@ -3,10 +3,10 @@ public with sharing class Crud {
     ----------------------------------------------------------------------
     -- - Author        : SharinPix
     -- - Description   : Manage CRUD in VisualForce page and Lightning Components
-    -- -             
+    -- -
     -- - Maintenance History:
     --
-    -- Date         Name  Version  Remarks 
+    -- Date         Name  Version  Remarks
     -- -----------  ----  -------  ---------------------------------------
     -- 29-NOV-2016  DMT   1.0      Initial version
     ----------------------------------------------------------------------
@@ -19,9 +19,9 @@ public with sharing class Crud {
     //public static boolean isCreateable(Schema.SObjectType sobjType) {
     //    return ObjectPermission(sobjType, ISCREATEABLE, new list < Schema.SObjectField > ());
     //}
-    //public static boolean isCreateable(Schema.SObjectType sobjType, List < Schema.SObjectField > fieldList) {
-    //    return ObjectPermission(sobjType, ISCREATEABLE, fieldList);
-    //}
+    public static boolean isCreateable(Schema.SObjectType sobjType, List < Schema.SObjectField > fieldList) {
+        return ObjectPermission(sobjType, ISCREATEABLE, fieldList);
+    }
     //public static boolean isUpdateable(Schema.SObjectType sobjType) {
     //    return ObjectPermission(sobjType, ISUPDATEABLE, new list < Schema.SObjectField > ());
     //}

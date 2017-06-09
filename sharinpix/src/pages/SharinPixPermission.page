@@ -3,9 +3,9 @@
         <apex:actionFunction action="{!cancelEdit}" name="cancel" />
 
         <apex:actionFunction action="{!updatePermission}" name="update" rerender="showstate">
-            <apex:param name="name" assignTo="{!permission.Name}" value="" />
-            <apex:param name="description" assignTo="{!permission.Description__c}" value="" />
-            <apex:param name="json" assignTo="{!permission.Json__c}" value="" />
+            <apex:param name="name" assignTo="{!name}" value="" />
+            <apex:param name="description" assignTo="{!description}" value="" />
+            <apex:param name="json" assignTo="{!jsonfile}" value="" />
         </apex:actionFunction>
 
     </apex:form>
@@ -43,9 +43,9 @@
 
         function loaded(e){
             var isNew = false;
-            var recordName = '{!permission.Name}';
-            var description = '{!permission.Description__c}';
-            var token = '{!permission.Json__c}' == '' ? '{}' : '{!permission.Json__c}';
+            var recordName = '{!JSENCODE(name)}';
+            var description = '{!JSENCODE(description)}';
+            var token = '{!JSENCODE(jsonfile)}' == '' ? '{}' : '{!JSENCODE(jsonfile)}';
             var readOnly = false;
             var edit = false
             if ('{!vfMode}' == 'New'){

@@ -4,7 +4,7 @@
 <head>
 <apex:slds />
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" src="{! URLFOR($Resource.PrefixedBootstrap, 'jquery-3.1.1.slim.min.js') }"/>
 <script>
 
  $(document).ready(function(){
@@ -12,10 +12,10 @@
       data = e.originalEvent.data;
       switch (data.name) {
         case 'viewer-image-viewed':
-          document.getElementById('statusIframe').contentWindow.postMessage({name: 'viewer-image-viewed', model_id: '{!recordId}', image_id: data.payload.image.public_id}, '*');
+          document.getElementById('statusIframe').contentWindow.postMessage({name: 'viewer-image-viewed', model_id: '{!recordId}', image_id: data.payload.image.public_id}, '{!domain}');
           break;
         case 'viewer-closed':
-          document.getElementById('statusIframe').contentWindow.postMessage({name: 'viewer-closed'}, '*');
+          document.getElementById('statusIframe').contentWindow.postMessage({name: 'viewer-closed'}, '{!domain}');
           break;
       };
     });
@@ -25,9 +25,9 @@
 </head>
 
 <body>
-  <iframe id="statusIframe" src="{!modelStatusUrl}" height="300px" width="100%" style="border: 0" sandbox="" />
+  <iframe id="statusIframe" src="{!HTMLENCODE(modelStatusUrl)}" height="320px" width="100%" style="border: 0" />
   <div id="album">
-    <iframe id="albumIframe" src="{!albumUrl}" height="520px" width="100%" style="border: 0" sandbox="" />
+    <iframe id="albumIframe" src="{!HTMLENCODE(albumUrl)}" height="520px" width="100%" style="border: 0" />
   </div>
 </body>
 </html>

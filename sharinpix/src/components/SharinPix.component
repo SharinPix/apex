@@ -3,5 +3,5 @@
   <apex:attribute name="id" type="string" description="Id of the iframe." assignTo="{!iframeIdInput}" default="sharinpix" access="global"/>
   <apex:attribute name="parameters" type="string" description="Parameters for the components" assignTo="{!parametersInput}" default="{}" access="global"/>
   <apex:attribute name="secretUrl" type="string" description="SharinPix Secret Url" assignTo="{!secretUrlInput}" default="" access="global"/>
-  <iframe id="{!iframeId}" style="{!style}" src="{!url}"/>
+  <iframe id="{!iframeId}" style="{!style}" src="{!url}" />
 </apex:component>

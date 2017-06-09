@@ -15,11 +15,11 @@
                     }
                 );
                 break;
-            case "admin-secret-url":
-                sharinpixUrl = e.data.payload;
-                if (sharinpixUrl != null) {
+            case "admin-secret-url-v2":
+                payload = e.data.payload;
+                if (payload != null) {
                     sharinpix.SharinPixSettingController.saveSecret(
-                        sharinpixUrl,
+                        payload.url, payload.organization.sfid,
                         function(response) {
                             e.source.postMessage({ name: "admin-secret-saved", payload: response }, e.origin);
                         }

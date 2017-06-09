@@ -17,7 +17,7 @@ private class SharinPixSettingControllerTEST {
     HttpCalloutMock multiCalloutMock = new MultiRequestMock(mapRequestResponse);
     Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
-    SharinPixSettingController.saveSecret('sharinpix://clientid:clientsecret@api.sharinpix.com/api/v1');
+    SharinPixSettingController.saveSecret('sharinpix://clientid:clientsecret@api.sharinpix.com/api/v1', UserInfo.getOrganizationId());
     Test.startTest();
     System.assert(SharinPixSettingController.hasValidSecret());
     Test.stopTest();
@@ -30,7 +30,7 @@ private class SharinPixSettingControllerTEST {
     HttpCalloutMock multiCalloutMock = new MultiRequestMock(mapRequestResponse);
     Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
-    SharinPixSettingController.saveSecret('sharinpix://clientid:clientsecret@api.sharinpix.com/api/v1');
+    SharinPixSettingController.saveSecret('sharinpix://clientid:clientsecret@api.sharinpix.com/api/v1', UserInfo.getOrganizationId());
 
     firstResponse = new SingleRequestMock(401, 'Unauthorized', '', null);
     mapRequestResponse = new Map<String,HttpCalloutMock>();
@@ -51,13 +51,13 @@ private class SharinPixSettingControllerTEST {
     Test.setMock(HttpCalloutMock.class, multiCalloutMock);
 
     Test.startTest();
-    System.assert(SharinPixSettingController.saveSecret('sharinpix://clientid:clientsecret@api.sharinpix.com/api/v1'));
+    System.assert(SharinPixSettingController.saveSecret('sharinpix://clientid:clientsecret@api.sharinpix.com/api/v1', UserInfo.getOrganizationId()));
     Test.stopTest();
   }
 
   static testMethod void testSaveSecretWithMalformedUrl() {
     Test.startTest();
-    System.assert(!SharinPixSettingController.saveSecret('http://notsharin.pix'));
+    System.assert(!SharinPixSettingController.saveSecret('http://notsharin.pix', UserInfo.getOrganizationId()));
     Test.stopTest();
   }
 
@@ -65,6 +65,13 @@ private class SharinPixSettingControllerTEST {
     String expected = JSON.serialize([SELECT Id, InstanceName, IsSandbox, Name, OrganizationType FROM Organization LIMIT 1]);
     Test.startTest();
     System.assertEquals(expected, SharinPixSettingController.getOrgInfos());
+    Test.stopTest();
+  }
+
+  static testMethod void testSecretOrganizationIsNotValid() {
+    SharinPixSettingController.saveSecret('sharinpix://clientid:clientsecret@api.sharinpix.com/api/v1', 'NOT_AN_ID');
+    Test.startTest();
+    System.assert(!SharinPixSettingController.hasValidSecret());
     Test.stopTest();
   }
 }
