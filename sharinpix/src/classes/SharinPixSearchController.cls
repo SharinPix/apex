@@ -53,7 +53,6 @@ public with sharing class SharinPixSearchController {
             Reports.ReportFactWithDetails factDetails = (Reports.ReportFactWithDetails)results.getFactMap().get('T!T');
 
             List<String> albumIds = new List<String>();
-            Integer columnIndex = -1;
             List<Reports.ReportDetailRow> detailRows = factDetails.getRows();
             List<Reports.ReportDataCell> dataCells;
 
@@ -61,15 +60,9 @@ public with sharing class SharinPixSearchController {
                 return albumIds;
             }
 
-            Reports.ReportDetailRow firstRow = detailRows[0];
-            dataCells = firstRow.getDataCells();
-            for (Integer i = 0; i < dataCells.size() && columnIndex == -1; i++) {
-                if (dataCells[i].getLabel() InstanceOf ID) {
-                    columnIndex = i;
-                }
-            }
+            Integer columnIndex = getFirstIdColumnIndex(reportId, results);
             if (columnIndex == -1) {
-                throw new SharinPixException('Report contains no ID column.');
+                throw new SharinPixException(Label.sharinpix.ReportNoID);
             }
 
             for (Reports.ReportDetailRow detailRow : detailRows) {
@@ -81,8 +74,28 @@ public with sharing class SharinPixSearchController {
         } catch (SharinPixException spe) {
             throw spe;
         } catch (Exception e) {
-            throw new SharinPixException('Error in generating report - ' + e.getCause() + '[' + e.getLineNumber() + ']: ' + e.getMessage());
+            throw new SharinPixException(String.format(
+                Label.sharinpix.ReportGenerateError,
+                new List<String> { String.valueOf(e.getCause()), String.valueOf(e.getLineNumber()), e.getMessage() }
+            ));
         }
+    }
+
+    private static Integer getFirstIdColumnIndex(String reportId, Reports.ReportResults results) {
+        Reports.ReportExtendedMetadata extendedMetadata = results.getReportExtendedMetadata();
+        Map<String, Reports.DetailColumn> detailColumnInfo = extendedMetadata.getDetailColumnInfo();
+
+        Reports.ReportDescribeResult reportDescribe = Reports.ReportManager.describeReport(reportId);
+        Reports.ReportMetadata reportMetadata = reportDescribe.getReportMetadata();
+        List<String> detailColumns = reportMetadata.getDetailColumns();
+        Reports.DetailColumn extendedDetailColumn;
+        for (Integer i = 0; i < detailColumns.size(); i++) {
+            extendedDetailColumn = detailColumnInfo.get(detailColumns[i]);
+            if (extendedDetailColumn.getDataType() == Reports.ColumnDataType.ID_DATA) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @TestVisible
@@ -91,7 +104,7 @@ public with sharing class SharinPixSearchController {
         if (tagNames == null) tagNames = new List<String>();
         if (albumIds.size() == 0) return '';
         if (tagOperator == null || tagOperator == '') tagOperator = 'OR';
-        if (tagOperator != 'AND' && tagOperator != 'OR') throw new SharinPixException('Invalid parameters.');
+        if (tagOperator != 'AND' && tagOperator != 'OR') throw new SharinPixException(Label.sharinpix.InvalidParameters);
 
         String albumIdsString = '';
         albumIdsString = '"' + String.join(albumIds, '" "') + '"';

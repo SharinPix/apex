@@ -23,10 +23,20 @@
     <aura:handler name="change" value="{! v.searchReady }" action="{! c.handleNewTokens }"/>
 
     <aura:method name="startSearch" action="{! c.startSearch }"/>
-    <aura:if isTrue="{! v.errorMsg }">
+
+    <div style="{! 'display: ' + (empty(v.errorMsg) ? 'block' : 'none') }">
+        <div style="{! 'display: ' + (v.loading ? 'block' : 'none') + '; height: ' + v.height + 'px' }">
+            <c:Loading/>
+        </div>
+        <div style="{! 'display: ' + (v.loading ? 'none' : 'block') }">
+            <iframe aura:id="SharinPix" src="{! v.searchUrl }" width="100%" height="{! v.height + 'px' }" style="border: 0;" onload="{! c.stopLoading }"></iframe>
+        </div>
+        <!-- sandbox="allow-same-origin allow-scripts" -->
+        <!-- allow-forms allow-popups allow-popups-to-escape-sandbox  -->
+    </div>
+    <div style="{! 'display: ' + (empty(v.errorMsg) ? 'none' : 'block') }">
         <ui:message title="Error" severity="Error">
             {! v.errorMsg }
         </ui:message>
-    </aura:if>
-    <iframe aura:id="SharinPix" src="{! v.searchUrl }" width="100%" height="{! v.height + 'px' }" style="border: 0;" onload="{! c.stopLoading }" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+    </div>
 </aura:component>
