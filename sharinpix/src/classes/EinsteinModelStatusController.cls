@@ -47,6 +47,10 @@ global with sharing class EinsteinModelStatusController {
                     'Display' => new map<string, object>{
                         'tags'=> true
                     }
+                },
+                'Sort' => new map<string, object>{
+                    'field'=> 'created_at',
+                    'order'=> 'desc'
                 }
             }
         };

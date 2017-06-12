@@ -41,6 +41,10 @@ public with sharing class EinsteinDatasetController {
                     'Display' => new map<string, object>{
                         'tags'=> true
                     }
+                },
+                'Sort' => new map<string, object>{
+                    'field'=> 'created_at',
+                    'order'=> 'desc'
                 }
             }
         };
