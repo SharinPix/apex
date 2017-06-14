@@ -1,6 +1,15 @@
 public with sharing class SharinPixSearchController {
     private static Client clientInstance = Client.getInstance();
-    private static final Integer TOKEN_SIZE = Integer.valueOf(Label.Token_Size);
+    private static final Integer TOKEN_SIZE = Integer.valueOf(Label.sharinpix.Token_Size);
+
+    // Dummy variable to include labels in package.
+    // Note on https://releasenotes.docs.salesforce.com/en-us/summer15/release-notes/rn_lightning_custom_label.htm
+    // Idea: https://success.salesforce.com/ideaView?id=0873A000000CLYSQA4
+    private static List<String> dummy = new List<String> {
+        Label.sharinpix.ErrorSeeConsole,
+        Label.sharinpix.InvalidReportId,
+        Label.sharinpix.ReportNoRows
+    };
 
     @AuraEnabled
     public static Map<String, Object> generateUrlAndTokens(Id reportId, List<Object> reportParameters, String tagOperator, List<String> tagNames) {
