@@ -1,3 +1,0 @@
-<apex:page standardController="EinsteinVisionProject__c" extensions="EinsteinVisionProjectAlbumCtrl" >
-    <iframe src="{!albumUrl}" height="500px" width="100%" style="border: 0" />
-</apex:page>

@@ -1,3 +1,0 @@
-<apex:page title="Einstein Dataset" standardController="EinsteinDataset__c" extensions="EinsteinDatasetController" docType="html-5.0">
-  <iframe src="{!albumUrl}" height="500px" width="100%" style="border: 0" />
-</apex:page>

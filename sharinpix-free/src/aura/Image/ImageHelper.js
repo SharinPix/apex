@@ -15,11 +15,14 @@
   changeImage  : function(component, diff){
       var index = component.get('v.index') + diff;
       var images = component.get('v.images');
+      if (images === undefined){
+        return;
+      }
       if(index >= images.length) {
         index = 0;
       }
       if(index < 0){
-          index = images.length-1;
+        index = images.length-1;
       }
       this.setComponentAttributes(component, {
         index: index,
