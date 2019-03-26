@@ -12,10 +12,11 @@ public class SharinPixDemoAttachmentUpload {
     }
 
     @future (callout=true)
-    public static void upload_photo(string attachmentId, string caseId){
+    public static void upload_photo(Id attachmentId, string caseId){
         SharinPix.Client clientInstance = SharinPix.Client.getInstance();
-        if (clientInstance!=null){
-            clientInstance.upload_attachment(attachmentId, caseId);
+        SharinPix.Utils utilsInstance = new SharinPix.Utils(clientInstance);
+        if (clientInstance!=null && utilsInstance!=null){
+            utilsInstance.uploadAttachment(attachmentId, caseId);
         }
         else {
             system.debug('### Error occurred');
