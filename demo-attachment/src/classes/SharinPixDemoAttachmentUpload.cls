@@ -13,7 +13,7 @@ public class SharinPixDemoAttachmentUpload {
 
     @future (callout=true)
     public static void upload_photo(Id attachmentId, string caseId){
-        SharinPix.Utils utilsInstance = SharinPix.Utils.getInstance();
+        SharinPix.Utils utilsInstance = new SharinPix.Utils(SharinPix.Client.getInstance());
         if (utilsInstance!=null){
             utilsInstance.uploadAttachment(attachmentId, caseId);
         }
